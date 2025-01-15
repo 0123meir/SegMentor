@@ -12,8 +12,6 @@ const FileDropZone = (props: FileDropZoneProps) => {
     const label = fileFormats[0].startsWith("video/") ? 'Video': 'Audio'
 
   return (
-    <div className="flex flex-col text-center flex-grow">
-    <h1 className="text-2xl font-bold mb-4"> {`Upload Lecture ${label} (${fileExtentions[0] ?? 'any media type'})`}</h1>
     <div
       {...getRootProps({
         className:
@@ -28,7 +26,6 @@ const FileDropZone = (props: FileDropZoneProps) => {
         Browse Files
       </button>
     </div>
-  </div>
   )
 }
 
