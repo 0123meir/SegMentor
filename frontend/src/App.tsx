@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Accept, useDropzone } from "react-dropzone";
+import { AIAssistant } from "@/components/AIAssistant";
+import { Collections } from "@/components/Collections";
 
 const App = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -55,12 +57,12 @@ const App = () => {
           )}
         </div>
 
-        <div className="h-1/4 bg-gray-100 rounded-lg m-2 flex items-center justify-center">
+        <AIAssistant/>
           <p className="text-xl">AI Assistant</p>
         </div>
       </div>
 
-      <div className="w-1/2 bg-gray-100 rounded-lg m-2 p-4">
+      <Collections/>
         <p className="text-xl">Collections</p>
       </div>
     </div>
