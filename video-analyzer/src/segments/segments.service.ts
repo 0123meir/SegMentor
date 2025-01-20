@@ -80,26 +80,30 @@ const generateSegmentsPrompt = (srt: string) =>
     { role: 'user', content: [{ type: 'text', text: srt }] },
   ] as ChatCompletionMessageParam[];
 
-export const createSegmentsFromSRT = async (srtFilePath: string) => {
-  const srt = fs.readFileSync(srtFilePath, 'utf8');
 
-  try {
-    const response = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: generateSegmentsPrompt(srt),
-      response_format: {
-        type: 'json_schema',
-        json_schema: segmentsSchema,
-      },
-      temperature: 0.5,
-      max_completion_tokens: 8046,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-    });
+@Injectable()
+export class SegmentsService {
+   createSegmentsFromSRT = async (srtFilePath: string) => {
+    const srt = fs.readFileSync(srtFilePath, 'utf8');
   
-    return JSON.parse(response.choices[0].message.content); //TODO: save to db when ready
-  } catch (error) {
-    console.error(error);
-  }
-};
+    try {
+      const response = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: generateSegmentsPrompt(srt),
+        response_format: {
+          type: 'json_schema',
+          json_schema: segmentsSchema,
+        },
+        temperature: 0.5,
+        max_completion_tokens: 8046,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      });
+    
+      return JSON.parse(response.choices[0].message.content); //TODO: save to db when ready
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}
