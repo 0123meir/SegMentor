@@ -1,0 +1,66 @@
+.video-player {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background-color: #000;
+}
+
+.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+}
+
+.seekbar {
+  margin-bottom: 40px;
+  direction: ltr;
+  position: absolute;
+  z-index: 100;
+  bottom: 0;
+  width: 100%;
+}
+
+.custom-controls {
+  color: #fff;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.left-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.custom-controls button {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.custom-controls button:hover {
+  color: #0193d7;
+}
+
+.seekbar-timestamp {
+  font-size: 14px;
+}
