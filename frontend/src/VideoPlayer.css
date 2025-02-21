@@ -23,6 +23,10 @@
   width: 100%;
 }
 
+.fullscreen .seekbar {
+  position: absolute;
+}
+
 .custom-controls {
   color: #fff;
   position: absolute;
