@@ -8,9 +8,6 @@ export interface VideoPlayerProps {
   url: string;
 }
 
-// TODO:
-// 1. mute when clicking on volume
-
 const VideoPlayer = (props: VideoPlayerProps) => {
   const videoRef = useRef<ReactPlayer>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -18,6 +15,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -34,12 +32,18 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const handleVolumeChange = (_e: Event, newValue: number | number[]) => {
     if (typeof newValue === "number" && videoRef.current) {
       setVolume(newValue);
+      setIsMuted(false);
     }
   };
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen((prev) => !prev);
   }, []);
+
+  const toggleMute = () => {
+    isMuted ? setVolume(1) : setVolume(0);
+    setIsMuted((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: { key: any; preventDefault: () => void }) => {
@@ -102,6 +106,8 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         volume={volume}
         handleVolumeChange={handleVolumeChange}
         toggleFullscreen={toggleFullscreen}
+        toggleMute={toggleMute}
+        isMuted={isMuted}
       />
     </div>
   );

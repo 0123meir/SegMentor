@@ -1,4 +1,4 @@
-import { FaPlay, FaPause, FaVolumeUp } from "react-icons/fa";
+import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import { BsFullscreen } from "react-icons/bs";
 import { Slider } from "@mui/material";
 import { FC } from "react";
@@ -11,6 +11,8 @@ interface CustomControlsProps {
   volume: number;
   handleVolumeChange: (e: Event, newValue: number | number[]) => void;
   toggleFullscreen: () => void;
+  toggleMute: () => void;
+  isMuted: boolean;
 }
 
 const CustomControls: FC<CustomControlsProps> = ({
@@ -21,6 +23,8 @@ const CustomControls: FC<CustomControlsProps> = ({
   volume,
   handleVolumeChange,
   toggleFullscreen,
+  toggleMute,
+  isMuted,
 }) => {
   const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -49,7 +53,9 @@ const CustomControls: FC<CustomControlsProps> = ({
           aria-labelledby="volume-slider"
           style={{ width: "60px" }}
         />
-        <FaVolumeUp />
+        <button onClick={toggleMute} className="hover:text-blue-500">
+          {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+        </button>
         <button
           onClick={togglePlayPause}
           className="play-pause-btn hover:text-blue-500"
