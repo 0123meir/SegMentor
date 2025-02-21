@@ -2,8 +2,6 @@ import { Fullscreen, Pause, PlayArrow, VolumeUp } from "@mui/icons-material";
 import { Slider } from "@mui/material";
 import { FC } from "react";
 
-import "../VideoPlayer.css";
-
 interface CustomControlsProps {
   currentTime: number;
   duration: number;
@@ -30,15 +28,15 @@ const CustomControls: FC<CustomControlsProps> = ({
   };
 
   return (
-    <div className="custom-controls">
-      <div className="right-controls">
-        <button onClick={toggleFullscreen}>
+    <div className="absolute bottom-0 left-0 w-full p-2 flex items-center justify-between z-10 text-white">
+      <div className="flex items-center gap-4">
+        <button onClick={toggleFullscreen} className="hover:text-blue-500">
           <Fullscreen />
         </button>
       </div>
 
-      <div className="left-controls">
-        <div className="seekbar-timestamp">
+      <div className="flex items-center gap-4">
+        <div className="text-sm">
           {formatTime(duration)} / {formatTime(currentTime)}
         </div>
         <Slider
@@ -51,7 +49,10 @@ const CustomControls: FC<CustomControlsProps> = ({
           style={{ width: "60px" }}
         />
         <VolumeUp />
-        <button onClick={togglePlayPause} className="play-pause-btn">
+        <button
+          onClick={togglePlayPause}
+          className="play-pause-btn hover:text-blue-500"
+        >
           {isPlaying ? <Pause /> : <PlayArrow />}
         </button>
       </div>

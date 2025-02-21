@@ -2,7 +2,6 @@ import { Slider } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
-import "../VideoPlayer.css";
 import CustomControls from "./CustomControls";
 
 export interface VideoPlayerProps {
@@ -11,7 +10,6 @@ export interface VideoPlayerProps {
 
 // TODO:
 // 1. mute when clicking on volume
-// 2. when on full screen do the same display as not
 
 const VideoPlayer = (props: VideoPlayerProps) => {
   const videoRef = useRef<ReactPlayer>(null);
@@ -66,9 +64,15 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, [togglePlayPause, toggleFullscreen]);
 
   return (
-    <div className={`video-player ${isFullscreen ? "fullscreen" : ""}`}>
+    <div
+      className={`relative w-full ${
+        isFullscreen
+          ? "fixed top-0 left-0 w-screen h-screen z-10 bg-black"
+          : "bg-black"
+      }`}
+    >
       <ReactPlayer
-        className="w-full rounded-md"
+        className="absolute rounded-md"
         ref={videoRef}
         url={props.url}
         controls={false}
@@ -78,16 +82,16 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
         onDuration={(duration) => setDuration(duration)}
         width="100%"
-        height="auto"
+        height="100%"
       />
 
       <Slider
-        className="seekbar"
         size="small"
         min={0}
         max={duration}
         value={currentTime}
         onChange={handleSeek}
+        style={{ position: "absolute", bottom: "40px" }}
       />
 
       <CustomControls
