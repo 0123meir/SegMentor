@@ -1,4 +1,5 @@
-import { Fullscreen, Pause, PlayArrow, VolumeUp } from "@mui/icons-material";
+import { FaPlay, FaPause, FaVolumeUp } from "react-icons/fa";
+import { BsFullscreen } from "react-icons/bs";
 import { Slider } from "@mui/material";
 import { FC } from "react";
 
@@ -31,7 +32,7 @@ const CustomControls: FC<CustomControlsProps> = ({
     <div className="absolute bottom-0 left-0 w-full p-2 flex items-center justify-between z-10 text-white">
       <div className="flex items-center gap-4">
         <button onClick={toggleFullscreen} className="hover:text-blue-500">
-          <Fullscreen />
+          <BsFullscreen />
         </button>
       </div>
 
@@ -48,12 +49,12 @@ const CustomControls: FC<CustomControlsProps> = ({
           aria-labelledby="volume-slider"
           style={{ width: "60px" }}
         />
-        <VolumeUp />
+        <FaVolumeUp />
         <button
           onClick={togglePlayPause}
           className="play-pause-btn hover:text-blue-500"
         >
-          {isPlaying ? <Pause /> : <PlayArrow />}
+          {isPlaying ? <FaPause /> : <FaPlay />}
         </button>
       </div>
     </div>
