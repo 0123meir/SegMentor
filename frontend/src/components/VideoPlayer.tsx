@@ -9,12 +9,12 @@ export interface VideoPlayerProps {
 }
 
 const VideoPlayer = (props: VideoPlayerProps) => {
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<ReactPlayer>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
   const togglePlayPause = useCallback(() => {
@@ -37,7 +37,11 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   };
 
   const toggleFullscreen = useCallback(() => {
-    setIsFullscreen((prev) => !prev);
+    if (!document.fullscreenElement) {
+      videoContainerRef.current?.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
   }, []);
 
   const toggleMute = () => {
@@ -56,7 +60,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
           toggleFullscreen();
           break;
         case "Escape":
-          setIsFullscreen(false);
+          if (document.fullscreenElement) document.exitFullscreen();
           break;
         default:
           break;
@@ -68,13 +72,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, [togglePlayPause, toggleFullscreen]);
 
   return (
-    <div
-      className={`relative w-full ${
-        isFullscreen
-          ? "fixed top-0 left-0 w-screen h-screen z-10 bg-black"
-          : "bg-black"
-      }`}
-    >
+    <div ref={videoContainerRef} className="relative w-full bg-black">
       <ReactPlayer
         className="absolute rounded-md"
         ref={videoRef}
