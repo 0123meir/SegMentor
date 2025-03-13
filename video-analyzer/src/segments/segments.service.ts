@@ -94,7 +94,7 @@ const generateSegmentsPrompt = (srt: string) =>
 
 @Injectable()
 export class SegmentsService {
-  createSegmentsFromSRT = async (srtFilePath: string) => {
+  createSegmentsFromSRT = async (srtFilePath: string): Promise<JSON> => {
     const srt = fs.readFileSync(srtFilePath, 'utf8');
 
     try {
