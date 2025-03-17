@@ -1,4 +1,3 @@
-import { Slider } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
@@ -11,26 +10,27 @@ export interface VideoPlayerProps {
 const VideoPlayer = (props: VideoPlayerProps) => {
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<ReactPlayer>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(1);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
   }, []);
 
-  const handleSeek = (_e: Event, value: number | number[]) => {
-    const seekTime = Array.isArray(value) ? value[0] : value;
+  const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const seekTime = parseFloat(event.target.value);
     if (videoRef.current) {
       setCurrentTime(seekTime);
       videoRef.current.seekTo(seekTime);
     }
   };
 
-  const handleVolumeChange = (_e: Event, newValue: number | number[]) => {
-    if (typeof newValue === "number" && videoRef.current) {
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseFloat(event.target.value);
+    if (videoRef.current) {
       setVolume(newValue);
       setIsMuted(false);
     }
@@ -87,13 +87,20 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         height="100%"
       />
 
-      <Slider
-        size="small"
-        min={0}
+      <input
+        type="range"
+        min="0"
         max={duration}
         value={currentTime}
         onChange={handleSeek}
-        style={{ position: "absolute", bottom: "40px" }}
+        className="absolute bottom-10 left-0 w-full h-5 bg-blue-500 rounded-full appearance-none cursor-pointer transition-all bg-transparent
+             [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:bg-blue-500
+             [&::-webkit-slider-runnable-track]:rounded-full 
+             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1
+             [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white 
+             [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md 
+             [&::-webkit-slider-thumb]:hover:bg-gray-200"
+        style={{ direction: "ltr" }}
       />
 
       <CustomControls

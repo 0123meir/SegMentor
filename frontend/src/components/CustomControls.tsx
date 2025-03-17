@@ -1,7 +1,6 @@
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
-import { BsFullscreen } from "react-icons/bs";
-import { Slider } from "@mui/material";
 import { FC } from "react";
+import { BsFullscreen } from "react-icons/bs";
+import { FaPause, FaPlay, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 
 interface CustomControlsProps {
   currentTime: number;
@@ -9,7 +8,7 @@ interface CustomControlsProps {
   isPlaying: boolean;
   togglePlayPause: () => void;
   volume: number;
-  handleVolumeChange: (e: Event, newValue: number | number[]) => void;
+  handleVolumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   toggleFullscreen: () => void;
   toggleMute: () => void;
   isMuted: boolean;
@@ -40,22 +39,31 @@ const CustomControls: FC<CustomControlsProps> = ({
         </button>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-start gap-4 text-left">
         <div className="text-sm">
           {formatTime(duration)} / {formatTime(currentTime)}
         </div>
-        <Slider
-          value={volume}
-          onChange={handleVolumeChange}
+
+        <input
+          type="range"
           min={0}
           max={1}
+          value={volume}
           step={0.01}
-          aria-labelledby="volume-slider"
-          style={{ width: "60px" }}
+          onChange={(e) => handleVolumeChange(e)}
+          className="w-full h-1 appearance-none bg-blue-500 rounded-full justify-start text-left cursor-pointer
+              [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:bg-blue-500 
+              [&::-webkit-slider-runnable-track]:rounded-full
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
+              [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full 
+              [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:-mt-1.5"
+          style={{ width: "60px", direction: "ltr" }}
         />
+
         <button onClick={toggleMute} className="hover:text-blue-500">
           {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
         </button>
+
         <button
           onClick={togglePlayPause}
           className="play-pause-btn hover:text-blue-500"
