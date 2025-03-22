@@ -5,9 +5,10 @@ import { OPEN_AI_CLIENT } from './constants';
 
 export const openAIClientProvider: FactoryProvider<OpenAI> = {
   provide: OPEN_AI_CLIENT,
-  useFactory: ({ apiKey }: OpenAIConfig): OpenAI =>
+  useFactory: (openAIConfig: OpenAIConfig): OpenAI =>
     new OpenAI({
-      apiKey,
+      apiKey: openAIConfig.apiKey,
+      timeout: openAIConfig.timeout,
     }),
   inject: [openAIConfig.KEY],
 };
