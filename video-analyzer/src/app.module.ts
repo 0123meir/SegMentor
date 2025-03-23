@@ -3,10 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { appConfig } from './config/app.config';
-import { SegmentsModule } from './segments/segments.module';
 import { openAIConfig } from './config/open-ai.config';
-import { OpenAIModule } from './open-ai/open-ai.module';
-import { TranscriptionsModule } from './transcriptions/transcriptions.module';
+import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
+import { SegmentsModule } from './modules/segments/segments.module';
+import { OpenAIModule } from './modules/open-ai/open-ai.module';
+import { AudioModule } from './modules/audio/audio.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TranscriptionsModule } from './transcriptions/transcriptions.module';
     TranscriptionsModule,
     SegmentsModule,
     OpenAIModule,
+    AudioModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],

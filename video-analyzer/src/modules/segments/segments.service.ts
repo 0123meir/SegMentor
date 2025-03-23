@@ -1,9 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import * as fs from 'fs';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources';
-import { OPEN_AI_CLIENT } from 'src/open-ai/constants';
 import {
   AI_MODEL,
   frequency_penalty,
@@ -14,18 +13,24 @@ import {
 } from './constants/model-params';
 import { segmentsSchema } from './constants/segments-schema';
 import { promptText } from './constants/model-prompt-text';
+import { OPEN_AI_CLIENT } from '../open-ai/constants';
 
 @Injectable()
 export class SegmentsService {
-  constructor(@Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI) {}
+  constructor(
+    @Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI,
+    private readonly logger: Logger,
+  ) {}
 
-  createSegmentsFromSRT = async (srtFilePath: string): Promise<JSON> => {
+  createSegmentsFromTranscription = async (
+    transcription: string,
+  ): Promise<JSON> => {
     try {
-      const srt = fs.readFileSync(srtFilePath, 'utf8');
+      this.logger.log('creating segments');
 
       const response = await this.openAI.chat.completions.create({
         model: AI_MODEL,
-        messages: this.generateSegmentsPrompt(srt),
+        messages: this.generateSegmentsPrompt(transcription),
         response_format: {
           type: 'json_schema',
           json_schema: segmentsSchema,
@@ -37,14 +42,18 @@ export class SegmentsService {
         presence_penalty,
       });
 
+      this.logger.log('finished segmenting successfully');
+
       return JSON.parse(response.choices[0].message.content); //TODO: save to db when ready
     } catch (error) {
-      console.error(error);
+      this.logger.error('failed creating segments');
+
+      throw error;
     }
   };
 
   private generateSegmentsPrompt = (
-    srt: string,
+    transcription: string,
   ): ChatCompletionMessageParam[] => [
     {
       role: 'system',
@@ -55,6 +64,6 @@ export class SegmentsService {
         },
       ],
     },
-    { role: 'user', content: [{ type: 'text', text: srt }] },
+    { role: 'user', content: [{ type: 'text', text: transcription }] },
   ];
 }

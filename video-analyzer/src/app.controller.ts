@@ -9,4 +9,11 @@ export class AppController {
   sayHello() {
     return this.appService.sayHello();
   }
+
+  @Get('analyze')
+  async analyze() {
+    const segments = await this.appService.getSegments();
+
+    return { segments };
+  }
 }
