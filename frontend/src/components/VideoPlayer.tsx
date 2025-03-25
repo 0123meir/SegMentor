@@ -50,10 +50,19 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   };
 
   useEffect(() => {
+    if (volume === 0 && !isMuted) {
+      setIsMuted(true);
+    } else if (volume > 0 && isMuted) {
+      setIsMuted(false);
+    }
+  }, [volume]);
+
+  useEffect(() => {
     const TIME_AND_VOLUME_SEEKBAR = "INPUT";
     const SPACE_KEY = " ";
     const FULLSCREEN_KEY = "f";
     const EXIT_FULLSCREEN_KEY = "Escape";
+    const MUTE_KEY = "m";
     const SEEK_FORWARD_KEY = "ArrowRight";
     const SEEK_BACKWARD_KEY = "ArrowLeft";
     const VOLUME_UP_KEY = "ArrowUp";
@@ -82,6 +91,9 @@ const VideoPlayer = (props: VideoPlayerProps) => {
           break;
         case EXIT_FULLSCREEN_KEY:
           if (document.fullscreenElement) document.exitFullscreen();
+          break;
+        case MUTE_KEY:
+          toggleMute();
           break;
         case SEEK_FORWARD_KEY:
           if (videoRef.current) {
@@ -119,7 +131,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [togglePlayPause, toggleFullscreen]);
+  }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
   return (
     <div ref={videoContainerRef} className="relative w-full bg-black">
