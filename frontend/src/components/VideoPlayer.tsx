@@ -50,17 +50,67 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   };
 
   useEffect(() => {
+    const TIME_AND_VOLUME_SEEKBAR = "INPUT";
+    const SPACE_KEY = " ";
+    const FULLSCREEN_KEY = "f";
+    const EXIT_FULLSCREEN_KEY = "Escape";
+    const SEEK_FORWARD_KEY = "ArrowRight";
+    const SEEK_BACKWARD_KEY = "ArrowLeft";
+    const VOLUME_UP_KEY = "ArrowUp";
+    const VOLUME_DOWN_KEY = "ArrowDown";
+
     const handleKeyDown = (event: { key: any; preventDefault: () => void }) => {
+      if (
+        document.activeElement?.tagName === TIME_AND_VOLUME_SEEKBAR &&
+        [
+          SEEK_FORWARD_KEY,
+          SEEK_BACKWARD_KEY,
+          VOLUME_UP_KEY,
+          VOLUME_DOWN_KEY,
+        ].includes(event.key)
+      ) {
+        event.preventDefault();
+      }
+
       switch (event.key) {
-        case " ":
+        case SPACE_KEY:
           togglePlayPause();
           event.preventDefault();
           break;
-        case "f":
+        case FULLSCREEN_KEY:
           toggleFullscreen();
           break;
-        case "Escape":
+        case EXIT_FULLSCREEN_KEY:
           if (document.fullscreenElement) document.exitFullscreen();
+          break;
+        case SEEK_FORWARD_KEY:
+          if (videoRef.current) {
+            const newTime = Math.min(
+              videoRef.current.getCurrentTime() + 10,
+              videoRef.current.getDuration()
+            );
+            setCurrentTime(newTime);
+            videoRef.current.seekTo(newTime);
+          }
+          break;
+        case SEEK_BACKWARD_KEY:
+          if (videoRef.current) {
+            const newTime = Math.max(videoRef.current.getCurrentTime() - 10, 0);
+            setCurrentTime(newTime);
+            videoRef.current.seekTo(newTime);
+          }
+          break;
+        case VOLUME_UP_KEY:
+          setVolume((prevVolume) => {
+            const newVolume = Math.min(prevVolume + 0.1, 1);
+            return newVolume;
+          });
+          break;
+        case VOLUME_DOWN_KEY:
+          setVolume((prevVolume) => {
+            const newVolume = Math.max(prevVolume - 0.1, 0);
+            return newVolume;
+          });
           break;
         default:
           break;
