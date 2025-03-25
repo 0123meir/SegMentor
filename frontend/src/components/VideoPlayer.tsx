@@ -134,7 +134,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
   return (
-    <div ref={videoContainerRef} className="relative w-full bg-black">
+    <div ref={videoContainerRef} className="relative w-full bg-black rounded-lg">
       <ReactPlayer
         className="absolute rounded-md"
         ref={videoRef}
@@ -155,7 +155,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         max={duration}
         value={currentTime}
         onChange={handleSeek}
-        className="absolute bottom-10 left-0 w-full h-5 bg-blue-500 rounded-full appearance-none cursor-pointer transition-all bg-transparent
+        className="absolute bottom-7 left-0 w-full h-5 bg-blue-500 rounded-full appearance-none cursor-pointer transition-all bg-transparent
              [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:bg-blue-500
              [&::-webkit-slider-runnable-track]:rounded-full 
              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1

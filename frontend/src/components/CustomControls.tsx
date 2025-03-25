@@ -32,9 +32,9 @@ const CustomControls: FC<CustomControlsProps> = ({
   };
 
   return (
-    <div className="absolute bottom-0 left-0 w-full p-2 flex items-center justify-between z-10 text-white">
+    <div className="absolute bottom-0 left-1 w-full p-2 flex items-center justify-between z-10 text-white">
       <div className="flex items-center gap-4">
-        <button onClick={toggleFullscreen} className="hover:text-blue-500">
+        <button onClick={toggleFullscreen} className="hover:text-blue-500 absolute right-4">
           <BsFullscreen />
         </button>
       </div>
