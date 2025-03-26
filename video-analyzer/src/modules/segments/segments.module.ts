@@ -1,10 +1,9 @@
 import { Logger, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { SegmentsService } from './segments.service';
 import { OpenAIModule } from '../open-ai/open-ai.module';
+import { SegmentsService } from './segments.service';
 
 @Module({
-  imports: [ConfigModule, OpenAIModule],
+  imports: [OpenAIModule],
   providers: [SegmentsService, Logger],
   exports: [SegmentsService],
 })

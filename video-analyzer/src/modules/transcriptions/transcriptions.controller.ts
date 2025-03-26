@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { TranscriptionsService } from './transcriptions.service';
+import { v4 as uuidV4 } from 'uuid';
 
 @Controller('transcriptions')
 export class TranscriptionsController {
@@ -11,6 +12,7 @@ export class TranscriptionsController {
       // './data/sample-fourier-transform.mp3',
       // './data/sample-short-muscles.mp3',
       './data/hebrew-discrete.mp3',
+      uuidV4(),
     );
 
     return {

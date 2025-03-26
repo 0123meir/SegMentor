@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { TranscriptionsService } from './modules/transcriptions/transcriptions.service';
 import { SegmentsService } from './modules/segments/segments.service';
+import { unlink } from 'fs/promises';
 
 @Injectable()
 export class AppService {
@@ -9,23 +10,27 @@ export class AppService {
     private readonly segmentsService: SegmentsService,
   ) {}
   async sayHello() {
-    return 'hello';
+    return { message: 'hello' };
   }
 
-  async getSegments() {
+  async getSegments(fileId: string, filePath: string) {
     try {
       const transcription = await this.transcriptionsService.transcribe(
-        './data/hebrew-discrete.mp3',
+        fileId,
+        filePath,
       );
 
       const segments =
         await this.segmentsService.createSegmentsFromTranscription(
+          fileId,
           transcription,
         );
 
       return segments;
     } catch (error) {
       throw new HttpException(error.message, 500, { cause: error.stack });
+    } finally {
+      unlink(filePath);
     }
   }
 }

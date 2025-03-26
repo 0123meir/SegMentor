@@ -1,13 +1,13 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { appConfig } from './config/app.config';
 import { openAIConfig } from './config/open-ai.config';
-import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
+import { FILE_UPLOAD_DIRECTORY } from './constants/file-upload-directory';
 import { SegmentsModule } from './modules/segments/segments.module';
-import { OpenAIModule } from './modules/open-ai/open-ai.module';
-import { AudioModule } from './modules/audio/audio.module';
+import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
 
 @Module({
   imports: [
@@ -17,8 +17,6 @@ import { AudioModule } from './modules/audio/audio.module';
     }),
     TranscriptionsModule,
     SegmentsModule,
-    OpenAIModule,
-    AudioModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],

@@ -1,7 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Request,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
+import { FileIdInterceptor } from './interceptors/file-id-interceptor';
+import { FileUploadInterceptor } from './interceptors/file-upload-interceptor';
+import { Request as ExpRequest } from 'express';
+import { FileRequest } from './types/file-request.type';
 
-@Controller()
+@Controller('segments')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -10,10 +22,17 @@ export class AppController {
     return this.appService.sayHello();
   }
 
-  @Get('analyze')
-  async analyze() {
-    const segments = await this.appService.getSegments();
+  @Post()
+  @UseInterceptors(FileIdInterceptor, FileUploadInterceptor)
+  async getSegmentsFromFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: FileRequest,
+  ) {
+    const fileId = req.fileId;
+    await this.appService.getSegments(fileId, file);
 
-    return { segments };
+    return {
+      message: req.fileId,
+    };
   }
 }
