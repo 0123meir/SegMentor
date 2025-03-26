@@ -19,24 +19,26 @@ export class TranscriptionsService {
     private readonly logger: Logger,
   ) {}
 
-  async transcribe(filePath: string) {
+  async transcribe(fileId: string, filePath: string) {
     const fileSizeBytesMB =
       (await fs.promises.stat(filePath)).size / (1_024 * 1_024);
 
     const shouldSplitAudio = fileSizeBytesMB >= MAX_FILE_CHUNK_SIZE_MB;
 
     return shouldSplitAudio
-      ? this.transcribeAsChunks(filePath)
-      : this.transcribeFile(filePath, TranscriptionFormat.SRT);
+      ? this.transcribeAsChunks(fileId, filePath)
+      : this.transcribeFile(fileId, filePath, TranscriptionFormat.SRT);
   }
 
   private async transcribeFile<T extends TranscriptionFormat>(
+    fileId: string,
     filePath: string,
     format: T,
   ): Promise<TranscriptionFormatResponse[T]> {
     try {
       this.logger.log({
         message: 'transcribing file',
+        fileId,
         filePath,
       });
 
@@ -46,6 +48,7 @@ export class TranscriptionsService {
 
       this.logger.log({
         message: 'finished transcribing successfully',
+        fileId,
         filePath,
       });
 
@@ -53,6 +56,7 @@ export class TranscriptionsService {
     } catch (error) {
       this.logger.error({
         message: 'error transcribing',
+        fileId,
         filePath,
         error,
       });
@@ -61,28 +65,37 @@ export class TranscriptionsService {
     }
   }
 
-  private async transcribeAsChunks(filePath: string) {
-    const fileId = uuidV4();
+  private async transcribeAsChunks(fileId: string, filePath: string) {
+    try {
+      this.logger.log({ message: 'creating chunk files', fileId, filePath });
+      const chunkFiles = await this.audioService.splitAudio(fileId, filePath);
+      this.logger.log({ message: 'finished chunk files', fileId, filePath });
 
-    this.logger.log({ message: 'creating chunk files', fileId, filePath });
-    const chunkFiles = await this.audioService.splitAudio(fileId, filePath);
-    this.logger.log({ message: 'finished chunk files', fileId, filePath });
+      this.logger.log({ message: 'transcribing chunks', fileId, filePath });
+      const transcriptionChunks = await Promise.all(
+        chunkFiles.map((file) =>
+          this.transcribeFile(fileId, file, TranscriptionFormat.JSON),
+        ),
+      );
+      this.logger.log({
+        message: 'finished transcribing chunks',
+        fileId,
+        filePath,
+      });
 
-    this.logger.log({ message: 'transcribing chunks', fileId, filePath });
-    const transcriptionChunks = await Promise.all(
-      chunkFiles.map((file) =>
-        this.transcribeFile(file, TranscriptionFormat.JSON),
-      ),
-    );
-    this.logger.log({
-      message: 'finished transcribing chunks',
-      fileId,
-      filePath,
-    });
+      return this.convertTranscriptionChunksToSRT(transcriptionChunks);
+    } catch (error) {
+      this.logger.error({
+        message: 'error transcribing chunks',
+        fileId,
+        filePath,
+        error,
+      });
 
-    this.audioService.removeAudioChunks(fileId);
-
-    return this.convertTranscriptionChunksToSRT(transcriptionChunks);
+      throw error;
+    } finally {
+      this.audioService.removeAudioChunks(fileId);
+    }
   }
 
   private convertTranscriptionChunksToSRT(

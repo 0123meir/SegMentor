@@ -23,10 +23,11 @@ export class SegmentsService {
   ) {}
 
   createSegmentsFromTranscription = async (
+    fileId: string,
     transcription: string,
   ): Promise<JSON> => {
     try {
-      this.logger.log('creating segments');
+      this.logger.log({ message: 'creating segments', fileId });
 
       const response = await this.openAI.chat.completions.create({
         model: AI_MODEL,
@@ -42,11 +43,11 @@ export class SegmentsService {
         presence_penalty,
       });
 
-      this.logger.log('finished segmenting successfully');
+      this.logger.log({ message: 'finished segmenting successfully', fileId });
 
       return JSON.parse(response.choices[0].message.content); //TODO: save to db when ready
     } catch (error) {
-      this.logger.error('failed creating segments');
+      this.logger.error({ message: 'failed creating segments', fileId });
 
       throw error;
     }

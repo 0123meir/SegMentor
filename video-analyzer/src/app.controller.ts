@@ -29,10 +29,11 @@ export class AppController {
     @Req() req: FileRequest,
   ) {
     const fileId = req.fileId;
-    await this.appService.getSegments(fileId, file);
+    const segments = await this.appService.getSegments(fileId, file.path);
 
     return {
-      message: req.fileId,
+      fileId,
+      segments,
     };
   }
 }
