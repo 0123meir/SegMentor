@@ -3,17 +3,26 @@ import {
   Get,
   Post,
   Req,
-  Request,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileIdInterceptor } from './interceptors/file-id-interceptor';
 import { FileUploadInterceptor } from './interceptors/file-upload-interceptor';
-import { Request as ExpRequest } from 'express';
 import { FileRequest } from './types/file-request.type';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiExtraModels,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
+import { SegmentsResultDTO } from './types/segments-result-dto';
+import { ALLOWED_FILE_MIME_TYPES } from './constants/allowed-file-mime-types';
 
-@Controller('segments')
+@Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -22,14 +31,37 @@ export class AppController {
     return this.appService.sayHello();
   }
 
-  @Post()
+  @Post('segments')
+  @ApiTags('Segments')
+  @ApiExtraModels(SegmentsResultDTO)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({
+    description: 'Successfully created segments',
+    schema: {
+      $ref: getSchemaPath(SegmentsResultDTO),
+    },
+  })
+  @ApiBadRequestResponse({
+    description: `Invalid file mime type, only supports ${ALLOWED_FILE_MIME_TYPES.join(', ')}`,
+  })
   @UseInterceptors(FileIdInterceptor, FileUploadInterceptor)
   async getSegmentsFromFile(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: FileRequest,
   ) {
     const fileId = req.fileId;
-    const segments = await this.appService.getSegments(fileId, file.path);
+    const segments = await this.appService.getSegments(fileId, file);
 
     return {
       fileId,

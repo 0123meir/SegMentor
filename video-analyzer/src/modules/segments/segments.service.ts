@@ -14,6 +14,7 @@ import {
 import { segmentsSchema } from './constants/segments-schema';
 import { promptText } from './constants/model-prompt-text';
 import { OPEN_AI_CLIENT } from '../open-ai/constants';
+import { Segment } from './types/segment';
 
 @Injectable()
 export class SegmentsService {
@@ -25,7 +26,7 @@ export class SegmentsService {
   createSegmentsFromTranscription = async (
     fileId: string,
     transcription: string,
-  ): Promise<JSON> => {
+  ): Promise<Segment[]> => {
     try {
       this.logger.log({ message: 'creating segments', fileId });
 
@@ -45,7 +46,7 @@ export class SegmentsService {
 
       this.logger.log({ message: 'finished segmenting successfully', fileId });
 
-      return JSON.parse(response.choices[0].message.content); //TODO: save to db when ready
+      return JSON.parse(response.choices[0].message.content) as Segment[]; //TODO: save to db when ready
     } catch (error) {
       this.logger.error({ message: 'failed creating segments', fileId });
 

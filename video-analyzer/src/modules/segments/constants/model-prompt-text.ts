@@ -18,4 +18,5 @@ Rules:
     Additionally, if the lecturer explicitly mentions a break (e.g., states "starting a break" or similar phrases) or if there is prolonged silence, skip that section.
 - start and end timestamps must be the exact same as in the SRT file, do not create segmnets for times that don't exist in the SRT.
 - Process the entire lecture
+- The Segments must be in the same language as the SRT. Do not translate or alter the language
 `;
