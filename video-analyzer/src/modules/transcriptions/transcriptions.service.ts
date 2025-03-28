@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { franc } from 'franc';
 import { TranscriptionVerbose } from 'openai/resources/audio/transcriptions';
 import { AudioService } from '../audio/audio.service';
 import { CHUNK_DURATION_SECONDS } from '../audio/constants';
@@ -8,6 +13,9 @@ import { JsonTranscriptionSegment } from './types/json-transcription-segment.typ
 import { TranscriptionFormatResponse } from './types/transcription-format-response.type';
 import { TranscriptionFormat } from './types/transcription-format.enum';
 import { convertToSrtSegmentText } from './utils/convert-to-srt-segment-text';
+import { TranscriptionData } from './types/transcription-data.type';
+import langs from 'langs';
+import { LANGUAGE_ISO_SPECIFICATION } from './constants/language-iso-specification';
 
 @Injectable()
 export class TranscriptionsService {
@@ -17,15 +25,35 @@ export class TranscriptionsService {
     private readonly logger: Logger,
   ) {}
 
-  async transcribe(fileId: string, file: Express.Multer.File) {
+  async transcribe(
+    fileId: string,
+    file: Express.Multer.File,
+  ): Promise<TranscriptionData> {
     const fileSizeBytesMB = file.size / (1_024 * 1_024);
 
     const shouldSplitAudio = fileSizeBytesMB >= MAX_FILE_CHUNK_SIZE_MB;
     const filePath = file.path;
 
-    return shouldSplitAudio
+    const transcription = await (shouldSplitAudio
       ? this.transcribeAsChunks(fileId, filePath)
-      : this.transcribeFile(fileId, filePath, TranscriptionFormat.SRT);
+      : this.transcribeFile(fileId, filePath, TranscriptionFormat.SRT));
+
+    const language = langs.where(
+      LANGUAGE_ISO_SPECIFICATION,
+      franc(transcription),
+    )?.name;
+
+    if (!language) {
+      throw new InternalServerErrorException({
+        fileId,
+        message: 'transcription language is undetectable',
+      });
+    }
+
+    return {
+      transcription,
+      language,
+    };
   }
 
   private async transcribeAsChunks(fileId: string, filePath: string) {

@@ -1,0 +1,1 @@
+export const LANGUAGE_ISO_SPECIFICATION = '3';

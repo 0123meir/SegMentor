@@ -1,5 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { unlink } from 'fs/promises';
+import { noop } from 'rxjs';
 import { SegmentsService } from './modules/segments/segments.service';
 import { TranscriptionsService } from './modules/transcriptions/transcriptions.service';
 
@@ -15,7 +16,7 @@ export class AppService {
 
   async getSegments(fileId: string, file: Express.Multer.File) {
     try {
-      const transcription = await this.transcriptionsService.transcribe(
+      const transcriptionData = await this.transcriptionsService.transcribe(
         fileId,
         file,
       );
@@ -23,14 +24,14 @@ export class AppService {
       const segments =
         await this.segmentsService.createSegmentsFromTranscription(
           fileId,
-          transcription,
+          transcriptionData,
         );
 
       return segments;
     } catch (error) {
       throw new HttpException(error.message, 500, { cause: error.stack });
     } finally {
-      unlink(file.path);
+      unlink(file.path).catch(noop);
     }
   }
 }
