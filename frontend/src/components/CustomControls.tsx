@@ -26,15 +26,26 @@ const CustomControls: FC<CustomControlsProps> = ({
   isMuted,
 }) => {
   const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    } else {
+      return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
   };
 
   return (
     <div className="absolute bottom-0 left-1 w-full p-2 flex items-center justify-between z-10 text-white">
       <div className="flex items-center gap-4">
-        <button onClick={toggleFullscreen} className="hover:text-blue-500 absolute right-4">
+        <button
+          onClick={toggleFullscreen}
+          className="hover:text-blue-500 absolute right-4"
+        >
           <BsFullscreen />
         </button>
       </div>
