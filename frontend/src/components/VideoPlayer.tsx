@@ -16,6 +16,8 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(1);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [playbackRate, setPlaybackRate] = useState<number>(1);
+
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -146,6 +148,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         controls={false}
         playing={isPlaying}
         volume={volume}
+        playbackRate={playbackRate}
         onClick={togglePlayPause}
         onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
         onDuration={(duration) => setDuration(duration)}
@@ -169,6 +172,8 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         toggleFullscreen={toggleFullscreen}
         toggleMute={toggleMute}
         isMuted={isMuted}
+        playbackRate={playbackRate}
+        setPlaybackRate={setPlaybackRate}
       />
     </div>
   );
