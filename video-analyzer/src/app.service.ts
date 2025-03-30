@@ -1,13 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { SegmentsService } from './segments/segments.service';
+import { HttpException, Injectable } from '@nestjs/common';
+import { unlink } from 'fs/promises';
+import { noop } from 'rxjs';
+import { SegmentsService } from './modules/segments/segments.service';
+import { TranscriptionsService } from './modules/transcriptions/transcriptions.service';
 
 @Injectable()
 export class AppService {
-  constructor(private SegmentsService: SegmentsService) {}
-  async getSegments(): Promise<JSON> {
-    //TODO: remove when saving to db is implemented
-    return this.SegmentsService.createSegmentsFromSRT(
-      './src/The Geometry of Linear Equations (1).srt',
-    );
+  constructor(
+    private readonly transcriptionsService: TranscriptionsService,
+    private readonly segmentsService: SegmentsService,
+  ) {}
+  async sayHello() {
+    return { message: 'hello' };
+  }
+
+  async getSegments(fileId: string, file: Express.Multer.File) {
+    try {
+      const transcriptionData = await this.transcriptionsService.transcribe(
+        fileId,
+        file,
+      );
+
+      const segments =
+        await this.segmentsService.createSegmentsFromTranscription(
+          fileId,
+          transcriptionData,
+        );
+
+      return segments;
+    } catch (error) {
+      throw new HttpException(error.message, 500, { cause: error.stack });
+    } finally {
+      unlink(file.path).catch(noop);
+    }
   }
 }
