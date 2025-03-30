@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { BsFullscreen } from "react-icons/bs";
 import { FaPause, FaPlay, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 
@@ -12,6 +12,8 @@ interface CustomControlsProps {
   toggleFullscreen: () => void;
   toggleMute: () => void;
   isMuted: boolean;
+  playbackRate: number;
+  setPlaybackRate: (rate: number) => void;
 }
 
 const CustomControls: FC<CustomControlsProps> = ({
@@ -24,19 +26,63 @@ const CustomControls: FC<CustomControlsProps> = ({
   toggleFullscreen,
   toggleMute,
   isMuted,
+  playbackRate,
+  setPlaybackRate,
 }) => {
+  const playbackRates = [0.25, 0.5, 1, 1.25, 1.5, 2];
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+
   const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    } else {
+      return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
   };
 
   return (
     <div className="absolute bottom-0 left-1 w-full p-2 flex items-center justify-between z-10 text-white">
       <div className="flex items-center gap-4">
-        <button onClick={toggleFullscreen} className="hover:text-blue-500 absolute right-4">
+        <button
+          onClick={toggleFullscreen}
+          className="hover:text-blue-500 absolute right-4"
+        >
           <BsFullscreen />
         </button>
+
+        <div className="flex items-center justify-start gap-4 relative">
+          <button
+            onClick={() => setShowSpeedMenu((prev) => !prev)}
+            className="hover:text-blue-500 text-white absolute right-10"
+          >
+            {playbackRate}x
+          </button>
+
+          {showSpeedMenu && (
+            <div className="absolute bottom-full mb-10 right-4 bg-gray-900 text-white text-sm rounded shadow-lg p-2">
+              {playbackRates.map((rate) => (
+                <button
+                  key={rate}
+                  onClick={() => {
+                    setPlaybackRate(rate);
+                    setShowSpeedMenu(false);
+                  }}
+                  className={`block px-3 py-1 w-full text-left hover:bg-gray-700 rounded ${
+                    playbackRate === rate ? "bg-gray-700" : ""
+                  }`}
+                >
+                  {rate}x
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center justify-start gap-4 text-left">
