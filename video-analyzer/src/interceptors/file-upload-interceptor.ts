@@ -2,9 +2,9 @@ import { BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ALLOWED_FILE_MIME_TYPES } from 'src/constants/allowed-file-mime-types';
-import { FILE_UPLOAD_DIRECTORY } from 'src/constants/file-upload-directory';
-import { FileRequest } from 'src/types/file-request.type';
+import { ALLOWED_FILE_MIME_TYPES } from '../constants/allowed-file-mime-types';
+import { FILE_UPLOAD_DIRECTORY } from '../constants/file-upload-directory';
+import { FileRequest } from '../types/file-request.type';
 
 export const FileUploadInterceptor = FileInterceptor('file', {
   storage: diskStorage({

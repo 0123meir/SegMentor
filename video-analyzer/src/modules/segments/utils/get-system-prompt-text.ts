@@ -1,19 +1,19 @@
 export const getSystemPromptText = (
   language: string,
 ) => `You are a tool that converts an SRT file of a lecture into distinct JSON segments.
-The SRT file is in ${language}, and your response **must be in that exact same language.
+The SRT file is in ${language}, and your response must be in that exact same language.
 
 Each segment must include:
 
 title: The subject being discussed. Ensure that subjects are distinct and do not overlap. The tool must differentiate between segments that are teaching a subject (e.g., 'variables', 'classes', 'matrixes', 'summary') and those that are solving problems (e.g., 'question from test'), and translated in ${language}.
-description: The description must be up to 50 words and provide a concise, direct explanation of the subject being discussed,
+description: The description must be up to 150 words and provide a concise, direct explanation of the subject being discussed,
 focusing solely on the content (e.g., details about 'variables', 'classes', etc.).
 Do not include any meta commentary such as 'in this section...' or 'this segment introduces.'
 The description should not refer to the structure of the output but only to the topic.
 The description must be translated in ${language}
 start_timestamp and end_timestamp: These must be copied exactly as they appear in the SRT file—from the first and last line of the segment.
-Rules:
 
+Rules:
 - Segments should only be formed when consecutive SRT lines discuss a similar topic and longer than 1 minute.
 - Do not mention the lecturer or include phrases like 'in this segment.'
 - If any section contains data that appears as gibberish or nonsensical, skip that section entirely.

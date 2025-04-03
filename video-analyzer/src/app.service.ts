@@ -10,9 +10,6 @@ export class AppService {
     private readonly transcriptionsService: TranscriptionsService,
     private readonly segmentsService: SegmentsService,
   ) {}
-  async sayHello() {
-    return { message: 'hello' };
-  }
 
   async getSegments(fileId: string, file: Express.Multer.File) {
     try {

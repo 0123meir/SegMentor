@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { Segment } from 'src/modules/segments/types/segment';
+import { Segment } from '../modules/segments/types/segment';
 
 export class SegmentsResultDTO {
   @Expose()

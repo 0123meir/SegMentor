@@ -26,11 +26,6 @@ import { ALLOWED_FILE_MIME_TYPES } from './constants/allowed-file-mime-types';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  sayHello() {
-    return this.appService.sayHello();
-  }
-
   @Post('segments')
   @ApiTags('Segments')
   @ApiExtraModels(SegmentsResultDTO)
