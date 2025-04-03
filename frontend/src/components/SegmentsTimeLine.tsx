@@ -1,13 +1,5 @@
-import React, { useEffect, useState } from "react";
-
-interface Segment {
-  start: number;
-  end: number;
-  color: string;
-  title: string;
-  description: string;
-}
-
+import { useSegmentsStore } from "@/state/SegmentsStore";
+import React from "react";
 interface SegmentsTimelineProps {
   duration: number;
   currentTime: number;
@@ -19,66 +11,9 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
   currentTime,
   handleSeek,
 }) => {
-  const segmentsColors = [
-    "#FF5733",
-    "#33FF57",
-    "#3357FF",
-    "#FF33A8",
-    "#FFD700",
-  ];
-  const [segments, setSegments] = useState<Segment[]>([]);
 
-  useEffect(() => {
-    if (duration > 0) {
-      setSegments(generateSegments(duration));
-    }
-  }, [duration]);
 
-//   dummy function to generate segements, need to receive from the server
-  const generateSegments = (duration: number, segmentCount = 5): Segment[] => {
-    if (duration === 0) return [];
-
-    const titles = [
-      "Intro",
-      "Main Part",
-      "Action Scene",
-      "Twist",
-      "Conclusion",
-    ];
-    const descriptions = [
-      "This is the introduction.",
-      "This part covers the main topic.",
-      "Exciting action scene!",
-      "A major twist happens here.",
-      "Wrapping up the video.",
-    ];
-
-    let lastTime = 0;
-    const segmentLengths = Array.from({ length: segmentCount }, () =>
-      Math.random()
-    );
-    const total = segmentLengths.reduce((acc, val) => acc + val, 0);
-    const normalizedLengths = segmentLengths.map(
-      (val) => (val / total) * duration
-    );
-
-    const newSegments = normalizedLengths.map((length, i) => {
-      const start = lastTime;
-      const end = start + length;
-      lastTime = end;
-
-      return {
-        start,
-        end,
-        color: segmentsColors[i % segmentsColors.length],
-        title: titles[i] || `Segment ${i + 1}`,
-        description: descriptions[i] || "No description available.",
-      };
-    });
-
-    newSegments[newSegments.length - 1].end = duration;
-    return newSegments;
-  };
+  const {segments} = useSegmentsStore();
 
   return (
     <div
