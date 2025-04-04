@@ -20,11 +20,11 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
   handleSeek,
 }) => {
   const segmentsColors = [
-    "#FF5733",
-    "#33FF57",
-    "#3357FF",
-    "#FF33A8",
-    "#FFD700",
+    "#B80C09",
+    "#0B4F6C",
+    "#01BAEF",
+    "#FBFBFF",
+    "#040F16",
   ];
   const [segments, setSegments] = useState<Segment[]>([]);
   const placeholderSegment: Segment = {
