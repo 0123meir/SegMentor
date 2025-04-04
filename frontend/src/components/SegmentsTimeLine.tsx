@@ -4,8 +4,8 @@ interface Segment {
   start: number;
   end: number;
   color: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }
 
 interface SegmentsTimelineProps {
@@ -27,6 +27,11 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
     "#FFD700",
   ];
   const [segments, setSegments] = useState<Segment[]>([]);
+  const placeholderSegment: Segment = {
+    start: 0,
+    end: duration,
+    color: "#2563EB",
+  };
 
   useEffect(() => {
     if (duration > 0) {
@@ -34,7 +39,7 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
     }
   }, [duration]);
 
-//   dummy function to generate segements, need to receive from the server
+  //   dummy function to generate segements, need to receive from the server
   const generateSegments = (duration: number, segmentCount = 5): Segment[] => {
     if (duration === 0) return [];
 
@@ -86,32 +91,39 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
       style={{ direction: "ltr" }}
     >
       <div className="flex flex-row gap-1 w-full">
-        {segments.map((segment, index) => (
-          <div
-            key={index}
-            className="relative flex flex-col items-center"
-            style={{ flex: `${segment.end - segment.start} 0 auto` }}
-          >
-            <div className="text-white text-xs mb-1 relative group cursor-pointer">
-              {segment.title}
-              <div
-                className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-black text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{
-                  minWidth: "150px",
-                  whiteSpace: "normal",
-                  wordBreak: "break-word",
-                  textAlign: "center",
-                }}
-              >
-                {segment.description}
-              </div>
-            </div>
+        {(segments.length === 0 ? [placeholderSegment] : segments).map(
+          (segment, index) => (
             <div
-              style={{ backgroundColor: segment.color }}
-              className="h-1 w-full rounded-full"
-            />
-          </div>
-        ))}
+              key={index}
+              className="relative flex flex-col items-center"
+              style={{ flex: `${segment.end - segment.start} 0 auto` }}
+            >
+              <div className="h-4 mb-1 flex items-center justify-center">
+                {segment.title && (
+                  <div className="text-white text-xs relative group cursor-pointer">
+                    {segment.title}
+                    <div
+                      className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-black text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{
+                        minWidth: "150px",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        textAlign: "center",
+                      }}
+                    >
+                      {segment.description}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div
+                style={{ backgroundColor: segment.color }}
+                className="h-1 w-full rounded-full cursor-pointer"
+              />
+            </div>
+          )
+        )}
       </div>
 
       <input
