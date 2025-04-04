@@ -16,7 +16,7 @@ Rules:
 
 - Segments should only be formed when consecutive SRT lines discuss a similar topic and longer than 1 minute.
 - Segments should vary in length depending on the natural flow of the lecture.
-- Some topics may take several minutes, while others may be shorter. longer topics should have more sentences summarizing them while shorter ones can have less.
+- Some topics may take several minutes, while others may be shorter. topics longer than 20 minutes should have at least 4 sentences summarizing them, while shorter ones can have less.
 - Avoid excessive splitting. If a topic continues for a while, keep it as a single segment rather than breaking it unnecessarily. 
 - Do not segment just based on time alone; use the lecture's content to determine when a new topic starts.
 - Start and end timestamps must be copied exactly from the SRT file.
