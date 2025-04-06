@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
 import CustomControls from "./CustomControls";
+import SegmentsTimeline from "./SegmentsTimeLine";
 
 export interface VideoPlayerProps {
   url: string;
@@ -15,6 +16,8 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(1);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [playbackRate, setPlaybackRate] = useState<number>(1);
+
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -134,7 +137,10 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
   return (
-    <div ref={videoContainerRef} className="relative w-full bg-black rounded-lg">
+    <div
+      ref={videoContainerRef}
+      className="relative w-full bg-black rounded-lg"
+    >
       <ReactPlayer
         className="absolute rounded-md"
         ref={videoRef}
@@ -142,6 +148,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         controls={false}
         playing={isPlaying}
         volume={volume}
+        playbackRate={playbackRate}
         onClick={togglePlayPause}
         onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
         onDuration={(duration) => setDuration(duration)}
@@ -149,20 +156,10 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         height="100%"
       />
 
-      <input
-        type="range"
-        min="0"
-        max={duration}
-        value={currentTime}
-        onChange={handleSeek}
-        className="absolute bottom-7 left-0 w-full h-5 bg-blue-500 rounded-full appearance-none cursor-pointer transition-all bg-transparent
-             [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:bg-blue-500
-             [&::-webkit-slider-runnable-track]:rounded-full 
-             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1
-             [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white 
-             [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md 
-             [&::-webkit-slider-thumb]:hover:bg-gray-200"
-        style={{ direction: "ltr" }}
+      <SegmentsTimeline
+        duration={duration}
+        currentTime={currentTime}
+        handleSeek={handleSeek}
       />
 
       <CustomControls
@@ -175,6 +172,8 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         toggleFullscreen={toggleFullscreen}
         toggleMute={toggleMute}
         isMuted={isMuted}
+        playbackRate={playbackRate}
+        setPlaybackRate={setPlaybackRate}
       />
     </div>
   );
