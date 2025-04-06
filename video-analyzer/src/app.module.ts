@@ -1,11 +1,22 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { SegmentsService } from './segments/segments.service';
+import { appConfig } from './config/app.config';
+import { openAIConfig } from './config/open-ai.config';
+import { SegmentsModule } from './modules/segments/segments.module';
+import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig, openAIConfig],
+    }),
+    TranscriptionsModule,
+    SegmentsModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, SegmentsService],
+  providers: [AppService, Logger],
 })
 export class AppModule {}
