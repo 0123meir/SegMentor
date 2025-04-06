@@ -22,12 +22,12 @@ export const segmentsSchema = {
             title: {
               type: 'string',
               description:
-                'The title of the segment, limited to under 7 words.',
+                'The title of the segment, limited to under 10 words.',
             },
             summary: {
               type: 'string',
               description:
-                'A brief description of the segment, limited to under 50 words.',
+                'A brief description of the segment, limited to under 150 words.',
             },
           },
           additionalProperties: false,
