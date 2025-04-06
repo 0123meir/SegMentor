@@ -1,6 +1,6 @@
 import { FactoryProvider } from '@nestjs/common';
 import OpenAI from 'openai';
-import { openAIConfig, OpenAIConfig } from 'src/config/open-ai.config';
+import { openAIConfig, OpenAIConfig } from '../../config/open-ai.config';
 import { OPEN_AI_CLIENT } from './constants';
 
 export const openAIClientProvider: FactoryProvider<OpenAI> = {

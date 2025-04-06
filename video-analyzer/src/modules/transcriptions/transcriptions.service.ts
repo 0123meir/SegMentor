@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { franc } from 'franc';
 import { TranscriptionVerbose } from 'openai/resources/audio/transcriptions';
 import { AudioService } from '../audio/audio.service';
 import { CHUNK_DURATION_SECONDS } from '../audio/constants';
@@ -16,6 +15,7 @@ import { convertToSrtSegmentText } from './utils/convert-to-srt-segment-text';
 import { TranscriptionData } from './types/transcription-data.type';
 import langs from 'langs';
 import { LANGUAGE_ISO_SPECIFICATION } from './constants/language-iso-specification';
+import { BYTES_PER_MEGABYTE } from './constants/bytes_per_megabyte';
 
 @Injectable()
 export class TranscriptionsService {
@@ -29,7 +29,7 @@ export class TranscriptionsService {
     fileId: string,
     file: Express.Multer.File,
   ): Promise<TranscriptionData> {
-    const fileSizeBytesMB = file.size / (1_024 * 1_024);
+    const fileSizeBytesMB = file.size / BYTES_PER_MEGABYTE;
 
     const shouldSplitAudio = fileSizeBytesMB >= MAX_FILE_CHUNK_SIZE_MB;
     const filePath = file.path;
@@ -38,17 +38,7 @@ export class TranscriptionsService {
       ? this.transcribeAsChunks(fileId, filePath)
       : this.transcribeFile(fileId, filePath, TranscriptionFormat.SRT));
 
-    const language = langs.where(
-      LANGUAGE_ISO_SPECIFICATION,
-      franc(transcription),
-    )?.name;
-
-    if (!language) {
-      throw new InternalServerErrorException({
-        fileId,
-        message: 'transcription language is undetectable',
-      });
-    }
+    const language = await this.getTranscriptionLanguage(fileId, transcription);
 
     return {
       transcription,
@@ -148,5 +138,26 @@ export class TranscriptionsService {
         convertToSrtSegmentText(segment, segmentIndex),
       )
       .join('');
+  }
+
+  private async getTranscriptionLanguage(
+    fileId: string,
+    transcription: string,
+  ): Promise<string> {
+    const detectLanguage = (await import('franc')).franc;
+
+    const language = langs.where(
+      LANGUAGE_ISO_SPECIFICATION,
+      detectLanguage(transcription),
+    )?.name;
+
+    if (!language) {
+      throw new InternalServerErrorException({
+        fileId,
+        message: 'transcription language is undetectable',
+      });
+    }
+
+    return language;
   }
 }

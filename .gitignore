@@ -60,3 +60,7 @@ chunks/
 uploads/
 *.crt
 *.key
+
+video-analyzer/data/
+video-analyzer/chunks/
+video-analyzer/uploads/

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/resources';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { OPEN_AI_CLIENT } from '../open-ai/constants';
 import { TranscriptionData } from '../transcriptions/types/transcription-data.type';
 import {
