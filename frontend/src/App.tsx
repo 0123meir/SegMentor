@@ -1,5 +1,5 @@
 import { AIAssistant } from "@/components/AIAssistant";
-import { Collections } from "@/components/Collections";
+import { Collections } from "@/components/LeftSideMenu";
 import LecturePlayer from "@/components/LecturePlayer";
 
 const App = () => {
