@@ -1,20 +1,23 @@
-import { Course } from "@/hooks/useCourses";
+import { useCoursesStore } from "@/state/CoursesStore";
 import { useState } from "react";
 import { BiBook } from "react-icons/bi";
 import { IoChevronDownOutline, IoChevronUpOutline } from "react-icons/io5";
 
-import { useCourses } from "../hooks/useCourses";
 import { detectTextDirection } from "../utils/detectTextDirection";
+import { Course } from "@/types/Course";
 
 export const CourseList = () => {
-  const courses = useCourses();
+  const {courses} = useCoursesStore();
   const sectionName = "My Courses";
 
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-4">
-      <div className="flex items-center gap-2 mb-6"  style={{ direction: detectTextDirection(sectionName) }}>
+      <div
+        className="flex items-center gap-2 mb-6"
+        style={{ direction: detectTextDirection(sectionName) }}
+      >
         <BiBook className="w-6 h-6 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-800" >{sectionName}</h2>
+        <h2 className="text-2xl font-bold text-gray-800">{sectionName}</h2>
       </div>
       <div className="space-y-3">
         {courses.map((course: Course) => (
