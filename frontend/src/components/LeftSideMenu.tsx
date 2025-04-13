@@ -1,4 +1,4 @@
-import { CourseList } from "./CourseList";
+import { CourseList } from "./Courses/CourseList";
 
 export const LeftSideMenu = () => {
   return (

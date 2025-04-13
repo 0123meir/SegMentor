@@ -1,30 +1,13 @@
+import { useCoursesStore } from "@/state/CoursesStore";
 import { useState } from "react";
 
-interface Lecture {
-  id: string;
-  title: string;
-  date: string;
-}
-
-interface Lecturer {
-  id: string;
-  name: string;
-}
-
-interface Course {
-  id: string;
-  name: string;
-  lectures: Lecture[];
-  lecturers: Lecturer[];
-}
-
 const CoursesManagerPage = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const {courses, setCourses} = useCoursesStore()
   const [currentCourse, setCurrentCourse] = useState<string>("");
   const [lectureTitle, setLectureTitle] = useState<string>("");
 
   // TODO: Replace with actual auth
-  const mockLecturerId = "lecturer123";
+  const mockLecturerId = "lecturer123"; 
   const isAdmin = true; // Will come from auth context
 
   const filteredCourses = courses.filter(
@@ -85,6 +68,8 @@ const CoursesManagerPage = () => {
     }
   };
 
+  console.log("CoursesManagerPage rendered");
+  
   return (
     <div className="max-w-[1200px] mx-auto p-8" dir="ltr">
       {isAdmin && (

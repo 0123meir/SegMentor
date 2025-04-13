@@ -1,4 +1,10 @@
-interface Lecturer {
+export interface Lecture {
+    id: string;
+    title: string;
+    date: string;
+  }
+
+  export interface Lecturer {
   id: string;
   name: string;
 }
@@ -6,7 +12,7 @@ interface Lecturer {
 export interface Course {
   id: string;
   name: string;
-  lectures: string[];
-  currentLecture: number;
+  lectures: Lecture[];
+  currentLectureId?: string;
   lecturers: Lecturer[];
 }
