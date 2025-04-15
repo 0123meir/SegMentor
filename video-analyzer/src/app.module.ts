@@ -6,6 +6,7 @@ import { appConfig } from './config/app.config';
 import { openAIConfig } from './config/open-ai.config';
 import { SegmentsModule } from './modules/segments/segments.module';
 import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
+import { KafkaModule } from './modules/kafka/kafka.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TranscriptionsModule } from './modules/transcriptions/transcriptions.mo
     }),
     TranscriptionsModule,
     SegmentsModule,
+    KafkaModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],

@@ -3,12 +3,14 @@ import { unlink } from 'fs/promises';
 import { noop } from 'rxjs';
 import { SegmentsService } from './modules/segments/segments.service';
 import { TranscriptionsService } from './modules/transcriptions/transcriptions.service';
+import { ProducerService } from './modules/kafka/producer.service';
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly transcriptionsService: TranscriptionsService,
     private readonly segmentsService: SegmentsService,
+    private readonly producerService: ProducerService,
   ) {}
 
   async getSegments(fileId: string, file: Express.Multer.File) {
