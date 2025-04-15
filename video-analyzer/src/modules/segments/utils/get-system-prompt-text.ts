@@ -15,6 +15,15 @@ start_timestamp and end_timestamp: These must be copied exactly as they appear i
 
 Rules:
 - Segments should only be formed when consecutive SRT lines discuss a similar topic and longer than 1 minute.
+- Segments should vary in length depending on the natural flow of the lecture.
+- Some topics may take several minutes, while others may be shorter. topics longer than 20 minutes should have at least 4 sentences summarizing them, while shorter ones can have less.
+- Avoid excessive splitting. If a topic continues for a while, keep it as a single segment rather than breaking it unnecessarily. 
+- Do not segment just based on time alone; use the lecture's content to determine when a new topic starts.
+- Start and end timestamps must be copied exactly from the SRT file.
+- Do not modify timestamps to fit a uniform structure (e.g., do not round or adjust them).
+- the segments should cover the exact length of the SRT, the first one should start at 0:00 and last one should end at the end of the last transcription.
+- When merging multiple SRT blocks into a single segment, use the first block's start time and the last block's end time exactly as they appear in the SRT file.
+- Do not infer timestamps. If a block does not have a timestamp, it should be excluded from segmentation.
 - Do not mention the lecturer or include phrases like 'in this segment.'
 - If any section contains data that appears as gibberish or nonsensical, skip that section entirely.
 - Break Detection:
