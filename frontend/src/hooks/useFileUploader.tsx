@@ -1,50 +1,63 @@
-import { useState } from "react";
-import axios from "axios";
-import { useSegmentsStore } from "@/state/SegmentsStore";
-import { SegmentDto } from "@/types/dtos/SegmentDto";
-import { segmentsColors } from "@/utils/Colors";
-import { timeToSeconds } from "@/utils/Time";
-import { Segment } from "@/types/Segment";
+import { useSegmentsStore } from '@/state/SegmentsStore';
+import { Segment } from '@/types/Segment';
+import { SegmentDto } from '@/types/dtos/SegmentDto';
+import { segmentsColors } from '@/utils/Colors';
+import { timeToSeconds } from '@/utils/Time';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+
+export type UploadState = 'none' | 'uploading' | 'error' | 'success';
 
 export const useFileUploader = () => {
-  const [isUploading, setIsUploading] = useState(false);
-  const { setSegments } = useSegmentsStore()
+  const [uploadState, setUploadState] = useState<UploadState>('none');
+  const { setSegments } = useSegmentsStore();
+
+  useEffect(() => {
+    console.log(uploadState);
+  }, [uploadState]);
   const uploadFile = async (file: File) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
-    setIsUploading(true);
+    setUploadState('uploading');
 
     try {
-      const response = await axios.post("http://localhost:3000/segments", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_VIDEO_ANALYZER_URL}/segments`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
-      const segments : SegmentDto[] = response.data.segments.segments
+      const segments: SegmentDto[] = response.data.segments.segments;
 
-      console.log("Upload successful:", segments);
+      console.log('Upload successful:', segments);
 
-      const segmentsForTimeline: Segment[] = segments.map((segment, index) => ({
-        ...segment,
-        color: segmentsColors[index % segmentsColors.length],
-        description: segment.summary,
-        start: timeToSeconds(segment.start),
-        end: timeToSeconds(segment.end)
-}))
+      const segmentsForTimeline: Segment[] = segments.map(
+        (segment: SegmentDto, index: number) => ({
+          ...segment,
+          color: segmentsColors[index % segmentsColors.length],
+          description: segment.summary,
+          start: timeToSeconds(segment.start),
+          end: timeToSeconds(segment.end),
+        })
+      );
 
-      setSegments(segmentsForTimeline)
-
+      setSegments(segmentsForTimeline);
+      setUploadState('success');
       return segments;
-
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error('Error uploading file:', error);
+      setUploadState('error');
     } finally {
-      setIsUploading(false);
+      setTimeout(() => {
+        setUploadState('none');
+      }, 3000);
     }
   };
 
-  return { uploadFile, isUploading };
+  return { uploadFile, uploadState };
 };
-
