@@ -1,29 +1,36 @@
-import { Course } from "@/types/Course";
-import { create } from "zustand";
+import { Course } from '@/types/Course';
+import { create } from 'zustand';
 
-interface CoursesStore {
+interface CoursesState {
   courses: Course[];
   activeCourseId: string | null;
+  isLoading: boolean;
+  error: string | null;
+  fetchCourses: (fetchFn: () => Promise<Course[]>) => Promise<void>;
   setCourses: (courses: Course[]) => void;
   setActiveCourse: (courseId: string) => void;
-  setCurrentLecture: (courseId: string, lectureIndex: number) => void;
 }
 
-export const useCoursesStore = create<CoursesStore>((set) => ({
+export const useCoursesStore = create<CoursesState>((set) => ({
   courses: [],
   activeCourseId: null,
+  isLoading: false,
+  error: null,
+  fetchCourses: async (fetchFn) => {
+    set({ isLoading: true, error: null });
+    try {
+      const courses = await fetchFn();
+      set({ courses, isLoading: false });
+    } catch (error) {
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Error: couldn't get courses, if this persists, please contact your administrator",
+        isLoading: false,
+      });
+    }
+  },
   setCourses: (courses) => set({ courses }),
   setActiveCourse: (courseId) => set({ activeCourseId: courseId }),
-  setCurrentLecture: (courseId, lectureIndex) =>
-    set((state) => ({
-      courses: state.courses.map((course) => {
-        if (course.id === courseId) {
-          return {
-            ...course,
-            currentLectureId: course.lectures[lectureIndex].id,
-          };
-        }
-        return course;
-      }),
-    })),
 }));

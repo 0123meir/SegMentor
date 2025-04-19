@@ -1,22 +1,69 @@
-import { useCoursesStore } from "@/state/CoursesStore";
-import { Course } from "@/types/Course";
-import { BiBook } from "react-icons/bi";
+import { useCourses } from '@/hooks/useCourses';
+import { useCoursesStore } from '@/state/CoursesStore';
+import { Course } from '@/types/Course';
+import { useEffect } from 'react';
+import { BiBook } from 'react-icons/bi';
 
-import { detectTextDirection } from "../../utils/detectTextDirection";
-import { CourseItem } from "./CourseItem";
+import { detectTextDirection } from '../../utils/detectTextDirection';
+import { CourseItem } from './CourseItem';
 
 export const CourseList = () => {
-  const { courses, activeCourseId, setActiveCourse, setCurrentLecture } =
-    useCoursesStore();
-  const sectionName = "My Courses";
+  const { courses, isLoading, error, fetchCourses, markLectureWatched } =
+    useCourses();
+  const { activeCourseId, setCourses, setActiveCourse } = useCoursesStore();
+
+  const sectionName = 'My Courses';
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    setCourses(courses);
+  }, [courses, setCourses]);
 
   const handleCourseClick = (course: Course) => {
-    setActiveCourse(course.id);
+    setActiveCourse(course._id);
   };
 
-  const handleLectureClick = (courseId: string, lectureIndex: number) => {
-    setCurrentLecture(courseId, lectureIndex);
+  const handleLectureClick = async (courseId: string, lectureIndex: number) => {
+    const course = courses.find((c) => c._id === courseId);
+    if (!course) return;
+
+    const lecture = course.lectures[lectureIndex];
+    if (!lecture) return;
+
+    // Delegate to hook for optimistic update and API call
+    await markLectureWatched(courseId, lecture._id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-gray-600">
+        Loading courses...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-red-600">
+        {error}
+      </div>
+    );
+  }
+
+  if (courses.length === 0) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-gray-600">
+        <p className="mb-2">No courses found.</p>
+        <p className="text-sm">
+          If you believe you should have access to some courses, please contact
+          your administrator.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-4">
@@ -30,11 +77,11 @@ export const CourseList = () => {
       <div className="space-y-3">
         {courses.map((course: Course) => (
           <CourseItem
-            key={course.id}
+            key={course._id}
             course={course}
             onClick={() => handleCourseClick(course)}
-            isActive={activeCourseId === course.id}
-            onLectureClick={(index) => handleLectureClick(course.id, index)}
+            isActive={activeCourseId === course._id}
+            onLectureClick={(index) => handleLectureClick(course._id, index)}
           />
         ))}
       </div>

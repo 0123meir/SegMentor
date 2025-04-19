@@ -1,19 +1,17 @@
-import { useCoursesStore } from "@/state/CoursesStore";
-import { useState } from "react";
+import { useCoursesStore } from '@/state/CoursesStore';
+import { useState } from 'react';
 
 const CoursesManagerPage = () => {
-  const {courses, setCourses} = useCoursesStore()
-  const [currentCourse, setCurrentCourse] = useState<string>("");
-  const [lectureTitle, setLectureTitle] = useState<string>("");
+  const { courses, setCourses } = useCoursesStore();
+  const [currentCourse, setCurrentCourse] = useState<string>('');
+  const [lectureTitle, setLectureTitle] = useState<string>('');
 
   // TODO: Replace with actual auth
-  const mockLecturerId = "lecturer123"; 
+  const mockLecturerId = 'lecturer123';
   const isAdmin = true; // Will come from auth context
 
   const filteredCourses = courses.filter(
-    (course) =>
-      isAdmin ||
-      course.lecturers.some((lecturer) => lecturer.id === mockLecturerId)
+    (course) => isAdmin || course.lecturer._id === mockLecturerId
   );
 
   const handleAddCourse = (): void => {
@@ -21,13 +19,13 @@ const CoursesManagerPage = () => {
       setCourses([
         ...courses,
         {
-          id: Date.now().toString(),
+          _id: Date.now().toString(),
           name: currentCourse,
           lectures: [],
-          lecturers: [{ id: mockLecturerId, name: "Current Lecturer" }],
+          lecturer: { _id: mockLecturerId, name: 'Current Lecturer' },
         },
       ]);
-      setCurrentCourse("");
+      setCurrentCourse('');
     }
   };
 
@@ -35,12 +33,12 @@ const CoursesManagerPage = () => {
     if (lectureTitle.trim()) {
       const updatedCourses = [...courses];
       updatedCourses[courseIndex].lectures.push({
-        id: Date.now().toString(),
+        _id: Date.now().toString(),
         title: lectureTitle,
         date: new Date().toISOString(),
       });
       setCourses(updatedCourses);
-      setLectureTitle("");
+      setLectureTitle('');
     }
   };
 
@@ -49,7 +47,7 @@ const CoursesManagerPage = () => {
     lectureIndex: number
   ): void => {
     const lecture = courses[courseIndex].lectures[lectureIndex];
-    const newTitle = prompt("Edit lecture title:", lecture.title);
+    const newTitle = prompt('Edit lecture title:', lecture.title);
     if (newTitle !== null) {
       const updatedCourses = [...courses];
       updatedCourses[courseIndex].lectures[lectureIndex].title = newTitle;
@@ -61,15 +59,13 @@ const CoursesManagerPage = () => {
     courseIndex: number,
     lectureIndex: number
   ): void => {
-    if (window.confirm("Are you sure you want to delete this lecture?")) {
+    if (window.confirm('Are you sure you want to delete this lecture?')) {
       const updatedCourses = [...courses];
       updatedCourses[courseIndex].lectures.splice(lectureIndex, 1);
       setCourses(updatedCourses);
     }
   };
 
-  console.log("CoursesManagerPage rendered");
-  
   return (
     <div className="max-w-[1200px] mx-auto p-8" dir="ltr">
       {isAdmin && (
@@ -92,7 +88,7 @@ const CoursesManagerPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredCourses.map((course, courseIndex) => (
-          <div key={course.id} className="bg-white rounded-lg p-6 shadow-md">
+          <div key={course._id} className="bg-white rounded-lg p-6 shadow-md">
             <h3 className="text-[#2c3e50] mb-4 text-xl font-semibold">
               {course.name}
             </h3>
@@ -125,7 +121,7 @@ const CoursesManagerPage = () => {
               {course.lectures.length > 0 ? (
                 course.lectures.map((lecture, lectureIndex) => (
                   <li
-                    key={lecture.id}
+                    key={lecture._id}
                     className="flex items-center p-3 border-b border-gray-200 last:border-b-0"
                   >
                     <span className="flex-1">{lecture.title}</span>

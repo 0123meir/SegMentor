@@ -1,18 +1,18 @@
 export interface Lecture {
-    id: string;
-    title: string;
-    date: string;
-  }
+  _id: string;
+  title: string;
+  date: string;
+}
 
-  export interface Lecturer {
-  id: string;
+export interface Lecturer {
+  _id: string;
   name: string;
 }
 
 export interface Course {
-  id: string;
+  _id: string;
   name: string;
   lectures: Lecture[];
-  currentLectureId?: string;
-  lecturers: Lecturer[];
+  lecturer: Lecturer;
+  watchedLectures: string[];
 }

@@ -1,8 +1,9 @@
-import { Course } from "@/types/Course";
-import { useState } from "react";
-import { IoChevronDownOutline, IoChevronUpOutline } from "react-icons/io5";
+import { Course } from '@/types/Course';
+import { useState } from 'react';
+import { FaCircle } from 'react-icons/fa';
+import { IoChevronDownOutline, IoChevronUpOutline } from 'react-icons/io5';
 
-import { detectTextDirection } from "../../utils/detectTextDirection";
+import { detectTextDirection } from '../../utils/detectTextDirection';
 
 interface CourseItemProps {
   course: Course;
@@ -19,7 +20,7 @@ export const CourseItem = ({
 }: CourseItemProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     onClick();
     setIsOpen(!isOpen);
   };
@@ -27,13 +28,6 @@ export const CourseItem = ({
   const handleLectureClick = (e: React.MouseEvent, index: number) => {
     e.stopPropagation(); // Prevent triggering the course click
     onLectureClick?.(index);
-    // Don't close the dropdown when selecting a lecture
-  };
-
-  const getCurrentLectureIndex = () => {
-    return course.lectures.findIndex(
-      (lecture) => course.currentLectureId === lecture.id
-    );
   };
 
   return (
@@ -48,8 +42,8 @@ export const CourseItem = ({
         duration-200 
         ${
           isActive
-            ? "ring-1 ring-blue-400 border-transparent shadow-sm"
-            : "hover:shadow-sm"
+            ? 'ring-1 ring-blue-400 border-transparent shadow-sm'
+            : 'hover:shadow-sm'
         }
       `}
       onClick={handleClick}
@@ -61,7 +55,7 @@ export const CourseItem = ({
             {course.name}
           </h3>
           <p className="text-sm text-gray-500">
-            Lecture {getCurrentLectureIndex() + 1} of {course.lectures.length}
+            {course.watchedLectures.length} Lectures of {course.lectures.length}
           </p>
         </div>
         {isOpen ? (
@@ -76,22 +70,22 @@ export const CourseItem = ({
           <ul className="divide-y divide-gray-100">
             {course.lectures.map((lecture, index) => (
               <li
-                key={lecture.id}
+                key={lecture._id}
                 onClick={(e) => handleLectureClick(e, index)}
                 className={`p-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer
                   ${
-                    lecture.id === course.currentLectureId
-                      ? "bg-blue-50 text-blue-700 font-medium"
-                      : "text-gray-700"
+                    course.watchedLectures.includes(lecture._id)
+                      ? 'bg-blue-50 text-blue-700 font-medium'
+                      : 'text-gray-700'
                   }
                 `}
                 style={{ direction: detectTextDirection(lecture.title) }}
               >
-                <div className="flex items-center">
-                  <span className="w-8 text-sm text-gray-500">
-                    {(index + 1).toString().padStart(2, "0")}
-                  </span>
-                  {lecture.title}
+                <div className="flex items-center justify-between cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">
+                  <span>{lecture.title}</span>
+                  {!course.watchedLectures?.includes(lecture._id) && (
+                    <FaCircle className="text-gray-300 w-3 h-3" />
+                  )}
                 </div>
               </li>
             ))}
