@@ -10,7 +10,7 @@ import { CourseItem } from './CourseItem';
 export const CourseList = () => {
   const { courses, isLoading, error, fetchCourses, markLectureWatched } =
     useCourses();
-  const { activeCourseId, setCourses, setActiveCourse } = useCoursesStore();
+  const { activeCourseId, activeLectureId, setCourses, setActiveCourse, setActiveLecture } = useCoursesStore();
 
   const sectionName = 'My Courses';
 
@@ -32,6 +32,11 @@ export const CourseList = () => {
 
     const lecture = course.lectures[lectureIndex];
     if (!lecture) return;
+
+    // set the lecture as active
+    setActiveLecture(lecture._id);
+
+    // TODO: navigate to the lecture
 
     // Delegate to hook for optimistic update and API call
     await markLectureWatched(courseId, lecture._id);
@@ -79,6 +84,7 @@ export const CourseList = () => {
           <CourseItem
             key={course._id}
             course={course}
+            activeLecture={activeLectureId}
             onClick={() => handleCourseClick(course)}
             isActive={activeCourseId === course._id}
             onLectureClick={(index) => handleLectureClick(course._id, index)}

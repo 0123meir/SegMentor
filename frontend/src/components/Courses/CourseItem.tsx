@@ -9,6 +9,7 @@ interface CourseItemProps {
   course: Course;
   onClick: () => void;
   isActive?: boolean;
+  activeLecture: string | null;
   onLectureClick?: (lectureIndex: number) => void;
 }
 
@@ -16,6 +17,7 @@ export const CourseItem = ({
   course,
   onClick,
   isActive,
+  activeLecture,
   onLectureClick,
 }: CourseItemProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,7 +76,7 @@ export const CourseItem = ({
                 onClick={(e) => handleLectureClick(e, index)}
                 className={`p-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer
                   ${
-                    course.watchedLectures.includes(lecture._id)
+                    activeLecture === lecture._id
                       ? 'bg-blue-50 text-blue-700 font-medium'
                       : 'text-gray-700'
                   }
@@ -83,9 +85,9 @@ export const CourseItem = ({
               >
                 <div className="flex items-center justify-between cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">
                   <span>{lecture.title}</span>
-                  {!course.watchedLectures?.includes(lecture._id) && (
-                    <FaCircle className="text-gray-300 w-3 h-3" />
-                  )}
+                    {!course.watchedLectures?.includes(lecture._id) && (
+                    <FaCircle className="text-blue-500 w-3 h-3" />
+                    )}
                 </div>
               </li>
             ))}

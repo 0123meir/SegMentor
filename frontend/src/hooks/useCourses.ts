@@ -63,7 +63,7 @@ export const useCourses = (): UseCoursesReturn => {
       );
 
       try {
-        await api.post('/watched-lectures', { //TODO this doesnt work!
+        await api.post('/watched-lectures', {
           userId: MOCK_USER_ID,
           courseId,
           lectureId,

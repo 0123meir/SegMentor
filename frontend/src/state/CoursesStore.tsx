@@ -4,16 +4,19 @@ import { create } from 'zustand';
 interface CoursesState {
   courses: Course[];
   activeCourseId: string | null;
+  activeLectureId: string | null;
   isLoading: boolean;
   error: string | null;
   fetchCourses: (fetchFn: () => Promise<Course[]>) => Promise<void>;
   setCourses: (courses: Course[]) => void;
   setActiveCourse: (courseId: string) => void;
+  setActiveLecture: (lectureId: string) => void;
 }
 
 export const useCoursesStore = create<CoursesState>((set) => ({
   courses: [],
   activeCourseId: null,
+  activeLectureId: null,
   isLoading: false,
   error: null,
   fetchCourses: async (fetchFn) => {
@@ -33,4 +36,5 @@ export const useCoursesStore = create<CoursesState>((set) => ({
   },
   setCourses: (courses) => set({ courses }),
   setActiveCourse: (courseId) => set({ activeCourseId: courseId }),
+  setActiveLecture: (lectureId) => set({ activeLectureId: lectureId }),
 }));
