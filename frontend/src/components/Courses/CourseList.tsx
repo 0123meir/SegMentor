@@ -10,7 +10,13 @@ import { CourseItem } from './CourseItem';
 export const CourseList = () => {
   const { courses, isLoading, error, fetchCourses, markLectureWatched } =
     useCourses();
-  const { activeCourseId, activeLectureId, setCourses, setActiveCourse, setActiveLecture } = useCoursesStore();
+  const {
+    activeCourseId,
+    activeLectureId,
+    setCourses,
+    setActiveCourse,
+    setActiveLecture,
+  } = useCoursesStore();
 
   const sectionName = 'My Courses';
 
@@ -71,7 +77,7 @@ export const CourseList = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-4">
+    <div className="p-4 space-y-4">
       <div
         className="flex items-center gap-2 mb-6"
         style={{ direction: detectTextDirection(sectionName) }}
