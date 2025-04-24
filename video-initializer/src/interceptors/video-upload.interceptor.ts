@@ -1,26 +1,27 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FILE_UPLOAD_DIRECTORY } from '../constants/file-upload-directory';
 import { ALLOWED_FILE_MIME_TYPES } from '../constants/allowed-file-mime-types';
+import { FileRequest } from 'src/types/file-request.type';
 
 export const VideoUploadInterceptor = FileInterceptor('file', {
-    // also need to generate the id for the file
   storage: diskStorage({
     destination: FILE_UPLOAD_DIRECTORY,
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+    filename: (req: FileRequest, file, cb) => {
+      const fileName = `${req.fileId}${extname(file.originalname)}`;
+      cb(null, fileName);
     },
   }),
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: FileRequest, file, cb) => {
     if (!ALLOWED_FILE_MIME_TYPES.includes(file.mimetype)) {
-      return cb( 
-        new HttpException(
-          'Only MP4 files are allowed!',
-          HttpStatus.BAD_REQUEST,
-        ),
+      return cb(
+        new BadRequestException({
+          message: 'File type not supported',
+          fileType: file.mimetype,
+          fileId: req.fileId,
+        }),
         false,
       );
     }

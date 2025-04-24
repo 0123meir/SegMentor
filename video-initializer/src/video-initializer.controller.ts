@@ -5,10 +5,13 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { VideoInitializerService } from './video-initializer.service';
 import { File } from 'multer';
+import { FileIdInterceptor } from './interceptors/file-id-interceptor';
 import { VideoUploadInterceptor } from './interceptors/video-upload.interceptor';
+import { FileRequest } from './types/file-request.type';
 
 @Controller('video-initializer')
 export class VideoInitializerController {
@@ -17,19 +20,19 @@ export class VideoInitializerController {
   ) {}
 
   @Post('extract-mp3')
-  @UseInterceptors(VideoUploadInterceptor)
-  async extractMp3(@UploadedFile() file: File) {
+  @UseInterceptors(FileIdInterceptor, VideoUploadInterceptor)
+  async extractMp3(@UploadedFile() file: File, @Req() req: FileRequest,) {
     if (!file) {
       throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
     }
 
-    const mp3Path = await this.videoInitializerService.extractMp3(file.path);
+    const fileId = req.fileId;
+    await this.videoInitializerService.extractMp3(file.path, fileId);
 
-    // here i need to return the mp3 to the s3 and use kafka with the video id
-    // for the video analyzer to process the video
+    // need to find what to send back to the client
     return {
       message: 'MP3 extracted successfully',
-      mp3Path,
+      fileId,
     };
   }
 }
