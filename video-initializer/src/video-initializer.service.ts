@@ -30,23 +30,31 @@ export class VideoInitializerService implements OnModuleInit {
           const formData = new FormData();
           formData.append('file', fs.createReadStream(mp3Output));
 
-          const response = await axios.post(
-            `${process.env.UPLOAD_FILE_S3_URL}`,
-            formData,
-            {
-              headers: formData.getHeaders(),
-            },
-          );
+          try {
+            const response = await axios.post(
+              `${process.env.UPLOAD_FILE_S3_URL}`,
+              formData,
+              {
+                headers: formData.getHeaders(),
+              },
+            );
 
-          Logger.log('File uploaded to S3:', response.data);
-          unlink(mp3Output).catch(noop);
-          unlink(inputPath).catch(noop);
-
-          // upload the file id to the kafka topic
-          resolve();
+            Logger.log('File uploaded to S3:', response.data);
+            // upload the file id to the kafka topic
+            resolve();
+          } catch (error) {
+            Logger.error('failed to upload file to S3:', error);
+            reject(error);
+          } finally {
+            unlink(mp3Output).catch(noop);
+            unlink(inputPath).catch(noop);
+          }
         })
         .on('error', (err) => {
           Logger.error('Error during MP3 extraction:', err);
+          unlink(mp3Output).catch(noop);
+          unlink(inputPath).catch(noop);
+
           reject(err);
         })
         .save(mp3Output);

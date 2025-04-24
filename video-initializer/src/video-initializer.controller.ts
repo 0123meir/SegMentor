@@ -13,7 +13,6 @@ import { FileIdInterceptor } from './interceptors/file-id-interceptor';
 import { VideoUploadInterceptor } from './interceptors/video-upload.interceptor';
 import { FileRequest } from './types/file-request.type';
 import {
-  ApiTags,
   ApiConsumes,
   ApiBody,
   ApiResponse,
