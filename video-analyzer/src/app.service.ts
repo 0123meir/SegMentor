@@ -18,6 +18,11 @@ export class AppService {
         file,
       );
 
+      await this.transcriptionsService.saveTranscription(
+        fileId,
+        transcriptionData.transcription,
+      );
+
       const segments =
         await this.segmentsService.createSegmentsFromTranscription(
           fileId,
@@ -31,4 +36,12 @@ export class AppService {
       unlink(file.path).catch(noop);
     }
   }
+
+  // // TODO: remove
+  // async saveTest(
+  //   fileId: string,
+  //   transcription: TranscriptionData['transcription'],
+  // ) {
+  //   return this.transcriptionsService.saveTranscription(fileId, transcription);
+  // }
 }
