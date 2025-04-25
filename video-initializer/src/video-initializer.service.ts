@@ -1,16 +1,16 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { unlink } from 'fs/promises';
 import { noop } from 'rxjs';
-import axios from 'axios';
+import { AudioUploadRepository } from './repositories/audio-upload.repository';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as path from 'path';
-import * as fs from 'fs';
-import * as FormData from 'form-data';
 import * as ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import * as ffprobeInstaller from '@ffprobe-installer/ffprobe';
 
 @Injectable()
 export class VideoInitializerService implements OnModuleInit {
+  constructor(private readonly audioUploadRepository: AudioUploadRepository) {}
+
   onModuleInit() {
     ffmpeg.setFfmpegPath(ffmpegInstaller.path);
     ffmpeg.setFfprobePath(ffprobeInstaller.path);
@@ -27,23 +27,11 @@ export class VideoInitializerService implements OnModuleInit {
         .on('end', async () => {
           Logger.log('MP3 extraction complete:', mp3Output);
 
-          const formData = new FormData();
-          formData.append('file', fs.createReadStream(mp3Output));
-
           try {
-            const response = await axios.post(
-              `${process.env.UPLOAD_FILE_S3_URL}`,
-              formData,
-              {
-                headers: formData.getHeaders(),
-              },
-            );
-
-            Logger.log('File uploaded to S3:', response.data);
-            // upload the file id to the kafka topic
+            await this.audioUploadRepository.uploadFileToS3(mp3Output);
+            // uplaod fileId to the kafka topic
             resolve();
           } catch (error) {
-            Logger.error('failed to upload file to S3:', error);
             reject(error);
           } finally {
             unlink(mp3Output).catch(noop);
