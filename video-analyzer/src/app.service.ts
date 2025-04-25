@@ -36,12 +36,4 @@ export class AppService {
       unlink(file.path).catch(noop);
     }
   }
-
-  // // TODO: remove
-  // async saveTest(
-  //   fileId: string,
-  //   transcription: TranscriptionData['transcription'],
-  // ) {
-  //   return this.transcriptionsService.saveTranscription(fileId, transcription);
-  // }
 }
