@@ -41,6 +41,6 @@ export class SearchService {
       threshold: 0.3,
     });
 
-    return fuse.search(prompt).map(result => result.item);
+    return fuse.search(prompt).map((result) => result.item);
   }
 }
