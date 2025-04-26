@@ -5,8 +5,5 @@ export const uploadFileRequestSwaggerSchema = {
       type: 'string',
       format: 'binary',
     },
-    fileId: {
-      type: 'string',
-    },
   },
 };

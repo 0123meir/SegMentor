@@ -47,8 +47,6 @@ export class TranscriptionsRepository implements OnModuleInit {
     transcription: TranscriptionData['transcription'],
   ) {
     const bodyData = new FormData();
-    bodyData.append('fileId', fileId);
-
     bodyData.append('file', Buffer.from(transcription), {
       filename: `${fileId}.srt`,
       contentType: 'text/plain',

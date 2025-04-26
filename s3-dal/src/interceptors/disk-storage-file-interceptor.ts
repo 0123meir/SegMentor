@@ -5,16 +5,13 @@ import { extname } from 'path';
 import { FILE_UPLOAD_DIRECTORY } from 'src/constants/file-upload-directory';
 import { FileType } from 'src/types/file.type';
 import { isFileSupported } from 'src/utils/is-file-supported';
-import { v4 as uuidV4 } from 'uuid';
 
 export const DiskStorageFileInterceptor = (allowedFileTypes?: FileType[]) => {
   return FileInterceptor('file', {
     storage: diskStorage({
       destination: FILE_UPLOAD_DIRECTORY,
       filename: (_req, file, cb) => {
-        const fileName = `${uuidV4()}-${file.originalname}`;
-
-        cb(null, fileName);
+        cb(null, file.originalname);
       },
     }),
     fileFilter: (req, file, cb) => {

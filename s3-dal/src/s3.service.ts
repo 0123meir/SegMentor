@@ -1,14 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { createReadStream } from 'fs';
 import { unlink } from 'fs/promises';
-import { extname } from 'path';
 import { noop } from 'rxjs';
 import { Readable } from 'stream';
 import { S3Repository } from './s3.repository';
-import { UploadFileRequestDTO } from './types/dto/upload-file-request.dto';
-import { S3Bucket } from './types/s3-bucket.enum';
-import { createReadStream } from 'fs';
 import { FileUploadStrategy } from './types/file-upload-strategy.enum';
 import { FileType } from './types/file.type';
+import { S3Bucket } from './types/s3-bucket.enum';
 
 @Injectable()
 export class S3Service {
@@ -16,13 +14,10 @@ export class S3Service {
 
   async uploadFile(
     file: Express.Multer.File,
-    fileId: UploadFileRequestDTO['fileId'],
     fileUploadStrategy: FileUploadStrategy,
     bucket: S3Bucket,
   ) {
     try {
-      const fileName = `${fileId}${extname(file.originalname)}`;
-
       const fileContent =
         fileUploadStrategy === FileUploadStrategy.IN_MEMORY
           ? file.buffer
@@ -30,7 +25,7 @@ export class S3Service {
 
       const result = await this.s3Repository.putObject(
         bucket,
-        fileName,
+        file.originalname,
         fileContent,
       );
 

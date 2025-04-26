@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
@@ -12,7 +11,6 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiConsumes,
-  ApiExtraModels,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -24,7 +22,6 @@ import {
 } from './interceptors';
 import { ParseInMemoryFilePipe } from './pipes/parse-in-memory-file.pipe';
 import { S3Service } from './s3.service';
-import { UploadFileRequestDTO } from './types/dto/upload-file-request.dto';
 import { FileUploadStrategy } from './types/file-upload-strategy.enum';
 import { FileType } from './types/file.type';
 import { S3Bucket } from './types/s3-bucket.enum';
@@ -36,7 +33,6 @@ export class S3Controller {
 
   @Post('/srt')
   @ApiTags('SRT Transcriptions')
-  @ApiExtraModels(UploadFileRequestDTO)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: uploadFileRequestSwaggerSchema,
@@ -46,13 +42,11 @@ export class S3Controller {
   })
   @UseInterceptors(MemoryStorageFileInterceptor())
   async uploadSrt(
-    @Body() uploadFileRequest: UploadFileRequestDTO,
     @UploadedFile(new ParseInMemoryFilePipe([FileType.SRT]))
     file: Express.Multer.File,
   ) {
     const result = await this.s3Service.uploadFile(
       file,
-      uploadFileRequest.fileId,
       FileUploadStrategy.IN_MEMORY,
       S3Bucket.SRT_TRANSCRIPTIONS,
     );
@@ -65,7 +59,6 @@ export class S3Controller {
 
   @Post('/audio')
   @ApiTags('Audio')
-  @ApiExtraModels(UploadFileRequestDTO)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: uploadFileRequestSwaggerSchema,
@@ -74,13 +67,9 @@ export class S3Controller {
     description: `Invalid file type, only supports ${getSwaggerSupportedFileTypes([FileType.MP3])}`,
   })
   @UseInterceptors(DiskStorageFileInterceptor([FileType.MP3]))
-  async uploadMp3(
-    @Body() uploadFileRequest: UploadFileRequestDTO,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  async uploadMp3(@UploadedFile() file: Express.Multer.File) {
     const result = await this.s3Service.uploadFile(
       file,
-      uploadFileRequest.fileId,
       FileUploadStrategy.DISK,
       S3Bucket.RAW_AUDIO,
     );
