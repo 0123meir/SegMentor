@@ -10,6 +10,7 @@ import {
 import { Response } from 'express';
 import { SearchService } from 'src/services/search.service';
 import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Controller()
 export class SearchController {
@@ -22,12 +23,15 @@ export class SearchController {
   async searchSrt(
     @Param('fileId') fileId: string,
     @Query('q') prompt: string,
+    @Query('fuzzy') fuzzy: true,
     @Res() res: Response,
   ) {
     try {
-      const fileContent = await this.s3DalHttpService.get(`/srt/:${fileId}`);
+      const { data: fileContent } = await firstValueFrom(
+        this.s3DalHttpService.get<string>(`/srt/${fileId}`),
+      );
       const content = fileContent?.toString() || '';
-      const matches = this.searchService.findMatches(content, prompt);
+      const matches = this.searchService.findMatches(content, prompt, fuzzy);
       res.json(matches);
     } catch (error) {
       throw new HttpException(
