@@ -49,7 +49,6 @@ export class S3Service {
       const file = await this.s3Repository.getObject(bucket, fileKey);
 
       if (file.Body instanceof Readable) {
-        // Use a Promise to manage the async collection of stream data
         const streamToBuffer = (stream: Readable): Promise<Buffer> => {
           return new Promise((resolve, reject) => {
             const chunks: Buffer[] = [];

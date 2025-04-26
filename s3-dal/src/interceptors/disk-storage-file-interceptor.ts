@@ -6,7 +6,7 @@ import { FILE_UPLOAD_DIRECTORY } from 'src/constants/file-upload-directory';
 import { FileType } from 'src/types/file.type';
 import { isFileSupported } from 'src/utils/is-file-supported';
 
-export const DiskStorageFileInterceptor = (allowedFileTypes?: FileType[]) => {
+export const DiskStorageFileInterceptor = (supportedFileTypes?: FileType[]) => {
   return FileInterceptor('file', {
     storage: diskStorage({
       destination: FILE_UPLOAD_DIRECTORY,
@@ -17,11 +17,12 @@ export const DiskStorageFileInterceptor = (allowedFileTypes?: FileType[]) => {
     fileFilter: (req, file, cb) => {
       const fileId = req.body.fileId;
 
-      if (!allowedFileTypes?.length) {
+      // No restrictions
+      if (!supportedFileTypes?.length) {
         return cb(null, true);
       }
 
-      if (!isFileSupported(file, allowedFileTypes)) {
+      if (!isFileSupported(file, supportedFileTypes)) {
         return cb(
           new BadRequestException({
             message: 'File type not supported',
