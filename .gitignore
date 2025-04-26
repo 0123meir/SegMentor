@@ -55,6 +55,12 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+data/
+chunks/
+uploads/
+*.crt
+*.key
+
 video-analyzer/data/
 video-analyzer/chunks/
 video-analyzer/uploads/

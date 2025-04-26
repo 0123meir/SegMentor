@@ -18,7 +18,6 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
 
-
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
   }, []);
@@ -47,10 +46,10 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     }
   }, []);
 
-  const toggleMute = () => {
-    isMuted ? setVolume(1) : setVolume(0);
+  const toggleMute = useCallback(() => {
+    setVolume(isMuted ? 1 : 0)
     setIsMuted((prev) => !prev);
-  };
+  },[isMuted]);
 
   useEffect(() => {
     if (volume === 0 && !isMuted) {
@@ -58,7 +57,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     } else if (volume > 0 && isMuted) {
       setIsMuted(false);
     }
-  }, [volume]);
+  }, [volume, isMuted]);
 
   useEffect(() => {
     const TIME_AND_VOLUME_SEEKBAR = "INPUT";
