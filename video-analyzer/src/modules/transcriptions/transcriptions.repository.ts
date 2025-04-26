@@ -1,10 +1,20 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common';
 import fs from 'fs';
 import OpenAI from 'openai';
 import { OPEN_AI_CLIENT } from '../open-ai/constants';
 import { AI_MODEL } from './constants/open-ai-params';
 import { TranscriptionFormatResponse } from './types/transcription-format-response.type';
 import { TranscriptionFormat } from './types/transcription-format.enum';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { isErrorHttpResponseCode } from 'src/utils/is-error-http-response';
+import { TranscriptionData } from './types/transcription-data.type';
+import FormData from 'form-data';
 
 @Injectable()
 export class TranscriptionsRepository implements OnModuleInit {
@@ -14,7 +24,10 @@ export class TranscriptionsRepository implements OnModuleInit {
     ) => Promise<TranscriptionFormatResponse[K]>;
   };
 
-  constructor(@Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI) {}
+  constructor(
+    @Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI,
+    private readonly s3DalHttpService: HttpService,
+  ) {}
 
   onModuleInit() {
     this.generateFunctionByFormat = {
@@ -27,6 +40,29 @@ export class TranscriptionsRepository implements OnModuleInit {
 
   generateTranscription(filePath: string, format: TranscriptionFormat) {
     return this.generateFunctionByFormat[format](filePath);
+  }
+
+  async saveTranscription(
+    fileId: string,
+    transcription: TranscriptionData['transcription'],
+  ) {
+    const bodyData = new FormData();
+    bodyData.append('file', Buffer.from(transcription), {
+      filename: `${fileId}.srt`,
+      contentType: 'text/plain',
+    });
+
+    const { data, status } = await firstValueFrom(
+      this.s3DalHttpService.post('srt', bodyData, {
+        headers: bodyData.getHeaders(),
+      }),
+    );
+
+    if (isErrorHttpResponseCode(status)) {
+      throw new HttpException({ fileId, data }, status);
+    }
+
+    return data;
   }
 
   private async generateTranscriptionSRT(filePath: string) {
