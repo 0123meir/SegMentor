@@ -4,7 +4,11 @@ import { SearchService } from 'src/services/search.service';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig } from 'src/config/app.config';
 import { openAIConfig } from 'src/config/open-ai.config';
-import { S3DalConfig, s3DalConfig, s3DalConfigKey } from 'src/config/s3-dal.config';
+import {
+  S3DalConfig,
+  s3DalConfig,
+  s3DalConfigKey,
+} from 'src/config/s3-dal.config';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
