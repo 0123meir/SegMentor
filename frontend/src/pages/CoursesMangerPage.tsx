@@ -16,15 +16,7 @@ const CoursesManagerPage = () => {
 
   const handleAddCourse = (): void => {
     if (currentCourse.trim() && isAdmin) {
-      setCourses([
-        ...courses,
-        {
-          _id: Date.now().toString(),
-          name: currentCourse,
-          lectures: [],
-          lecturer: { _id: mockLecturerId, name: 'Current Lecturer' },
-        },
-      ]);
+      setCourses([...courses]);
       setCurrentCourse('');
     }
   };
