@@ -46,6 +46,29 @@ export class TranscriptionsService {
     };
   }
 
+  async saveTranscription(
+    fileId: string,
+    transcription: TranscriptionData['transcription'],
+  ) {
+    try {
+      this.logger.log({ message: 'saving transcription', fileId });
+
+      await this.transcriptionsRepository.saveTranscription(
+        fileId,
+        transcription,
+      );
+
+      this.logger.log({ message: 'finished saving transcription', fileId });
+    } catch (error) {
+      console.error(error);
+
+      throw new InternalServerErrorException({
+        fileId,
+        message: 'File save failed',
+      });
+    }
+  }
+
   private async transcribeAsChunks(fileId: string, filePath: string) {
     try {
       this.logger.log({ message: 'creating chunk files', fileId, filePath });
