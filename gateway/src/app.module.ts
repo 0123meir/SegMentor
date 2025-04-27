@@ -1,8 +1,9 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HttpModule } from '@nestjs/axios';
-import { AuthMiddleware } from './middleware/auth.middleware';
+import { AuthMiddleware } from './middlewares/auth.middleware';
+import { CoursesProxyMiddleware } from './apiProxies/courses-proxy.middleware';
 
 @Module({
   imports: [HttpModule],
@@ -11,6 +12,8 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer
+      .apply(AuthMiddleware, CoursesProxyMiddleware)
+      .forRoutes({ path: 'courses*', method: RequestMethod.ALL });
   }
 }
