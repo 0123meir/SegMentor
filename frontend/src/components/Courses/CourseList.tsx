@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { BiBook } from 'react-icons/bi';
 
 import { detectTextDirection } from '../../utils/detectTextDirection';
-import { CourseItem } from './CourseItem';
+import { CourseItem } from './sidebar/CourseItem';
 
 export const CourseList = () => {
   const { courses, isLoading, error, fetchCourses, markLectureWatched } =
@@ -26,7 +26,7 @@ export const CourseList = () => {
 
   useEffect(() => {
     setCourses(courses);
-  }, [courses, setCourses]);
+  }, []);
 
   const handleCourseClick = (course: Course) => {
     setActiveCourse(course._id);

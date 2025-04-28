@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FaCircle } from 'react-icons/fa';
 import { IoChevronDownOutline, IoChevronUpOutline } from 'react-icons/io5';
 
-import { detectTextDirection } from '../../utils/detectTextDirection';
+import { detectTextDirection } from '../../../utils/detectTextDirection';
 
 interface CourseItemProps {
   course: Course;
@@ -85,9 +85,9 @@ export const CourseItem = ({
               >
                 <div className="flex items-center justify-between cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">
                   <span>{lecture.title}</span>
-                    {!course.watchedLectures?.includes(lecture._id) && (
+                  {!course.watchedLectures?.includes(lecture._id) && (
                     <FaCircle className="text-blue-500 w-3 h-3" />
-                    )}
+                  )}
                 </div>
               </li>
             ))}

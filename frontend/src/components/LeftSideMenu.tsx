@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-import { CourseList } from './Courses/CourseList';
+import { CourseList } from './courses/CourseList';
 
 export const LeftSideMenu = () => {
   const [isOpen, setIsOpen] = useState(true);
