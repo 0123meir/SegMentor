@@ -6,13 +6,14 @@ import { appConfig } from './config/app.config';
 import { openAIConfig } from './config/open-ai.config';
 import { SegmentsModule } from './modules/segments/segments.module';
 import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
+import { s3DalConfig } from './config/s3-dal.config';
 import { KafkaModule } from './modules/kafka/kafka.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, openAIConfig],
+      load: [appConfig, openAIConfig, s3DalConfig],
     }),
     TranscriptionsModule,
     SegmentsModule,

@@ -20,6 +20,11 @@ export class AppService {
         file,
       );
 
+      await this.transcriptionsService.saveTranscription(
+        fileId,
+        transcriptionData.transcription,
+      );
+
       const segments =
         await this.segmentsService.createSegmentsFromTranscription(
           fileId,
