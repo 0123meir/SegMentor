@@ -1,9 +1,10 @@
 import React from 'react';
 
 import LectureList from './LectureList';
+import { Course } from '@/types/Course';
 
 interface CourseCardProps {
-  course: any;
+  course: Course;
   courseIndex: number;
   isAdmin: boolean;
   lectureTitle: string;

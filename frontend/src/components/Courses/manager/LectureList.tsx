@@ -1,7 +1,8 @@
+import { Lecture } from '@/types/Course';
 import React from 'react';
 
 interface LectureListProps {
-  lectures: any[];
+  lectures: Lecture[];
   onEdit: (courseIndex: number, lectureIndex: number) => void;
   onDelete: (courseIndex: number, lectureIndex: number) => void;
   courseIndex: number;

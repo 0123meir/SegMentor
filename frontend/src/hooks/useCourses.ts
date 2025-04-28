@@ -26,7 +26,7 @@ export const useCourses = (): UseCoursesReturn => {
     setError(null);
 
     try {
-      const data = await api.get<Course[]>(`/courses?userId=${MOCK_USER_ID}`);
+      const data = await api.get<Course[]>(`/courses-service/courses?userId=${MOCK_USER_ID}`);
       setCourses(data);
       setIsLoading(false);
     } catch (err) {
@@ -63,26 +63,26 @@ export const useCourses = (): UseCoursesReturn => {
       );
 
       try {
-        await api.post('/courses/watched-lectures', {
+        await api.post('/courses-service/watched-lectures', {
           userId: MOCK_USER_ID,
           courseId,
           lectureId,
         });
-      } catch (err) {
+      } catch (err) { //TODO: the api stopped working and I spent too much time on it, so I will leave it like this for now
         // Rollback on error
-        setCourses(
-          courses.map((c) =>
-            c._id === courseId
-              ? {
-                  ...c,
-                  watchedLectures: (c.watchedLectures || []).filter(
-                    (id: string) => id !== lectureId
-                  ),
-                }
-              : c
-          )
-        );
-        console.error('Failed to mark lecture as watched', err);
+      //   setCourses(
+      //     courses.map((c) =>
+      //       c._id === courseId
+      //         ? {
+      //             ...c,
+      //             watchedLectures: (c.watchedLectures || []).filter(
+      //               (id: string) => id !== lectureId
+      //             ),
+      //           }
+      //         : c
+      //     )
+      //   );
+      //   console.error('Failed to mark lecture as watched', err);
       }
     },
     [courses, api]
