@@ -1,15 +1,29 @@
 import AddCourseForm from '@/components/courses/manager/AddCourseForm';
 import CourseCard from '@/components/courses/manager/CourseCard';
+import { useCourses } from '@/hooks/useCourses';
 import { useCoursesStore } from '@/state/CoursesStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const CoursesManagerPage = () => {
-  const { courses, setCourses } = useCoursesStore();
+  const { courses, fetchCourses } = useCourses();
+  const { setCourses } = useCoursesStore();
+
   const [currentCourse, setCurrentCourse] = useState<string>('');
-  const [lectureTitle, setLectureTitle] = useState<string>('');
+  const [lectureTitles, setLectureTitles] = useState<{ [key: number]: string }>(
+    {}
+  );
+
+  useEffect(() => {
+    //this is not good at all, but it works for now I need to change the whole behavior of hook and store
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    setCourses(courses);
+  }, []);
 
   // TODO: Replace with actual auth
-  const mockLecturerId = 'lecturer123';
+  const mockLecturerId = '68037dda1cf98a948e07e10f';
   const isAdmin = true; // Will come from auth context
 
   const filteredCourses = courses.filter(
@@ -23,16 +37,28 @@ const CoursesManagerPage = () => {
     }
   };
 
+  const handleSetLectureTitle = (courseIndex: number, title: string) => {
+    setLectureTitles((prev) => ({
+      ...prev,
+      [courseIndex]: title,
+    }));
+  };
+
   const handleAddLecture = (courseIndex: number): void => {
-    if (lectureTitle.trim()) {
+    const title = lectureTitles[courseIndex];
+    if (title?.trim()) {
       const updatedCourses = [...courses];
       updatedCourses[courseIndex].lectures.push({
         _id: Date.now().toString(),
-        title: lectureTitle,
+        title: title,
         date: new Date().toISOString(),
       });
       setCourses(updatedCourses);
-      setLectureTitle('');
+      // Clear just this course's lecture title
+      setLectureTitles((prev) => ({
+        ...prev,
+        [courseIndex]: '',
+      }));
     }
   };
 
@@ -72,12 +98,14 @@ const CoursesManagerPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredCourses.map((course, courseIndex) => (
           <CourseCard
-            key={course._id}
+            key={`${course._id}-${courseIndex}`}
             course={course}
             courseIndex={courseIndex}
             isAdmin={isAdmin}
-            lectureTitle={lectureTitle}
-            setLectureTitle={setLectureTitle}
+            lectureTitle={lectureTitles[courseIndex] || ''}
+            setLectureTitle={(title) =>
+              handleSetLectureTitle(courseIndex, title)
+            }
             onAddLecture={handleAddLecture}
             onEditLecture={handleEditLecture}
             onDeleteLecture={handleDeleteLecture}

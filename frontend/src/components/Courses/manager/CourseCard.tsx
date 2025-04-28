@@ -1,7 +1,7 @@
+import { Course } from '@/types/Course';
 import React from 'react';
 
 import LectureList from './LectureList';
-import { Course } from '@/types/Course';
 
 interface CourseCardProps {
   course: Course;
