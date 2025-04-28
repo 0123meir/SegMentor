@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HttpModule } from '@nestjs/axios';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { CoursesProxyMiddleware } from './apiProxies/courses-proxy.middleware';
@@ -8,7 +7,7 @@ import { CoursesProxyMiddleware } from './apiProxies/courses-proxy.middleware';
 @Module({
   imports: [HttpModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
