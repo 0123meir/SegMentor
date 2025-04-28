@@ -19,8 +19,6 @@ export class CourseService {
   }
 
   async findAll(): Promise<Course[]> {
-    const a = await this.courseModel.find();
-    console.log('only find', a);
     return this.courseModel
       .find()
       .populate('lectures')
