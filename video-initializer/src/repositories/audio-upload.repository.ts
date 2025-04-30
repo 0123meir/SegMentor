@@ -2,9 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import * as FormData from 'form-data';
 import * as fs from 'fs';
+import { ProducerService } from '../kafka/producer.service';
 
 @Injectable()
 export class AudioUploadRepository {
+  constructor(private readonly producerService: ProducerService) {}
+
   async uploadFileToS3(mp3Output: string): Promise<void> {
     const formData = new FormData();
     formData.append('file', fs.createReadStream(mp3Output));
@@ -23,5 +26,18 @@ export class AudioUploadRepository {
       Logger.error('Failed to upload file to S3:', error);
       throw error;
     }
+  }
+
+  async uploadFileIdToKafka(fileId: string): Promise<void> {
+    Logger.log('Uploading fileId to Kafka:', fileId);
+    await this.producerService.produce({
+      topic: 'video.to-segment',
+      messages: [
+        {
+          key: fileId,
+          value: JSON.stringify({ fileId }),
+        },
+      ],
+    });
   }
 }
