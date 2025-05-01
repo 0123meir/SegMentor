@@ -21,7 +21,9 @@ const LectureList: React.FC<LectureListProps> = ({
           key={`${lecture._id}-${lectureIndex}`}
           className="flex items-center p-3 border-b border-gray-200 last:border-b-0"
         >
-          <span className="flex-1">{lecture.title}</span>
+          <span className="flex-1 min-w-0 break-words max-w-xs">
+            {lecture.title}
+          </span>
           <div className="flex gap-2">
             <button
               onClick={() => onEdit(courseIndex, lectureIndex)}

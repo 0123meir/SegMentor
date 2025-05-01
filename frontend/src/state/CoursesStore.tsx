@@ -10,18 +10,16 @@ interface CoursesState {
   activeLectureId: string | null;
   isLoading: boolean;
   error: string | null;
-  api:  null | UseApiType;
+  api: null | UseApiType;
   initState: (api: UseApiType) => void;
   fetchCourses: () => Promise<void>;
-  markLectureWatched: (
-    courseId: string,
-    lectureId: string
-  ) => Promise<void>;
+  markLectureWatched: (courseId: string, lectureId: string) => Promise<void>;
   setCourses: (courses: Course[]) => void;
   addLecture: (courseId: string, lectureData: Partial<Lecture>) => void;
   deleteLecture: (courseId: string, lectureId: string) => void;
   setActiveCourse: (courseId: string) => void;
   setActiveLecture: (lectureId: string) => void;
+  addCourse: (courseData: Partial<Course>) => Promise<void>;
 }
 
 export const useCoursesStore = create<CoursesState>((set, get) => ({
@@ -35,10 +33,10 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   fetchCourses: async () => {
     set({ isLoading: true, error: null });
     try {
-      if(!get().api) {
+      if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
-      
+
       const data = await get().api!.get<Course[]>(
         `/courses-service/courses?userId=${MOCK_USER_ID}`
       );
@@ -53,7 +51,7 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     }
   },
   markLectureWatched: async (courseId, lectureId) => {
-    if(!get().api) {
+    if (!get().api) {
       throw new Error('API not initialized. Please call initState first.');
     }
 
@@ -100,7 +98,7 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   addLecture: async (courseId: string, lectureData: Partial<Lecture>) => {
     // Optimistically update UI
     set((state) => {
-      const courseIdx = state.courses.findIndex(c => c._id === courseId);
+      const courseIdx = state.courses.findIndex((c) => c._id === courseId);
       if (courseIdx === -1) return state;
       const newLecture = { ...lectureData };
       const updatedCourses = [...state.courses];
@@ -112,7 +110,7 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     });
 
     try {
-      if(!get().api) {
+      if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
 
@@ -123,12 +121,12 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     } catch (e) {
       // Rollback optimistic update
       set((state) => {
-        const courseIdx = state.courses.findIndex(c => c._id === courseId);
+        const courseIdx = state.courses.findIndex((c) => c._id === courseId);
         if (courseIdx === -1) return state;
         const updatedCourses = [...state.courses];
-        updatedCourses[courseIdx].lectures = updatedCourses[courseIdx].lectures.filter(
-          (lecture) => lecture._id !== lectureData._id
-        );
+        updatedCourses[courseIdx].lectures = updatedCourses[
+          courseIdx
+        ].lectures.filter((lecture) => lecture._id !== lectureData._id);
         return { ...state, courses: updatedCourses };
       });
       console.error('Failed to add lecture', e);
@@ -137,17 +135,17 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   deleteLecture: async (courseId: string, lectureId: string) => {
     // Optimistically update UI
     set((state) => {
-      const courseIdx = state.courses.findIndex(c => c._id === courseId);
+      const courseIdx = state.courses.findIndex((c) => c._id === courseId);
       if (courseIdx === -1) return state;
       const updatedCourses = [...state.courses];
-      updatedCourses[courseIdx].lectures = updatedCourses[courseIdx].lectures.filter(
-        (lecture) => lecture._id !== lectureId
-      );
+      updatedCourses[courseIdx].lectures = updatedCourses[
+        courseIdx
+      ].lectures.filter((lecture) => lecture._id !== lectureId);
       return { ...state, courses: updatedCourses };
     });
 
     try {
-      if(!get().api) {
+      if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
 
@@ -155,7 +153,7 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     } catch (e) {
       // Rollback optimistic update
       set((state) => {
-        const courseIdx = state.courses.findIndex(c => c._id === courseId);
+        const courseIdx = state.courses.findIndex((c) => c._id === courseId);
         if (courseIdx === -1) return state;
         const updatedCourses = [...state.courses];
         updatedCourses[courseIdx].lectures.push({ _id: lectureId } as Lecture); // Add back the deleted lecture
@@ -167,4 +165,24 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   setCourses: (courses) => set({ courses }),
   setActiveCourse: (courseId) => set({ activeCourseId: courseId }),
   setActiveLecture: (lectureId) => set({ activeLectureId: lectureId }),
+  addCourse: async (courseData: Partial<Course>) => {
+    try {
+      if (!get().api) {
+        throw new Error('API not initialized. Please call initState first.');
+      }
+      const created = await get().api!.post<Course>(
+        '/courses-service/courses',
+        {
+          ...courseData,
+          userId: MOCK_USER_ID,
+        }
+      );
+      set((state) => ({
+        courses: [...state.courses, created],
+      }));
+    } catch (e) {
+      console.error('Failed to add course', e);
+      // Optionally, set error state here
+    }
+  },
 }));

@@ -4,8 +4,15 @@ import { useCoursesStore } from '@/state/CoursesStore';
 import { useState } from 'react';
 
 const CoursesManagerPage = () => {
-  const { courses, setCourses, isLoading, error, addLecture, deleteLecture } =
-    useCoursesStore();
+  const {
+    courses,
+    setCourses,
+    isLoading,
+    error,
+    addLecture,
+    deleteLecture,
+    addCourse,
+  } = useCoursesStore();
 
   const [currentCourse, setCurrentCourse] = useState<string>('');
   const [lectureTitles, setLectureTitles] = useState<{ [key: number]: string }>(
@@ -17,12 +24,16 @@ const CoursesManagerPage = () => {
   const isAdmin = true; // Will come from auth context
 
   const filteredCourses = courses.filter(
-    (course) => isAdmin || course.lecturer._id === mockLecturerId
+    (course) => isAdmin || course.lecturer.find(lecturerId => lecturerId === mockLecturerId)
   );
 
-  const handleAddCourse = (): void => {
+  const handleAddCourse = async (): Promise<void> => {
     if (currentCourse.trim() && isAdmin) {
-      setCourses([...courses]);
+      await addCourse({
+        name: currentCourse.trim(),
+        lecturer: [ mockLecturerId], // adjust as needed
+        lectures: [],
+      });
       setCurrentCourse('');
     }
   };

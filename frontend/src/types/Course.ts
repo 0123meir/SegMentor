@@ -16,6 +16,6 @@ export interface Course {
   _id: string;
   name: string;
   lectures: Partial<Lecture>[];
-  lecturer: Lecturer;
+  lecturer: Partial<string>[];
   watchedLectures: string[];
 }
