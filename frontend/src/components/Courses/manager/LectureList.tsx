@@ -2,7 +2,7 @@ import { Lecture } from '@/types/Course';
 import React from 'react';
 
 interface LectureListProps {
-  lectures: Lecture[];
+  lectures: Partial<Lecture>[];
   onEdit: (courseIndex: number, lectureIndex: number) => void;
   onDelete: (courseIndex: number, lectureIndex: number) => void;
   courseIndex: number;
@@ -18,7 +18,7 @@ const LectureList: React.FC<LectureListProps> = ({
     {lectures.length > 0 ? (
       lectures.map((lecture, lectureIndex) => (
         <li
-          key={lecture._id}
+          key={`${lecture._id}-${lectureIndex}`}
           className="flex items-center p-3 border-b border-gray-200 last:border-b-0"
         >
           <span className="flex-1">{lecture.title}</span>

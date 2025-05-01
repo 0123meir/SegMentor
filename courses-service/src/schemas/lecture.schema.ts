@@ -6,13 +6,13 @@ export class Lecture extends Document {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true })
+  @Prop()
   description: string;
 
-  @Prop({ required: true })
-  duration: number;
+  @Prop()
+  duration: string;
 
-  @Prop({ required: true })
+  @Prop()
   videoUrl: string;
 }
 

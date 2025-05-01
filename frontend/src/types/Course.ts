@@ -1,7 +1,10 @@
 export interface Lecture {
   _id: string;
-  title: string;
   date: string;
+  title: string;
+  description: string;
+  duration: string;
+  videoUrl: string;
 }
 
 export interface Lecturer {
@@ -12,7 +15,7 @@ export interface Lecturer {
 export interface Course {
   _id: string;
   name: string;
-  lectures: Lecture[];
+  lectures: Partial<Lecture>[];
   lecturer: Lecturer;
   watchedLectures: string[];
 }

@@ -4,7 +4,8 @@ import { useCoursesStore } from '@/state/CoursesStore';
 import { useState } from 'react';
 
 const CoursesManagerPage = () => {
-  const { courses, setCourses, isLoading, error } = useCoursesStore();
+  const { courses, setCourses, isLoading, error, addLecture, deleteLecture } =
+    useCoursesStore();
 
   const [currentCourse, setCurrentCourse] = useState<string>('');
   const [lectureTitles, setLectureTitles] = useState<{ [key: number]: string }>(
@@ -36,14 +37,13 @@ const CoursesManagerPage = () => {
   const handleAddLecture = (courseIndex: number): void => {
     const title = lectureTitles[courseIndex];
     if (title?.trim()) {
-      const updatedCourses = [...courses];
-      updatedCourses[courseIndex].lectures.push({
-        _id: Date.now().toString(),
-        title: title,
-        date: new Date().toISOString(),
+      const courseId = courses[courseIndex]._id;
+      addLecture(courseId, {
+        title,
+        description: '',
+        duration: '',
+        videoUrl: '',
       });
-      setCourses(updatedCourses);
-      // Clear just this course's lecture title
       setLectureTitles((prev) => ({
         ...prev,
         [courseIndex]: '',
@@ -69,9 +69,10 @@ const CoursesManagerPage = () => {
     lectureIndex: number
   ): void => {
     if (window.confirm('Are you sure you want to delete this lecture?')) {
-      const updatedCourses = [...courses];
-      updatedCourses[courseIndex].lectures.splice(lectureIndex, 1);
-      setCourses(updatedCourses);
+      deleteLecture(
+        courses[courseIndex]._id,
+        courses[courseIndex].lectures[lectureIndex]._id!
+      );
     }
   };
 

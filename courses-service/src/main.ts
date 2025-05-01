@@ -11,9 +11,6 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
 
-  // Set up global validation
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-
   // Set up Swagger
   // const config = new DocumentBuilder()
   //   .setTitle('SegMentor Courses API')

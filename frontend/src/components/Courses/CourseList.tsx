@@ -31,12 +31,12 @@ export const CourseList = () => {
     if (!lecture) return;
 
     // set the lecture as active
-    setActiveLecture(lecture._id);
+  setActiveLecture(lecture._id!);
 
     // TODO: navigate to the lecture
 
     // Delegate to hook for optimistic update and API call
-    await markLectureWatched(courseId, lecture._id);
+    await markLectureWatched(courseId, lecture._id!);
   };
 
   if (isLoading) {

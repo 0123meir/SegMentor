@@ -81,12 +81,12 @@ export const CourseItem = ({
                       : 'text-gray-700'
                   }
                 `}
-                style={{ direction: detectTextDirection(lecture.title) }}
+                style={{ direction: detectTextDirection(lecture.title!) }}
               >
                 <div className="flex items-center justify-between cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">
                   <span>{lecture.title}</span>
-                  {!course.watchedLectures?.includes(lecture._id) && (
-                    <FaCircle className="text-blue-500 w-3 h-3" />
+                  {!course.watchedLectures?.includes(lecture._id!) && (
+                  <FaCircle className="text-blue-500" style={{ width: '12px', height: '12px' }} />
                   )}
                 </div>
               </li>
