@@ -1,5 +1,8 @@
+import { UseApiType } from '@/hooks/useApi';
 import { Course } from '@/types/Course';
 import { create } from 'zustand';
+
+const MOCK_USER_ID = '661e1c2f9b1e8a001f0e1234';
 
 interface CoursesState {
   courses: Course[];
@@ -7,31 +10,89 @@ interface CoursesState {
   activeLectureId: string | null;
   isLoading: boolean;
   error: string | null;
-  fetchCourses: (fetchFn: () => Promise<Course[]>) => Promise<void>;
+  api:  null | UseApiType;
+  initState: (api: UseApiType) => void;
+  fetchCourses: () => Promise<void>;
+  markLectureWatched: (
+    courseId: string,
+    lectureId: string
+  ) => Promise<void>;
   setCourses: (courses: Course[]) => void;
   setActiveCourse: (courseId: string) => void;
   setActiveLecture: (lectureId: string) => void;
 }
 
-export const useCoursesStore = create<CoursesState>((set) => ({
+export const useCoursesStore = create<CoursesState>((set, get) => ({
   courses: [],
   activeCourseId: null,
   activeLectureId: null,
   isLoading: false,
   error: null,
-  fetchCourses: async (fetchFn) => {
+  api: null,
+  initState: (api) => set({ api }),
+  fetchCourses: async () => {
     set({ isLoading: true, error: null });
     try {
-      const courses = await fetchFn();
-      set({ courses, isLoading: false });
-    } catch (error) {
-      set({
-        error:
-          error instanceof Error
-            ? error.message
-            : "Error: couldn't get courses, if this persists, please contact your administrator",
-        isLoading: false,
+      if(!get().api) {
+        throw new Error('API not initialized. Please call initState first.');
+      }
+      
+      const data = await get().api!.get<Course[]>(
+        `/courses-service/courses?userId=${MOCK_USER_ID}`
+      );
+      set({ courses: data, isLoading: false });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Error: couldn't get courses, if this persists, please contact your administrator";
+      set({ error: errorMessage, courses: [], isLoading: false });
+      console.error('Error fetching courses:', errorMessage);
+    }
+  },
+  markLectureWatched: async (courseId, lectureId) => {
+    if(!get().api) {
+      throw new Error('API not initialized. Please call initState first.');
+    }
+
+    const { courses } = get();
+    const course = courses.find((c) => c._id === courseId);
+    if (!course) return;
+    if (course.watchedLectures?.includes(lectureId)) return;
+
+    // Optimistic update
+    set({
+      courses: courses.map((c) =>
+        c._id === courseId
+          ? {
+              ...c,
+              watchedLectures: [...(c.watchedLectures || []), lectureId],
+            }
+          : c
+      ),
+    });
+
+    try {
+      await get().api!.post('/courses-service/watched-lectures', {
+        userId: MOCK_USER_ID,
+        courseId,
+        lectureId,
       });
+    } catch (err) {
+      // Rollback on error
+      set({
+        courses: courses.map((c) =>
+          c._id === courseId
+            ? {
+                ...c,
+                watchedLectures: (c.watchedLectures || []).filter(
+                  (id: string) => id !== lectureId
+                ),
+              }
+            : c
+        ),
+      });
+      console.error('Failed to mark lecture as watched', err);
     }
   },
   setCourses: (courses) => set({ courses }),

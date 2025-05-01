@@ -1,26 +1,15 @@
 import AddCourseForm from '@/components/courses/manager/AddCourseForm';
 import CourseCard from '@/components/courses/manager/CourseCard';
-import { useCourses } from '@/hooks/useCourses';
 import { useCoursesStore } from '@/state/CoursesStore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const CoursesManagerPage = () => {
-  const { courses, fetchCourses } = useCourses();
-  const { setCourses } = useCoursesStore();
+  const { courses, setCourses, isLoading, error } = useCoursesStore();
 
   const [currentCourse, setCurrentCourse] = useState<string>('');
   const [lectureTitles, setLectureTitles] = useState<{ [key: number]: string }>(
     {}
   );
-
-  useEffect(() => {
-    //this is not good at all, but it works for now I need to change the whole behavior of hook and store
-    fetchCourses();
-  }, []);
-
-  useEffect(() => {
-    setCourses(courses);
-  }, []);
 
   // TODO: Replace with actual auth
   const mockLecturerId = '68037dda1cf98a948e07e10f';
@@ -86,6 +75,20 @@ const CoursesManagerPage = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-gray-600">
+        Loading courses...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-red-600">
+        {error}
+      </div>
+    );
+  }
   return (
     <div className="max-w-[1200px] mx-auto p-8" dir="ltr">
       {isAdmin && (

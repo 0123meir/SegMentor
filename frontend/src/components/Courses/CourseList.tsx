@@ -1,32 +1,23 @@
-import { useCourses } from '@/hooks/useCourses';
 import { useCoursesStore } from '@/state/CoursesStore';
 import { Course } from '@/types/Course';
-import { useEffect } from 'react';
 import { BiBook } from 'react-icons/bi';
 
 import { detectTextDirection } from '../../utils/detectTextDirection';
 import { CourseItem } from './sidebar/CourseItem';
 
 export const CourseList = () => {
-  const { courses, isLoading, error, fetchCourses, markLectureWatched } =
-    useCourses();
   const {
+    courses,
+    isLoading,
+    error,
+    markLectureWatched,
     activeCourseId,
     activeLectureId,
-    setCourses,
     setActiveCourse,
     setActiveLecture,
   } = useCoursesStore();
 
   const sectionName = 'My Courses';
-
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  useEffect(() => {
-    setCourses(courses);
-  }, []);
 
   const handleCourseClick = (course: Course) => {
     setActiveCourse(course._id);

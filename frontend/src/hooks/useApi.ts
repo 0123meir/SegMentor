@@ -85,3 +85,5 @@ export const useApi = () => {
     delete: delete_,
   };
 };
+
+export type UseApiType = ReturnType<typeof useApi>;

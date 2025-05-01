@@ -1,14 +1,24 @@
+import { useEffect } from 'react';
 import {
   Navigate,
   Route,
   BrowserRouter as Router,
   Routes,
-} from "react-router-dom";
+} from 'react-router-dom';
 
-import CoursesManagerPage from "./pages/CoursesMangerPage";
-import { WatchLecturePage } from "./pages/WatchLecturePage";
+import { useApi } from './hooks/useApi';
+import CoursesManagerPage from './pages/CoursesMangerPage';
+import { WatchLecturePage } from './pages/WatchLecturePage';
+import { useCoursesStore } from './state/CoursesStore';
 
 const App = () => {
+  const { fetchCourses, initState } = useCoursesStore();
+  const api = useApi();
+
+  useEffect(() => {
+    initState(api)
+    fetchCourses();
+  }, []);
 
   return (
     <div>
