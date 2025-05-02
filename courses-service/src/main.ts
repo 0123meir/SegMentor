@@ -11,19 +11,6 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
 
-  // Set up Swagger
-  // const config = new DocumentBuilder()
-  //   .setTitle('SegMentor Courses API')
-  //   .setDescription('API for managing courses, lectures, and lecturers')
-  //   .setVersion('1.0')
-  //   .addTag('courses')
-  //   .addTag('lectures')
-  //   .addTag('lecturers')
-  //   .build();
-
-  // const document = SwaggerModule.createDocument(app, config);
-  // SwaggerModule.setup('api', app, document);
-
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
