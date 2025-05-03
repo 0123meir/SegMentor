@@ -9,6 +9,7 @@ import { TranscriptionsModule } from './modules/transcriptions/transcriptions.mo
 import { s3DalConfig } from './config/s3-dal.config';
 import { KafkaModule } from './modules/kafka/kafka.module';
 import { VideoSegmentationConsumer } from './modules/kafka/video-segmentation.consumer';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { VideoSegmentationConsumer } from './modules/kafka/video-segmentation.co
       isGlobal: true,
       load: [appConfig, openAIConfig, s3DalConfig],
     }),
+    MongooseModule.forRoot(`${process.env.MONGO_URL}`),
     TranscriptionsModule,
     SegmentsModule,
     KafkaModule,

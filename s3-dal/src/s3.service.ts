@@ -43,7 +43,7 @@ export class S3Service {
     bucket: S3Bucket,
     fileId: string,
     fileType: FileType,
-  ): Promise<string> {
+  ): Promise<Buffer> {
     try {
       const fileKey = `${fileId}${fileType.extension}`;
       const file = await this.s3Repository.getObject(bucket, fileKey);
@@ -58,8 +58,14 @@ export class S3Service {
           });
         };
 
-        return (await streamToBuffer(file.Body)).toString('utf-8');
+        return await streamToBuffer(file.Body);
       }
+
+      if (Buffer.isBuffer(file.Body)) {
+        return file.Body;
+      }
+
+      throw new Error('Unknown file body type');
     } catch (error) {
       throw new InternalServerErrorException({
         message: 'File retrieval failure',
