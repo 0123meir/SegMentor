@@ -18,7 +18,7 @@ export class VideoSegmentationConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.consumerService.consume(
-      { topics: ['video.to-segment'] },
+      { topics: [process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment'] },
       {
         eachMessage: async ({ message }) => {
           const { fileId } = JSON.parse(message.value.toString());

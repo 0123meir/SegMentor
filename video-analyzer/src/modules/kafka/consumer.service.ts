@@ -1,16 +1,15 @@
-import { Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import {
   Consumer,
   ConsumerRunConfig,
   ConsumerSubscribeTopics,
   Kafka,
 } from 'kafkajs';
+import { KAFKA_CLIENT } from './kafka-client.provider';
 
 @Injectable()
 export class ConsumerService implements OnApplicationShutdown {
-  private readonly kafka = new Kafka({
-    brokers: ['localhost:9092'],
-  });
+  constructor(@Inject(KAFKA_CLIENT) private readonly kafka: Kafka) {}
 
   private readonly consumers: Consumer[] = [];
 
