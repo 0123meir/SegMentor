@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Segment } from './segment';
 
 export type SegmentsDocument = Segments & Document;
 
@@ -8,17 +9,18 @@ export class Segments {
   @Prop({ required: true })
   fileId: string;
 
-  @Prop({ required: true })
-  start: string;
-
-  @Prop({ required: true })
-  end: string;
-
-  @Prop({ required: true })
-  title: string;
-
-  @Prop({ required: true })
-  summary: string;
+  @Prop({
+    type: [
+      {
+        start: { type: String, required: true },
+        end: { type: String, required: true },
+        title: { type: String, required: true },
+        summary: { type: String, required: true },
+      },
+    ],
+    required: true,
+  })
+  segments: Segment[];
 }
 
 export const SegmentsSchema = SchemaFactory.createForClass(Segments);

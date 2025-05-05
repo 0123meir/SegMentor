@@ -75,11 +75,11 @@ export class SegmentsService {
   ];
 
   async saveSegments(fileId: string, segments: Segment[]) {
-    const docs = segments.map((segment) => ({
-      ...segment,
+    const doc = {
       fileId,
-    }));
-
-    return this.segmentsModel.insertMany(docs);
+      segments,
+    };
+  
+    return this.segmentsModel.create(doc);
   }
 }
