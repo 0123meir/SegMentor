@@ -29,7 +29,7 @@ export class VideoInitializerService implements OnModuleInit {
 
           try {
             await this.audioUploadRepository.uploadFileToS3(mp3Output);
-            // uplaod fileId to the kafka topic
+            await this.audioUploadRepository.uploadFileIdToKafka(fileId);
             resolve();
           } catch (error) {
             reject(error);
