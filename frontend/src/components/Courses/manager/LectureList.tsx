@@ -1,5 +1,4 @@
 import { Lecture } from '@/types/Course';
-import React from 'react';
 
 interface LectureListProps {
   lectures: Partial<Lecture>[];
@@ -8,12 +7,12 @@ interface LectureListProps {
   courseIndex: number;
 }
 
-const LectureList: React.FC<LectureListProps> = ({
+const LectureList = ({
   lectures,
   onEdit,
   onDelete,
   courseIndex,
-}) => (
+}: LectureListProps) => (
   <ul className="list-none p-0">
     {lectures.length > 0 ? (
       lectures.map((lecture, lectureIndex) => (

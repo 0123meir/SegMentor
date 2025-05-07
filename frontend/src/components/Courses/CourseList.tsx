@@ -2,7 +2,7 @@ import { useCoursesStore } from '@/state/CoursesStore';
 import { Course } from '@/types/Course';
 import { BiBook } from 'react-icons/bi';
 
-import { detectTextDirection } from '../../utils/detectTextDirection';
+import { detectTextDirection } from '@/utils/detectTextDirection';
 import { CourseItem } from './sidebar/CourseItem';
 
 export const CourseList = () => {

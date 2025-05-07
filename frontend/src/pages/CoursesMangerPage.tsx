@@ -69,9 +69,8 @@ const CoursesManagerPage = () => {
     const lecture = courses[courseIndex].lectures[lectureIndex];
     const newTitle = prompt('Edit lecture title:', lecture.title);
     if (newTitle !== null) {
-      const updatedCourses = [...courses];
-      updatedCourses[courseIndex].lectures[lectureIndex].title = newTitle;
-      setCourses(updatedCourses);
+      courses[courseIndex].lectures[lectureIndex].title = newTitle;
+      setCourses(courses);
     }
   };
 
@@ -79,7 +78,7 @@ const CoursesManagerPage = () => {
     courseIndex: number,
     lectureIndex: number
   ): void => {
-    if (window.confirm('Are you sure you want to delete this lecture?')) {
+    if (window.confirm('Are you sure you want to delete this lecture?')) { //TODO: use a modal
       deleteLecture(
         courses[courseIndex]._id,
         courses[courseIndex].lectures[lectureIndex]._id!

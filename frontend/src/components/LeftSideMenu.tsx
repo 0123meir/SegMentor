@@ -30,7 +30,7 @@ export const LeftSideMenu = () => {
         }}
       >
         <div className="flex items-center justify-center h-full text-gray-600">
-          {isOpen ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}
+          {isOpen ? <FiChevronLeft size={'2rem'} /> : <FiChevronRight size={'2rem'} />}
         </div>
       </div>
     </div>

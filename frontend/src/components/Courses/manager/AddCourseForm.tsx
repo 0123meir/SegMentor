@@ -1,16 +1,16 @@
-import React from 'react';
+import { ChangeEvent } from "react";
 
 interface AddCourseFormProps {
   onAdd: () => void;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const AddCourseForm: React.FC<AddCourseFormProps> = ({
+const AddCourseForm = ({
   onAdd,
   value,
   onChange,
-}) => (
+}: AddCourseFormProps) => (
   <div className="bg-white p-6 rounded-lg shadow-md mb-8">
     <input
       type="text"

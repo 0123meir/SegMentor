@@ -31,7 +31,6 @@ export const useApi = () => {
 
         return await response.json();
       } catch (error) {
-        // Instead of throwing a new object, return a rejected promise
         return Promise.reject({
           message:
             error instanceof Error

@@ -1,5 +1,4 @@
 import { Course } from '@/types/Course';
-import React from 'react';
 
 import LectureList from './LectureList';
 
@@ -14,7 +13,7 @@ interface CourseCardProps {
   onDeleteLecture: (courseIndex: number, lectureIndex: number) => void;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({
+const CourseCard = ({
   course,
   courseIndex,
   isAdmin,
@@ -23,7 +22,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   onAddLecture,
   onEditLecture,
   onDeleteLecture,
-}) => (
+} :CourseCardProps) => (
   <div className="bg-white rounded-lg p-6 shadow-md">
     <h3 className="text-[#2c3e50] mb-4 text-xl font-semibold">{course.name}</h3>
     <button
