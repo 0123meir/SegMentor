@@ -27,10 +27,14 @@ export class SearchService {
     return matches;
   }
 
-  findMatches(content: string, prompt: string, fuzzy = false): SrtMatch[] {
+  findMatches(
+    content: string,
+    prompt: string,
+    perfectMatch = true,
+  ): SrtMatch[] {
     const entries = this.parseSrt(content);
 
-    if (!fuzzy) {
+    if (perfectMatch) {
       return entries.filter((entry) =>
         entry.text.toLowerCase().includes(prompt.toLowerCase()),
       );

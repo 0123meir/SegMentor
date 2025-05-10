@@ -22,8 +22,8 @@ export class SearchController {
   @Get('/search/:fileId')
   async searchSrt(
     @Param('fileId') fileId: string,
-    @Query('q') prompt: string,
-    @Query('fuzzy') fuzzy: true,
+    @Query('prompt') prompt: string,
+    @Query('perfectMatch') perfectMatch: true,
     @Res() res: Response,
   ) {
     try {
@@ -31,7 +31,11 @@ export class SearchController {
         this.s3DalHttpService.get<string>(`/srt/${fileId}`),
       );
       const content = fileContent?.toString() || '';
-      const matches = this.searchService.findMatches(content, prompt, fuzzy);
+      const matches = this.searchService.findMatches(
+        content,
+        prompt,
+        perfectMatch,
+      );
       res.json(matches);
     } catch (error) {
       throw new HttpException(
