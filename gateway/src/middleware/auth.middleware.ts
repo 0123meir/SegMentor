@@ -1,15 +1,18 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  NestMiddleware,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { PERMISSIONS_URL } from '../routes-constants';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly httpService: HttpService) {}
+  constructor() {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const excludedRoutes = ['/users/login', '/users/create'];
+    const excludedRoutes = ['/users/login', '/users'];
 
     if (excludedRoutes.includes(req.path)) {
       return next();
@@ -24,13 +27,12 @@ export class AuthMiddleware implements NestMiddleware {
     }
 
     try {
-      const response = await firstValueFrom(
-        this.httpService.post(`${PERMISSIONS_URL}/auth/validate`, { token }),
-      );
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || 'development_secret',
+      ) as { role: string };
 
-      const { role } = response.data;
-      req['role'] = role;
-
+      req['role'] = decoded.role;
       next();
     } catch (error) {
       throw new HttpException(

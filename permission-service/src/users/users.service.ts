@@ -11,17 +11,33 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async createUser(username: string, password: string): Promise<User> {
+  async register(
+    username: string,
+    password: string,
+  ): Promise<{ user: UserDocument; token: string }> {
+    console.log(username, password);
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({
       username,
       password: hashedPassword,
       role: 'student',
     });
-    return user.save();
+
+    const savedUser = await user.save();
+
+    const token = jwt.sign(
+      { id: savedUser._id, username: savedUser.username, role: savedUser.role },
+      process.env.JWT_SECRET || 'development_secret',
+      { expiresIn: '24h' },
+    );
+
+    return { user: savedUser, token };
   }
 
-  async login(username: string, password: string): Promise<{ token: string }> {
+  async login(
+    username: string,
+    password: string,
+  ): Promise<{ user: UserDocument; token: string }> {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');
@@ -35,9 +51,9 @@ export class UsersService {
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET || 'development_secret',
-      { expiresIn: '1h' },
+      { expiresIn: '24h' },
     );
 
-    return { token };
+    return { user, token };
   }
 }
