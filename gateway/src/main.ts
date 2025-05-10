@@ -11,6 +11,7 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use('/courses-service', coursesProxy);
 
   await app.listen(process.env.PORT ?? 4000);

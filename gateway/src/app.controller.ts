@@ -4,31 +4,34 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { PERMISSIONS_URL } from './routes-constants';
+import { CreateUserDto } from './dto/create-user.dts';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('users')
 export class AppController {
   constructor(private readonly httpService: HttpService) {}
 
-  @Post('create')
-  async createUser(
-    @Body('username') username: string,
-    @Body('password') password: string,
-    @Body('role') role: string,
-  ) {
+  @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async createUser(@Body() createUserDto: CreateUserDto) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${PERMISSIONS_URL}/users/create`, {
-          username,
-          password,
-          role,
+        this.httpService.post(`${PERMISSIONS_URL}/users`, {
+          username: createUserDto.username,
+          password: createUserDto.password,
         }),
       );
 
-      return response.data;
+      const { user, token } = response.data;
+      const { password, ...filteredUser } = user;
+
+      return { user: filteredUser, token };
     } catch (error) {
       throw new HttpException(
         error.response?.data || 'Error communicating with permissions service',
@@ -38,19 +41,20 @@ export class AppController {
   }
 
   @Post('login')
-  async login(
-    @Body('username') username: string,
-    @Body('password') password: string,
-  ) {
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async login(@Body() loginUserDto: LoginUserDto) {
     try {
       const response = await firstValueFrom(
         this.httpService.post(`${PERMISSIONS_URL}/users/login`, {
-          username,
-          password,
+          username: loginUserDto.username,
+          password: loginUserDto.password,
         }),
       );
 
-      return response.data;
+      const { user, token } = response.data;
+      const { password, ...filteredUser } = user;
+
+      return { user: filteredUser, token };
     } catch (error) {
       throw new HttpException(
         error.response?.data || 'Error communicating with permissions service',
