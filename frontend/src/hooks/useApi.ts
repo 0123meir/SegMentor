@@ -1,5 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from 'react';
+
+interface HttpError extends Error {
+  status?: number;
+}
 
 import { config } from '../config/config';
 
@@ -25,7 +28,7 @@ export const useApi = () => {
 
         if (!response.ok) {
           const error = new Error(`HTTP error! status: ${response.status}`);
-          (error as any).status = response.status;
+          (error as HttpError).status = response.status;
           throw error;
         }
 
@@ -38,7 +41,7 @@ export const useApi = () => {
               : 'An unknown error occurred',
           status:
             error instanceof Error && 'status' in error
-              ? (error as any).status
+              ? (error as HttpError).status
               : 500,
         } as ApiError);
       }
