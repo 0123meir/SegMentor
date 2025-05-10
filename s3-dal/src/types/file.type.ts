@@ -13,6 +13,10 @@ export const FileType = {
     extension: '.json',
     mimeTypes: ['application/json'],
   },
+  MP4: {
+    extension: '.mp4',
+    mimeTypes: ['video/mp4'],
+  },
 } as const satisfies Record<
   string,
   {
