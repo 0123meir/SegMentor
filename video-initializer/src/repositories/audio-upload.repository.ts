@@ -8,13 +8,16 @@ import { ProducerService } from '../kafka/producer.service';
 export class AudioUploadRepository {
   constructor(private readonly producerService: ProducerService) {}
 
-  async uploadFileToS3(mp3Output: string): Promise<void> {
+  async uploadFileToS3(
+    filePath: string,
+    fileType: 'audio' | 'video',
+  ): Promise<void> {
     const formData = new FormData();
-    formData.append('file', fs.createReadStream(mp3Output));
+    formData.append('file', fs.createReadStream(filePath));
 
     try {
       const response = await axios.post(
-        `${process.env.UPLOAD_FILE_S3_URL}/audio`,
+        `${process.env.UPLOAD_FILE_S3_URL}/${fileType}`,
         formData,
         {
           headers: formData.getHeaders(),
