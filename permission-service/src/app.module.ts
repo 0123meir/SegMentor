@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { ConfigModule } from '@nestjs/config';
+import { VideoController } from './auth/video-auth.controller';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { ConfigModule } from '@nestjs/config';
     ),
     UsersModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, VideoController],
 })
 export class AppModule {}
