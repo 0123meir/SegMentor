@@ -1,18 +1,40 @@
-import { AIAssistant } from "@/components/AIAssistant";
-import { Collections } from "@/components/Collections";
-import LecturePlayer from "@/components/LecturePlayer";
+import { useEffect } from 'react';
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import WatchLecturePage  from "@/pages/WatchLecturePage";
+import CoursesManagerPage from "@/pages/CoursesMangerPage";
+
+import LoginPage from '@/components/LoginPage.tsx';
+import RegisterPage from '@/components/RegisterPage.tsx';
+import ProtectedRoute from '@/components/ProtectedRoute.tsx';
+import { useApi } from './hooks/useApi';
+import { useCoursesStore } from './state/CoursesStore';
 
 const App = () => {
+    const { fetchCourses, initState } = useCoursesStore();
+  const api = useApi();
+
+  useEffect(() => {
+    initState(api)
+    fetchCourses();
+  }, []);
+
   return (
-    <div className="flex h-screen">
-      <div className="flex flex-col flex-grow">
-       <LecturePlayer/>
-
-        <AIAssistant/>
-      </div>
-
-      <Collections/>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/courses-manager" element={<CoursesManagerPage />} />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <WatchLecturePage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 };
 
