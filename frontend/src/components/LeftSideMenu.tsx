@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-import { CourseList } from './courses/CourseList';
+import { CourseList } from './Courses/sidebar/CourseList';
 
 export const LeftSideMenu = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -30,7 +30,11 @@ export const LeftSideMenu = () => {
         }}
       >
         <div className="flex items-center justify-center h-full text-gray-600">
-          {isOpen ? <FiChevronLeft size={'2rem'} /> : <FiChevronRight size={'2rem'} />}
+          {isOpen ? (
+            <FiChevronLeft size={'2rem'} />
+          ) : (
+            <FiChevronRight size={'2rem'} />
+          )}
         </div>
       </div>
     </div>
