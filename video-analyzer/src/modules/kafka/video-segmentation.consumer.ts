@@ -18,7 +18,11 @@ export class VideoSegmentationConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.consumerService.consume(
-      { topics: [process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment'] },
+      {
+        topics: [
+          process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment',
+        ],
+      },
       {
         eachMessage: async ({ message }) => {
           const { fileId } = JSON.parse(message.value.toString());
@@ -53,9 +57,13 @@ export class VideoSegmentationConsumer implements OnModuleInit {
               fileId,
               mp3BufferFile,
             );
-            
-            await this.segmentService.saveSegments(fileId, segments["segments"]);
+
+            await this.segmentService.saveSegments(
+              fileId,
+              segments['segments'],
+            );
             this.logger.log(`Segments saved in database for fileId ${fileId}`);
+            await this.segmentService.updateLectureStatus(fileId);
           } catch (error) {
             this.logger.error(
               `Failed to fetch MP3 for fileId ${fileId}: ${error.message}`,

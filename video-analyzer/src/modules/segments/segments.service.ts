@@ -18,6 +18,7 @@ import { getSystemPromptText } from './utils/get-system-prompt-text';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Segments, SegmentsDocument } from './types/segments.schema';
+import axios from 'axios';
 
 @Injectable()
 export class SegmentsService {
@@ -79,7 +80,26 @@ export class SegmentsService {
       fileId,
       segments,
     };
-  
+
     return this.segmentsModel.create(doc);
+  }
+
+  async updateLectureStatus(fileId: string) {
+    try {
+      await axios.put(`${process.env.LECTURE_SERVICE_URL}/lectures/${fileId}`, {
+        status: 'Done',
+        // need to change it to Asaf's url
+        videoUrl: `https://eu-north-1.console.aws.amazon.com/s3/buckets/segmentor-raw-video/${fileId}`,
+      });
+      this.logger.log(
+        `Lecture updated with status and video URL for fileId ${fileId}`,
+      );
+    } catch (error) {
+      this.logger.error({
+        message: 'failed updating lecture status and video url',
+        fileId,
+        error,
+      });
+    }
   }
 }
