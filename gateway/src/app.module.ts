@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { HttpModule } from '@nestjs/axios';
-import { AuthMiddleware } from './middlewares/auth.middleware';
+import { AuthMiddleware } from './middleware/auth.middleware';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -19,6 +19,6 @@ export class AppModule {
     consumer
       .apply(AuthMiddleware)
       .exclude('/users/login', '/users')
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes('*');
   }
 }

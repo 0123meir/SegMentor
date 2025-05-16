@@ -28,8 +28,9 @@ export class VideoInitializerService implements OnModuleInit {
           Logger.log('MP3 extraction complete:', mp3Output);
 
           try {
-            await this.audioUploadRepository.uploadFileToS3(mp3Output);
-            // uplaod fileId to the kafka topic
+            await this.audioUploadRepository.uploadFileToS3(inputPath, 'video');
+            await this.audioUploadRepository.uploadFileToS3(mp3Output, 'audio');
+            await this.audioUploadRepository.uploadFileIdToKafka(fileId);
             resolve();
           } catch (error) {
             reject(error);

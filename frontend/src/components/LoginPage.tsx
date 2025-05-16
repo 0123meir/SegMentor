@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
-import useAuthStore from '@/stores/AuthStore.tsx';
+import useAuthStore from '@/state/AuthStore.tsx';
 import { GATEWAY_URL } from '@/globals/urls.tsx';
 import Cookies from 'js-cookie';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);

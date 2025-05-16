@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import WatchLecturePage  from "@/pages/WatchLecturePage";
 import CoursesManagerPage from "@/pages/CoursesMangerPage";
 
@@ -22,14 +22,14 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/courses-manager" element={<CoursesManagerPage />} />
         <Route
           path="/home"
           element={
             <ProtectedRoute>
-              <WatchLecturePage />
+              <CoursesManagerPage />
             </ProtectedRoute>
           }
         />
