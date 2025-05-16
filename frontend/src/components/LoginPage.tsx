@@ -17,10 +17,13 @@ const LoginPage = () => {
 
     try {
       const LOGIN_URL = `${GATEWAY_URL}/users/login`;
-      const response: AxiosResponse<{token: string}> = await axios.post(LOGIN_URL, { username: username, password: password });
+      const response: AxiosResponse<{token: string, user: {_id: string, role: string, username: string}}> =
+        await axios.post(LOGIN_URL, { username: username, password: password });
 
       useAuthStore.getState().setToken(response.data.token);
+      useAuthStore.getState().setUser(response.data.user);
       Cookies.set('authToken', useAuthStore.getState().token, { expires: 7, secure: true, sameSite: 'strict' });
+
       navigate('/home');
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
