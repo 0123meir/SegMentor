@@ -56,4 +56,17 @@ export class UsersService {
 
     return { user, token };
   }
+
+  async updateUserRole(username: string, role: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ username });
+    if (!user) return false;
+
+    user.role = role;
+    await user.save();
+    return true;
+  }
+
+  async findByUsername(username: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ username }).exec();
+  }
 }
