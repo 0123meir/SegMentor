@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import useAuthStore from '@/state/AuthStore.tsx';
 import { GATEWAY_URL } from '@/globals/urls.tsx';
 import Cookies from 'js-cookie';
 import { FormEvent } from 'react'
 
-const RegisterPage: React.FC = () => {
+const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,9 +24,13 @@ const RegisterPage: React.FC = () => {
 
     try {
       const REGISTER_URL = `${GATEWAY_URL}/users`;
-      const response = await axios.post(REGISTER_URL, { username, password });
+      const response: AxiosResponse<{token: string, user: {_id: string, role: string, username: string}}> =
+        await axios.post(REGISTER_URL, { username, password });
+
       useAuthStore.getState().setToken(response.data.token);
+      useAuthStore.getState().setUser(response.data.user);
       Cookies.set('authToken', useAuthStore.getState().token, { expires: 7, secure: true, sameSite: 'strict' });
+
       navigate('/home');
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
