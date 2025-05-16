@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import useAuthStore from '@/stores/AuthStore.tsx';
+import useAuthStore from '@/state/AuthStore.tsx';
 import { GATEWAY_URL } from '@/globals/urls.tsx';
 import Cookies from 'js-cookie';
+import { FormEvent } from 'react'
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
