@@ -24,7 +24,7 @@ const RegisterPage = () => {
 
     try {
       const REGISTER_URL = `${GATEWAY_URL}/users`;
-      const response: AxiosResponse<{token: string, user: {_id: string, role: string, username: string}}> =
+      const response: AxiosResponse<{token: string, user: {id: string, role: string, username: string}}> =
         await axios.post(REGISTER_URL, { username, password });
 
       useAuthStore.getState().setToken(response.data.token);

@@ -6,11 +6,11 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
-  SetMetadata, Req
+  SetMetadata,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserDocument } from '../schemas/user.schema';
 import { RolesGuard } from './roles.guards';
+import { UserType } from './UserType';
 
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
@@ -22,7 +22,7 @@ export class UsersController {
   async createUser(
     @Body('username') username: string,
     @Body('password') password: string,
-  ): Promise<{ user: UserDocument; token: string }> {
+  ): Promise<{ user: UserType; token: string }> {
     return this.usersService.register(username, password);
   }
 
@@ -30,7 +30,7 @@ export class UsersController {
   async login(
     @Body('username') username: string,
     @Body('password') password: string,
-  ): Promise<{ user: UserDocument; token: string }> {
+  ): Promise<{ user: UserType; token: string }> {
     return this.usersService.login(username, password);
   }
 
