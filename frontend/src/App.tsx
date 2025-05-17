@@ -29,6 +29,14 @@ const App = () => {
           path="/home"
           element={
             <ProtectedRoute>
+              <WatchLecturePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses-manager"
+          element={
+            <ProtectedRoute>
               <CoursesManagerPage />
             </ProtectedRoute>
           }

@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { HttpModule } from '@nestjs/axios';
-import { AuthMiddleware } from './middleware/auth.middleware';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
