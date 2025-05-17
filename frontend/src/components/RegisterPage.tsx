@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 import useAuthStore from '@/state/AuthStore.tsx';
@@ -12,6 +12,13 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = Cookies.get('authToken');
+    if (token) {
+      navigate('/home');
+    }
+  }, [navigate]);
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();

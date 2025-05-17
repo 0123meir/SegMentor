@@ -1,18 +1,21 @@
 import {
   Controller,
+  Get,
   Post,
   Patch,
   Body,
   HttpException,
   HttpStatus,
   UsePipes,
-  ValidationPipe, Req
+  ValidationPipe,
+  Req,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { PERMISSIONS_URL } from './routes-constants';
 import { CreateUserDto } from './dto/create-user.dts';
 import { LoginUserDto } from './dto/login-user.dto';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('users')
 export class AppController {
@@ -60,6 +63,43 @@ export class AppController {
       throw new HttpException(
         error.response?.data || 'Error communicating with permissions service',
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('me')
+  async getMe(
+    @Req() req: any,
+  ): Promise<{ id: string; username: string; role: string }> {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      throw new HttpException(
+        'Authorization header missing',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      throw new HttpException('Token missing', HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || 'development_secret',
+      ) as {
+        id: string;
+        username: string;
+        role: string;
+      };
+
+      const { id, username, role } = decoded;
+      return { id, username, role };
+    } catch (error) {
+      throw new HttpException(
+        'Invalid or expired token',
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }

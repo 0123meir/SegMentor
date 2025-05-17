@@ -16,6 +16,12 @@ export class UsersService {
     username: string,
     password: string,
   ): Promise<{ user: UserType; token: string }> {
+    const existingUser = await this.userModel.findOne({ username });
+
+    if (existingUser) {
+      throw new Error('Username is already registered');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({
       username,
