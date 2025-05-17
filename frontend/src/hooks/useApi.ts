@@ -5,6 +5,7 @@ interface HttpError extends Error {
 }
 
 import { config } from '../config/config';
+import Cookies from 'js-cookie';
 
 interface ApiError {
   message: string;
@@ -16,7 +17,7 @@ export const useApi = () => {
     async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
       const headers = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.MOCK_JWT}`, //TODO: replace with real JWT token
+        Authorization: `Bearer ${Cookies.get('authToken')}`,
         ...options?.headers,
       };
 

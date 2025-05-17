@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { HttpModule } from '@nestjs/axios';
 import { AuthMiddleware } from './middlewares/auth.middleware';

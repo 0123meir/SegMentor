@@ -1,11 +1,9 @@
 import { Course } from '@/types/Course';
-
 import LectureList from './LectureList';
 
 interface CourseCardProps {
   course: Course;
   courseIndex: number;
-  isAdmin: boolean;
   lectureTitle: string;
   setLectureTitle: (title: string) => void;
   onAddLecture: (courseIndex: number) => void;
@@ -16,7 +14,6 @@ interface CourseCardProps {
 const CourseCard = ({
   course,
   courseIndex,
-  isAdmin,
   lectureTitle,
   setLectureTitle,
   onAddLecture,
@@ -33,7 +30,7 @@ const CourseCard = ({
     >
       Upload New Lecture
     </button>
-    {isAdmin && (
+    
       <>
         <input
           type="text"
@@ -49,7 +46,7 @@ const CourseCard = ({
           Add Lecture
         </button>
       </>
-    )}
+    
     <LectureList
       lectures={course.lectures}
       onEdit={onEditLecture}
