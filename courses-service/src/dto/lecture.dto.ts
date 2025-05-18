@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsDateString,
-  IsOptional,
-  IsEnum,
-  IsNumber,
-} from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsEnum } from 'class-validator';
 
 export class CreateLectureDto {
   @IsString()
@@ -16,14 +10,6 @@ export class CreateLectureDto {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @IsOptional()
-  @IsNumber()
-  durationinMS?: number;
-
-  @IsOptional()
-  @IsString()
-  videoUrl?: string;
 
   @IsEnum(['In Progress', 'Done'])
   status: 'In Progress' | 'Done';
@@ -41,14 +27,6 @@ export class UpdateLectureDto {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @IsOptional()
-  @IsNumber()
-  durationinMS?: number;
-
-  @IsOptional()
-  @IsString()
-  videoUrl?: string;
 
   @IsOptional()
   @IsEnum(['In Progress', 'Done'])

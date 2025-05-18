@@ -14,9 +14,6 @@ export class Lecture extends Document {
   @Prop()
   duration?: number;
 
-  @Prop()
-  videoUrl?: string;
-
   @Prop({
     required: true,
     enum: ['In Progress', 'Done'],

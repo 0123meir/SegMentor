@@ -67,7 +67,7 @@ const CoursesManagerPage = () => {
       const courseId = courses![courseIndex]._id;
       addLecture(courseId, {
         title,
-        description: '',
+        description: '', //TODO: add description in uploud lecture popup
         duration: '',
         videoUrl: '',
       });
