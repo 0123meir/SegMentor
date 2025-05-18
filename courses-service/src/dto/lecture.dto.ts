@@ -1,11 +1,8 @@
-import { IsString, IsDateString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum } from 'class-validator';
 
 export class CreateLectureDto {
   @IsString()
   title: string;
-
-  @IsDateString()
-  date: string;
 
   @IsOptional()
   @IsString()
@@ -19,10 +16,6 @@ export class UpdateLectureDto {
   @IsOptional()
   @IsString()
   title?: string;
-
-  @IsOptional()
-  @IsDateString()
-  date?: string;
 
   @IsOptional()
   @IsString()

@@ -3,8 +3,11 @@ export interface Lecture {
   date: string;
   title: string;
   description: string;
-  duration: string;
-  videoUrl: string;
+}
+
+export interface LectureUpdate {
+  title: string;
+  description: string;
 }
 
 export interface Lecturer {

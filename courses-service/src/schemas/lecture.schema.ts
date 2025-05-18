@@ -8,11 +8,11 @@ export class Lecture extends Document {
   @Prop({ required: true })
   title: string;
 
-  @Prop()
-  description?: string;
+  @Prop({ required: false })
+  date: string;
 
   @Prop()
-  duration?: number;
+  description?: string;
 
   @Prop({
     required: true,

@@ -1,5 +1,10 @@
 import { UseApiType } from '@/hooks/useApi';
-import { Course, Lecture , AddCourseRequest} from '@/types/Course';
+import {
+  AddCourseRequest,
+  Course,
+  Lecture,
+  LectureUpdate,
+} from '@/types/Course';
 import { create } from 'zustand';
 
 interface CoursesState {
@@ -14,7 +19,7 @@ interface CoursesState {
   fetchCourses: () => Promise<void>;
   markLectureWatched: (courseId: string, lectureId: string) => Promise<void>;
   setCourses: (courses: Course[]) => void;
-  addLecture: (courseId: string, lectureData: Partial<Lecture>) => void;
+  addLecture: (courseId: string, lectureData: LectureUpdate) => void;
   deleteLecture: (courseId: string, lectureId: string) => void;
   setActiveCourse: (courseId: string) => void;
   setActiveLecture: (lectureId: string) => void;
@@ -96,56 +101,45 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     }
   },
   addLecture: async (courseId: string, lectureData: Partial<Lecture>) => {
-    // Optimistically update UI
-    set((state) => {
-      const courseIdx = state.courses?.findIndex((c) => c._id === courseId);
-      if (courseIdx === -1) return state;
-      if(!lectureData.title) {
-        throw new Error('Lecture title is required');
-      }
-      const newLecture: Lecture = {
-        _id: '',
-        date:  '',
-        title: lectureData.title!,
-        description: '',
-        duration: '',
-        videoUrl: '',
-      };
-      const updatedCourses = [...state.courses!];
-      updatedCourses[courseIdx!].lectures = [
-        ...updatedCourses[courseIdx!].lectures,
-        newLecture,
-      ];
-      return { ...state, courses: updatedCourses };
-    });
-
+    if (!lectureData.title) {
+      throw new Error('Lecture title is required');
+    }
     try {
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
 
-      await get().api!.post(`/courses-service/lectures`, {
-        ...lectureData,
-        courseId,
-      });
-    } catch (e) {
-      // Rollback optimistic update
+      // Call API to create lecture and get the full Lecture object
+      const createdLecture = await get().api!.post<Lecture>(
+        `/courses-service/lectures`,
+        {
+          ...lectureData,
+          courseId,
+        }
+      );
+
+      // Update state with the new lecture
       set((state) => {
-        const courseIdx = state.courses && state.courses.findIndex((c) => c._id === courseId);
-        if (courseIdx === -1) return state;
+        const courseIdx = state.courses?.findIndex((c) => c._id === courseId);
+        if (courseIdx === undefined || courseIdx === -1) return state;
         const updatedCourses = [...state.courses!];
-        updatedCourses[courseIdx!].lectures = updatedCourses[
-          courseIdx!
-        ].lectures.filter((lecture) => lecture._id !== lectureData._id);
+        updatedCourses[courseIdx].lectures = [
+          ...updatedCourses[courseIdx].lectures,
+          createdLecture,
+        ];
         return { ...state, courses: updatedCourses };
       });
+    } catch (e) {
       console.error('Failed to add lecture', e);
+
+      set({ error: 'Failed to add lecture' });
     }
   },
   deleteLecture: async (courseId: string, lectureId: string) => {
     // Optimistically update UI
     set((state) => {
-      const courseIdx = state.courses && state.courses.findIndex((c) => c._id === courseId);
+      const courseIdx =
+        state.courses && state.courses.findIndex((c) => c._id === courseId);
       if (courseIdx === -1) return state;
       const updatedCourses = [...state.courses!];
       updatedCourses[courseIdx!].lectures = updatedCourses[
@@ -163,7 +157,8 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     } catch (e) {
       // Rollback optimistic update
       set((state) => {
-        const courseIdx = state.courses && state.courses.findIndex((c) => c._id === courseId);
+        const courseIdx =
+          state.courses && state.courses.findIndex((c) => c._id === courseId);
         if (courseIdx === -1) return state;
         const updatedCourses = [...state.courses!];
         updatedCourses[courseIdx!].lectures.push({ _id: lectureId } as Lecture); // Add back the deleted lecture
