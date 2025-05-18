@@ -13,9 +13,7 @@ const WatchLecturePage = () => {
   const api = useApi();
 
   useEffect(() => {
-    console.log('watchLecture: ', token, user);
     if (token && user && !courses) {
-      console.log('watchLecture: inside if: ', token, user);
       initState(api, user.id);
       fetchCourses();
     }

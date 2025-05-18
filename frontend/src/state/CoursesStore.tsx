@@ -1,5 +1,5 @@
 import { UseApiType } from '@/hooks/useApi';
-import { Course, Lecture } from '@/types/Course';
+import { Course, Lecture , AddCourseRequest} from '@/types/Course';
 import { create } from 'zustand';
 
 interface CoursesState {
@@ -18,7 +18,7 @@ interface CoursesState {
   deleteLecture: (courseId: string, lectureId: string) => void;
   setActiveCourse: (courseId: string) => void;
   setActiveLecture: (lectureId: string) => void;
-  addCourse: (courseData: Partial<Course>) => Promise<void>;
+  addCourse: (courseData: AddCourseRequest) => Promise<void>;
 }
 
 export const useCoursesStore = create<CoursesState>((set, get) => ({
@@ -100,7 +100,17 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     set((state) => {
       const courseIdx = state.courses?.findIndex((c) => c._id === courseId);
       if (courseIdx === -1) return state;
-      const newLecture = { ...lectureData };
+      if(!lectureData.title) {
+        throw new Error('Lecture title is required');
+      }
+      const newLecture: Lecture = {
+        _id: '',
+        date:  '',
+        title: lectureData.title!,
+        description: '',
+        duration: '',
+        videoUrl: '',
+      };
       const updatedCourses = [...state.courses!];
       updatedCourses[courseIdx!].lectures = [
         ...updatedCourses[courseIdx!].lectures,
@@ -165,7 +175,7 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   setCourses: (courses) => set({ courses }),
   setActiveCourse: (courseId) => set({ activeCourseId: courseId }),
   setActiveLecture: (lectureId) => set({ activeLectureId: lectureId }),
-  addCourse: async (courseData: Partial<Course>) => {
+  addCourse: async (courseData: AddCourseRequest) => {
     try {
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
