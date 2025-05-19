@@ -1,48 +1,63 @@
-import { useFileUploader } from '@/hooks/useFileUploader';
+// import { useFileUploader } from '@/hooks/useFileUploader';
 import { useEffect, useState } from 'react';
 
-import FileDropZone from './FileDropZone';
-import UploadSnackbar from './UploadSnackbar';
+// import FileDropZone from './FileDropZone';
+// import UploadSnackbar from './UploadSnackbar';
 import VideoPlayer from './VideoPlayer';
+import { useCoursesStore } from '@/state/CoursesStore';
+import { useSegmentsStore } from '@/state/SegmentsStore';
+import useAuthStore from '@/stores/AuthStore';
 
 const LecturePlayer = () => {
-  const [videoFile, setVideoFile] = useState<File | null>(null);
+  // const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
+  const {activeLectureId} = useCoursesStore()
+  const {setSegments} = useSegmentsStore()
+  const {token} = useAuthStore();
 
-  const { uploadFile, uploadState } = useFileUploader();
+  // const { uploadFile, uploadState } = useFileUploader();
 
-  const handleFileUpload = (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
+  // const handleFileUpload = (acceptedFiles: File[]) => {
+  //   const file = acceptedFiles[0];
 
-    if (file.type.startsWith('video/') && !videoFile) {
-      setVideoFile(file);
-      setVideoUrl(URL.createObjectURL(file));
-    }
-  };
+  //   if (file.type.startsWith('video/') && !videoFile) {
+  //     setVideoFile(file);
+  //     setVideoUrl(URL.createObjectURL(file));
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (videoFile) {
+  //     console.log('start upload of ', videoFile);
+  //     uploadFile(videoFile);
+  //   }
+  // }, [videoFile]);
 
   useEffect(() => {
-    if (videoFile) {
-      console.log('start upload of ', videoFile);
-      uploadFile(videoFile);
-    }
-  }, [videoFile]);
+    const onActiveLectureChange = async () => {
+        setVideoUrl(`${import.meta.env}/${activeLectureId}.mp4`)
+        setSegments([])
+      }
+
+      onActiveLectureChange()
+  }, [activeLectureId, token, setSegments]);
 
   return (
     <div className="flex flex-grow m-2 gap-1" style={{ height: '80rem' }}>
-      {!videoFile && (
+      {/* {!videoFile && (
         <FileDropZone
           dropZoneOptions={{
             accept: { 'video/mp4': ['.mp4'] },
             onDrop: handleFileUpload,
           }}
         />
-      )}
+      )} */}
 
-      {videoFile && videoUrl && (
+      {videoUrl ? (
         <VideoPlayer url={videoUrl} />
-      )}
+      ): <>No Lecture Selected!</>}
 
-      <UploadSnackbar uploadState={uploadState} />
+      {/* <UploadSnackbar uploadState={uploadState} /> */}
     </div>
   );
 };
