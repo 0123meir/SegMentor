@@ -35,8 +35,10 @@ const LecturePlayer = () => {
 
   useEffect(() => {
     const onActiveLectureChange = async () => {
-        setVideoUrl(`${import.meta.env}/${activeLectureId}.mp4`)
-        setSegments([])
+        if (activeLectureId) {
+          setVideoUrl(`${import.meta.env.VITE_CLOUDFRONT_DOMAIN_URL}/${activeLectureId}.mp4`)
+          setSegments([])
+        }
       }
 
       onActiveLectureChange()
