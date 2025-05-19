@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Lecture } from './lecture.schema';
-import { Lecturer } from './lecturer.schema';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 @Schema()
 export class Course extends Document {
@@ -9,10 +7,10 @@ export class Course extends Document {
   name: string;
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Lecture' }] })
-  lectures: Lecture[];
+  lectures: Types.ObjectId[];
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Lecturer' })
-  lecturer: Lecturer;
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User' })
+  lecturer: MongooseSchema.Types.ObjectId[];
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

@@ -23,7 +23,7 @@ export const useFileUploader = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_VIDEO_ANALYZER_URL}/segments`,
+        `${import.meta.env.VITE_VIDEO_INITIALIZER_URL}/extract-mp3`,
         formData,
         {
           headers: {
@@ -32,6 +32,7 @@ export const useFileUploader = () => {
         }
       );
 
+      // for now the service does not return segments
       const segments: SegmentDto[] = response.data.segments.segments;
 
       console.log('Upload successful:', segments);

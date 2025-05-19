@@ -1,11 +1,27 @@
-import { IsString, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsEnum } from 'class-validator';
 
 export class CreateLectureDto {
   @IsString()
   title: string;
 
-  @IsDateString()
-  date: string;
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsEnum(['In Progress', 'Done'])
+  status: 'In Progress' | 'Done';
 }
 
-export class UpdateLectureDto extends CreateLectureDto {}
+export class UpdateLectureDto {
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsEnum(['In Progress', 'Done'])
+  status?: 'In Progress' | 'Done';
+}

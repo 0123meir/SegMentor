@@ -1,8 +1,24 @@
 import { AIAssistant } from '@/components/AIAssistant';
 import LecturePlayer from '@/components/LecturePlayer';
 import { LeftSideMenu } from '@/components/LeftSideMenu';
+import { useApi } from '@/hooks/useApi';
+import useAuthStore from '@/state/AuthStore';
+import { useCoursesStore } from '@/state/CoursesStore';
+import { useEffect } from 'react';
 
-export const WatchLecturePage = () => {
+const WatchLecturePage = () => {
+  const { fetchCourses, initState, courses } = useCoursesStore();
+  const { token, user } = useAuthStore();
+
+  const api = useApi();
+
+  useEffect(() => {
+    if (token && user && !courses) {
+      initState(api, user.id);
+      fetchCourses();
+    }
+  }, [user?.id, token]);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="flex flex-col flex-grow min-w-0">
@@ -13,3 +29,5 @@ export const WatchLecturePage = () => {
     </div>
   );
 };
+
+export default WatchLecturePage;

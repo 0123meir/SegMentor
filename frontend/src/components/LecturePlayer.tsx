@@ -7,9 +7,7 @@ import VideoPlayer from './VideoPlayer';
 
 const LecturePlayer = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
-  const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined);
 
   const { uploadFile, uploadState } = useFileUploader();
 
@@ -19,18 +17,15 @@ const LecturePlayer = () => {
     if (file.type.startsWith('video/') && !videoFile) {
       setVideoFile(file);
       setVideoUrl(URL.createObjectURL(file));
-    } else if (file.type.startsWith('audio/') && !audioFile) {
-      setAudioFile(file);
-      setAudioUrl(URL.createObjectURL(file));
     }
   };
 
   useEffect(() => {
-    if (audioFile) {
-      console.log('start upload of ', audioFile);
-      uploadFile(audioFile);
+    if (videoFile) {
+      console.log('start upload of ', videoFile);
+      uploadFile(videoFile);
     }
-  }, [audioFile]);
+  }, [videoFile]);
 
   return (
     <div className="flex flex-grow m-2 gap-1" style={{ height: '80rem' }}>
@@ -43,16 +38,7 @@ const LecturePlayer = () => {
         />
       )}
 
-      {!audioFile && (
-        <FileDropZone
-          dropZoneOptions={{
-            accept: { 'audio/mp3': ['.mp3'] },
-            onDrop: handleFileUpload,
-          }}
-        />
-      )}
-
-      {videoFile && audioFile && videoUrl && audioUrl && (
+      {videoFile && videoUrl && (
         <VideoPlayer url={videoUrl} />
       )}
 

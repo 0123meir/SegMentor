@@ -19,12 +19,10 @@ export class CourseService {
   }
 
   async findAll(): Promise<Course[]> {
-    const a = await this.courseModel.find();
-    console.log('only find', a);
     return this.courseModel
       .find()
       .populate('lectures')
-      .populate('lecturer')
+      .populate({ path: 'lecturer', select: 'username _id' })
       .exec();
   }
 
@@ -32,7 +30,7 @@ export class CourseService {
     return this.courseModel
       .findById(id)
       .populate('lectures')
-      .populate('lecturer')
+      .populate({ path: 'lecturer', select: 'username _id' })
       .exec();
   }
 
@@ -40,7 +38,7 @@ export class CourseService {
     return this.courseModel
       .findByIdAndUpdate(id, updateCourseDto, { new: true })
       .populate('lectures')
-      .populate('lecturer')
+      .populate({ path: 'lecturer', select: 'username _id' })
       .exec();
   }
 
@@ -49,11 +47,10 @@ export class CourseService {
   }
 
   async findAllWithWatchedLectures(userId: string) {
-    // Populate lectures and lecturer fields
     const courses = await this.courseModel
       .find()
       .populate('lectures')
-      .populate('lecturer')
+      .populate({ path: 'lecturer', select: 'username _id' })
       .lean();
 
     // Get all watched lectures for this user

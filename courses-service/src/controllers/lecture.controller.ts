@@ -15,7 +15,7 @@ export class LectureController {
   constructor(private readonly lectureService: LectureService) {}
 
   @Post()
-  create(@Body() createLectureDto: CreateLectureDto) {
+  create(@Body() createLectureDto: CreateLectureDto & { courseId: string }) {
     return this.lectureService.create(createLectureDto);
   }
 
