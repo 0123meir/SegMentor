@@ -1,7 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AIAssistant } from "@/components/AIAssistant";
-import { Collections } from "@/components/Collections";
-import LecturePlayer from "@/components/LecturePlayer";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import WatchLecturePage  from "@/pages/WatchLecturePage";
+import CoursesManagerPage from "@/pages/CoursesMangerPage";
+
 import LoginPage from '@/components/LoginPage.tsx';
 import RegisterPage from '@/components/RegisterPage.tsx';
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
@@ -48,13 +48,15 @@ const App = () => {
           path="/home"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <div className="flex flex-col flex-grow">
-                  <LecturePlayer />
-                  <AIAssistant />
-                </div>
-                <Collections />
-              </div>
+              <WatchLecturePage />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/courses-manager"
+          element={
+            <ProtectedRoute>
+              <CoursesManagerPage />
             </ProtectedRoute>
           }
         />
@@ -62,5 +64,6 @@ const App = () => {
     </Router>
   );
 };
+
 
 export default App;
