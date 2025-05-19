@@ -26,6 +26,66 @@ interface CoursesState {
   addCourse: (courseData: AddCourseRequest) => Promise<void>;
 }
 
+function optimisticMarkLectureWatched(
+  courses: Course[],
+  courseId: string,
+  lectureId: string
+) {
+  return courses.map((c) =>
+    c._id === courseId
+      ? {
+          ...c,
+          watchedLectures: [...(c.watchedLectures || []), lectureId],
+        }
+      : c
+  );
+}
+
+function rollbackMarkLectureWatched(
+  courses: Course[],
+  courseId: string,
+  lectureId: string
+) {
+  return courses.map((c) =>
+    c._id === courseId
+      ? {
+          ...c,
+          watchedLectures: (c.watchedLectures || []).filter(
+            (id: string) => id !== lectureId
+          ),
+        }
+      : c
+  );
+}
+
+function optimisticDeleteLecture(
+  state: CoursesState,
+  courseId: string,
+  lectureId: string
+) {
+  const courseIdx =
+    state.courses && state.courses.findIndex((c) => c._id === courseId);
+  if (courseIdx === -1) return state;
+  const updatedCourses = [...state.courses!];
+  updatedCourses[courseIdx!].lectures = updatedCourses[
+    courseIdx!
+  ].lectures.filter((lecture) => lecture._id !== lectureId);
+  return { ...state, courses: updatedCourses };
+}
+
+function rollbackDeleteLecture(
+  state: CoursesState,
+  courseId: string,
+  lectureId: string
+) {
+  const courseIdx =
+    state.courses && state.courses.findIndex((c) => c._id === courseId);
+  if (courseIdx === -1) return state;
+  const updatedCourses = [...state.courses!];
+  updatedCourses[courseIdx!].lectures.push({ _id: lectureId } as Lecture);
+  return { ...state, courses: updatedCourses };
+}
+
 export const useCoursesStore = create<CoursesState>((set, get) => ({
   courses: null,
   activeCourseId: null,
@@ -41,7 +101,6 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
-
       const data = await get().api!.get<Course[]>(
         `/courses-service/courses?userId=${get().userId}`
       );
@@ -59,22 +118,13 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
     if (!get().api) {
       throw new Error('API not initialized. Please call initState first.');
     }
-
     const { courses } = get();
     const course = courses && courses.find((c) => c._id === courseId);
     if (!course) return;
     if (course.watchedLectures?.includes(lectureId)) return;
 
-    // Optimistic update
     set({
-      courses: courses.map((c) =>
-        c._id === courseId
-          ? {
-              ...c,
-              watchedLectures: [...(c.watchedLectures || []), lectureId],
-            }
-          : c
-      ),
+      courses: optimisticMarkLectureWatched(courses, courseId, lectureId),
     });
 
     try {
@@ -84,18 +134,8 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
         lectureId,
       });
     } catch (err) {
-      // Rollback on error
       set({
-        courses: courses.map((c) =>
-          c._id === courseId
-            ? {
-                ...c,
-                watchedLectures: (c.watchedLectures || []).filter(
-                  (id: string) => id !== lectureId
-                ),
-              }
-            : c
-        ),
+        courses: rollbackMarkLectureWatched(courses, courseId, lectureId),
       });
       console.error('Failed to mark lecture as watched', err);
     }
@@ -108,8 +148,6 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
-
-      // Call API to create lecture and get the full Lecture object
       const createdLecture = await get().api!.post<Lecture>(
         `/courses-service/lectures`,
         {
@@ -117,8 +155,6 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
           courseId,
         }
       );
-
-      // Update state with the new lecture
       set((state) => {
         const courseIdx = state.courses?.findIndex((c) => c._id === courseId);
         if (courseIdx === undefined || courseIdx === -1) return state;
@@ -131,39 +167,18 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
       });
     } catch (e) {
       console.error('Failed to add lecture', e);
-
       set({ error: 'Failed to add lecture' });
     }
   },
   deleteLecture: async (courseId: string, lectureId: string) => {
-    // Optimistically update UI
-    set((state) => {
-      const courseIdx =
-        state.courses && state.courses.findIndex((c) => c._id === courseId);
-      if (courseIdx === -1) return state;
-      const updatedCourses = [...state.courses!];
-      updatedCourses[courseIdx!].lectures = updatedCourses[
-        courseIdx!
-      ].lectures.filter((lecture) => lecture._id !== lectureId);
-      return { ...state, courses: updatedCourses };
-    });
-
+    set((state) => optimisticDeleteLecture(state, courseId, lectureId));
     try {
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
-
       await get().api!.delete(`/courses-service/lectures/${lectureId}`);
     } catch (e) {
-      // Rollback optimistic update
-      set((state) => {
-        const courseIdx =
-          state.courses && state.courses.findIndex((c) => c._id === courseId);
-        if (courseIdx === -1) return state;
-        const updatedCourses = [...state.courses!];
-        updatedCourses[courseIdx!].lectures.push({ _id: lectureId } as Lecture); // Add back the deleted lecture
-        return { ...state, courses: updatedCourses };
-      });
+      set((state) => rollbackDeleteLecture(state, courseId, lectureId));
       console.error('Failed to delete lecture', e);
     }
   },
@@ -187,7 +202,6 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
       }));
     } catch (e) {
       console.error('Failed to add course', e);
-      // Optionally, set error state here
     }
   },
 }));

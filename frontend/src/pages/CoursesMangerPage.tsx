@@ -22,10 +22,10 @@ const CoursesManagerPage = () => {
 
   const api = useApi();
 
-    const isAllowed = user?.role === 'admin' || user?.role === 'lecturer';
+  const isAllowed = user?.role === 'admin' || user?.role === 'lecturer';
 
   useEffect(() => {
-    if (token && user && isAllowed && !courses ) {
+    if (token && user && isAllowed && !courses) {
       initState(api, user.id);
       fetchCourses();
     }
@@ -38,16 +38,17 @@ const CoursesManagerPage = () => {
 
   const userId = user?.id;
 
-  const filteredCourses = courses && courses.filter(
-    (course) =>
-    course.lecturer.find((lecturer) => lecturer._id === userId)
-  );
+  const filteredCourses =
+    courses &&
+    courses.filter((course) =>
+      course.lecturer.find((lecturer) => lecturer._id === userId)
+    );
 
   const handleAddCourse = async (): Promise<void> => {
     if (currentCourse.trim() && isAllowed && userId) {
       await addCourse({
         name: currentCourse.trim(),
-        lecturer: userId, 
+        lecturer: userId,
         lectures: [],
       });
       setCurrentCourse('');
