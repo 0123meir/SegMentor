@@ -1,44 +1,79 @@
+import noPermission from '@/assets/no-permission.jpg';
+import AddCourseForm from '@/components/Courses/manager/AddCourseForm';
+import CourseCard from '@/components/Courses/manager/CourseCard';
+import { useApi } from '@/hooks/useApi';
+import useAuthStore from '@/state/AuthStore';
 import { useCoursesStore } from '@/state/CoursesStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const CoursesManagerPage = () => {
-  const { courses, setCourses } = useCoursesStore();
+  const { token, user } = useAuthStore();
+  const {
+    fetchCourses,
+    initState,
+    courses,
+    setCourses,
+    isLoading,
+    error,
+    addLecture,
+    deleteLecture,
+    addCourse,
+  } = useCoursesStore();
+
+  const api = useApi();
+
+  const isAllowed = user?.role === 'admin' || user?.role === 'lecturer';
+
+  useEffect(() => {
+    if (token && user && isAllowed && !courses) {
+      initState(api, user.id);
+      fetchCourses();
+    }
+  }, [user?.id, token, isAllowed]);
+
   const [currentCourse, setCurrentCourse] = useState<string>('');
-  const [lectureTitle, setLectureTitle] = useState<string>('');
-
-  // TODO: Replace with actual auth
-  const mockLecturerId = 'lecturer123';
-  const isAdmin = true; // Will come from auth context
-
-  const filteredCourses = courses.filter(
-    (course) => isAdmin || course.lecturer._id === mockLecturerId
+  const [lectureTitles, setLectureTitles] = useState<{ [key: number]: string }>(
+    {}
   );
 
-  const handleAddCourse = (): void => {
-    if (currentCourse.trim() && isAdmin) {
-      setCourses([
-        ...courses,
-        {
-          _id: Date.now().toString(),
-          name: currentCourse,
-          lectures: [],
-          lecturer: { _id: mockLecturerId, name: 'Current Lecturer' },
-        },
-      ]);
+  const userId = user?.id;
+
+  const filteredCourses =
+    courses &&
+    courses.filter((course) =>
+      course.lecturer.find((lecturer) => lecturer._id === userId)
+    );
+
+  const handleAddCourse = async (): Promise<void> => {
+    if (currentCourse.trim() && isAllowed && userId) {
+      await addCourse({
+        name: currentCourse.trim(),
+        lecturer: userId,
+        lectures: [],
+      });
       setCurrentCourse('');
     }
   };
 
+  const handleSetLectureTitle = (courseIndex: number, title: string) => {
+    setLectureTitles((prev) => ({
+      ...prev,
+      [courseIndex]: title,
+    }));
+  };
+
   const handleAddLecture = (courseIndex: number): void => {
-    if (lectureTitle.trim()) {
-      const updatedCourses = [...courses];
-      updatedCourses[courseIndex].lectures.push({
-        _id: Date.now().toString(),
-        title: lectureTitle,
-        date: new Date().toISOString(),
+    const title = lectureTitles[courseIndex];
+    if (title?.trim()) {
+      const courseId = courses![courseIndex]._id;
+      addLecture(courseId, {
+        title,
+        description: '', //TODO: add description in uploud lecture popup
       });
-      setCourses(updatedCourses);
-      setLectureTitle('');
+      setLectureTitles((prev) => ({
+        ...prev,
+        [courseIndex]: '',
+      }));
     }
   };
 
@@ -46,12 +81,11 @@ const CoursesManagerPage = () => {
     courseIndex: number,
     lectureIndex: number
   ): void => {
-    const lecture = courses[courseIndex].lectures[lectureIndex];
-    const newTitle = prompt('Edit lecture title:', lecture.title);
+    const lecture = courses && courses[courseIndex].lectures[lectureIndex];
+    const newTitle = prompt('Edit lecture title:', lecture?.title);
     if (newTitle !== null) {
-      const updatedCourses = [...courses];
-      updatedCourses[courseIndex].lectures[lectureIndex].title = newTitle;
-      setCourses(updatedCourses);
+      courses![courseIndex].lectures[lectureIndex].title = newTitle;
+      setCourses(courses!);
     }
   };
 
@@ -60,98 +94,60 @@ const CoursesManagerPage = () => {
     lectureIndex: number
   ): void => {
     if (window.confirm('Are you sure you want to delete this lecture?')) {
-      const updatedCourses = [...courses];
-      updatedCourses[courseIndex].lectures.splice(lectureIndex, 1);
-      setCourses(updatedCourses);
+      //TODO: use a modal
+      deleteLecture(
+        courses![courseIndex]._id,
+        courses![courseIndex].lectures[lectureIndex]._id!
+      );
     }
   };
 
+  if (!isAllowed)
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-red-600">
+        You do not have permission to access this page. Please contact an admin
+        for more information.
+        <img src={noPermission} alt="No permission" className="mt-10 w-200" />
+      </div>
+    );
+
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-gray-600">
+        Loading courses...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 text-center text-red-600">
+        {error}
+      </div>
+    );
+  }
   return (
     <div className="max-w-[1200px] mx-auto p-8" dir="ltr">
-      {isAdmin && (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <input
-            type="text"
-            value={currentCourse}
-            onChange={(e) => setCurrentCourse(e.target.value)}
-            placeholder="Enter course name"
-            className="w-full p-3 border border-gray-300 rounded-md mb-4 text-base"
-          />
-          <button
-            onClick={handleAddCourse}
-            className="bg-blue-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-blue-600"
-          >
-            Add Course
-          </button>
-        </div>
+      {isAllowed && (
+        <AddCourseForm
+          onAdd={handleAddCourse}
+          value={currentCourse}
+          onChange={(e) => setCurrentCourse(e.target.value)}
+        />
       )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredCourses.map((course, courseIndex) => (
-          <div key={course._id} className="bg-white rounded-lg p-6 shadow-md">
-            <h3 className="text-[#2c3e50] mb-4 text-xl font-semibold">
-              {course.name}
-            </h3>
-            <button
-              onClick={() => {
-                /* TODO: Navigate to lecture upload page */
-              }}
-              className="w-full bg-green-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-green-600 mb-4"
-            >
-              Upload New Lecture
-            </button>
-            {isAdmin && (
-              <>
-                <input
-                  type="text"
-                  value={lectureTitle}
-                  onChange={(e) => setLectureTitle(e.target.value)}
-                  placeholder="Enter lecture title"
-                  className="w-full p-3 border border-gray-300 rounded-md mb-4 text-base"
-                />
-                <button
-                  onClick={() => handleAddLecture(courseIndex)}
-                  className="bg-blue-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-blue-600"
-                >
-                  Add Lecture
-                </button>
-              </>
-            )}
-            <ul className="list-none p-0">
-              {course.lectures.length > 0 ? (
-                course.lectures.map((lecture, lectureIndex) => (
-                  <li
-                    key={lecture._id}
-                    className="flex items-center p-3 border-b border-gray-200 last:border-b-0"
-                  >
-                    <span className="flex-1">{lecture.title}</span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          handleEditLecture(courseIndex, lectureIndex)
-                        }
-                        className="bg-blue-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleDeleteLecture(courseIndex, lectureIndex)
-                        }
-                        className="bg-red-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li className="flex items-center p-3">
-                  No lectures added yet.
-                </li>
-              )}
-            </ul>
-          </div>
+        {filteredCourses?.map((course, courseIndex) => (
+          <CourseCard
+            key={`${course._id}-${courseIndex}`}
+            course={course}
+            courseIndex={courseIndex}
+            lectureTitle={lectureTitles[courseIndex] || ''}
+            setLectureTitle={(title) =>
+              handleSetLectureTitle(courseIndex, title)
+            }
+            onAddLecture={handleAddLecture}
+            onEditLecture={handleEditLecture}
+            onDeleteLecture={handleDeleteLecture}
+          />
         ))}
       </div>
     </div>

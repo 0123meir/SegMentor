@@ -1,7 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from 'react';
 
+interface HttpError extends Error {
+  status?: number;
+}
+
 import { config } from '../config/config';
+import Cookies from 'js-cookie';
 
 interface ApiError {
   message: string;
@@ -13,7 +17,7 @@ export const useApi = () => {
     async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
       const headers = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.MOCK_JWT}`, //TODO: replace with real JWT token
+        Authorization: `Bearer ${Cookies.get('authToken')}`,
         ...options?.headers,
       };
 
@@ -25,13 +29,12 @@ export const useApi = () => {
 
         if (!response.ok) {
           const error = new Error(`HTTP error! status: ${response.status}`);
-          (error as any).status = response.status;
+          (error as HttpError).status = response.status;
           throw error;
         }
 
         return await response.json();
       } catch (error) {
-        // Instead of throwing a new object, return a rejected promise
         return Promise.reject({
           message:
             error instanceof Error
@@ -39,7 +42,7 @@ export const useApi = () => {
               : 'An unknown error occurred',
           status:
             error instanceof Error && 'status' in error
-              ? (error as any).status
+              ? (error as HttpError).status
               : 500,
         } as ApiError);
       }
@@ -85,3 +88,5 @@ export const useApi = () => {
     delete: delete_,
   };
 };
+
+export type UseApiType = ReturnType<typeof useApi>;

@@ -15,12 +15,16 @@ import {
 import { segmentsSchema } from './constants/segments-schema';
 import { Segment } from './types/segment';
 import { getSystemPromptText } from './utils/get-system-prompt-text';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Segments, SegmentsDocument } from './types/segments.schema';
 
 @Injectable()
 export class SegmentsService {
   constructor(
     @Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI,
     private readonly logger: Logger,
+    @InjectModel(Segments.name) private segmentsModel: Model<SegmentsDocument>,
   ) {}
 
   createSegmentsFromTranscription = async (
@@ -46,7 +50,7 @@ export class SegmentsService {
 
       this.logger.log({ message: 'finished segmenting successfully', fileId });
 
-      return JSON.parse(response.choices[0].message.content) as Segment[]; //TODO: save to db when ready
+      return JSON.parse(response.choices[0].message.content) as Segment[];
     } catch (error) {
       this.logger.error({ message: 'failed creating segments', fileId, error });
 
@@ -69,4 +73,13 @@ export class SegmentsService {
     },
     { role: 'user', content: [{ type: 'text', text: transcription }] },
   ];
+
+  async saveSegments(fileId: string, segments: Segment[]) {
+    const doc = {
+      fileId,
+      segments,
+    };
+  
+    return this.segmentsModel.create(doc);
+  }
 }

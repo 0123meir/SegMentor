@@ -1,51 +1,42 @@
-import { useCourses } from '@/hooks/useCourses';
 import { useCoursesStore } from '@/state/CoursesStore';
 import { Course } from '@/types/Course';
-import { useEffect } from 'react';
+import { detectTextDirection } from '@/utils/detectTextDirection';
 import { BiBook } from 'react-icons/bi';
 
-import { detectTextDirection } from '../../utils/detectTextDirection';
 import { CourseItem } from './CourseItem';
 
 export const CourseList = () => {
-  const { courses, isLoading, error, fetchCourses, markLectureWatched } =
-    useCourses();
   const {
+    courses,
+    isLoading,
+    error,
+    markLectureWatched,
     activeCourseId,
     activeLectureId,
-    setCourses,
     setActiveCourse,
     setActiveLecture,
   } = useCoursesStore();
 
   const sectionName = 'My Courses';
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  useEffect(() => {
-    setCourses(courses);
-  }, [courses, setCourses]);
-
   const handleCourseClick = (course: Course) => {
     setActiveCourse(course._id);
   };
 
   const handleLectureClick = async (courseId: string, lectureIndex: number) => {
-    const course = courses.find((c) => c._id === courseId);
+    const course = courses?.find((c) => c._id === courseId);
     if (!course) return;
 
     const lecture = course.lectures[lectureIndex];
     if (!lecture) return;
 
     // set the lecture as active
-    setActiveLecture(lecture._id);
+    setActiveLecture(lecture._id!);
 
     // TODO: navigate to the lecture
 
     // Delegate to hook for optimistic update and API call
-    await markLectureWatched(courseId, lecture._id);
+    await markLectureWatched(courseId, lecture._id!);
   };
 
   if (isLoading) {
@@ -64,7 +55,7 @@ export const CourseList = () => {
     );
   }
 
-  if (courses.length === 0) {
+  if (!courses || (courses && courses.length === 0)) {
     return (
       <div className="max-w-3xl mx-auto p-4 text-center text-gray-600">
         <p className="mb-2">No courses found.</p>
@@ -86,7 +77,7 @@ export const CourseList = () => {
         <h2 className="text-2xl font-bold text-gray-800">{sectionName}</h2>
       </div>
       <div className="space-y-3">
-        {courses.map((course: Course) => (
+        {courses?.map((course: Course) => (
           <CourseItem
             key={course._id}
             course={course}

@@ -80,6 +80,29 @@ export class S3Controller {
     };
   }
 
+  @Post('/video')
+  @ApiTags('Video')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: uploadFileRequestSwaggerSchema,
+  })
+  @ApiBadRequestResponse({
+    description: `Invalid file type, only supports ${getSwaggerSupportedFileTypes([FileType.MP4])}`,
+  })
+  @UseInterceptors(DiskStorageFileInterceptor([FileType.MP4]))
+  async uploadMp4(@UploadedFile() file: Express.Multer.File) {
+    const result = await this.s3Service.uploadFile(
+      file,
+      FileUploadStrategy.DISK,
+      S3Bucket.RAW_VIDEO,
+    );
+
+    return {
+      message: 'File uploaded successfully',
+      url: result,
+    };
+  }
+
   @Get('/srt/:fileId')
   @ApiTags('SRT Transcriptions')
   @ApiOkResponse({
@@ -107,6 +130,22 @@ export class S3Controller {
       S3Bucket.RAW_AUDIO,
       fileId,
       FileType.MP3,
+    );
+
+    res.send(fileContent);
+  }
+
+  @Get('/video/:fileId')
+  @ApiTags('Video')
+  @ApiOkResponse({
+    type: String,
+    description: 'File contents of requested MP4 file',
+  })
+  async getRawVideo(@Param('fileId') fileId: string, @Res() res: Response) {
+    const fileContent = await this.s3Service.getFile(
+      S3Bucket.RAW_VIDEO,
+      fileId,
+      FileType.MP4,
     );
 
     res.send(fileContent);
