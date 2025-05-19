@@ -18,48 +18,77 @@ export class VideoSegmentationConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.consumerService.consume(
-      { topics: [process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment'] },
       {
-        eachMessage: async ({ message }) => {
-          const { fileId } = JSON.parse(message.value.toString());
-          this.logger.log(`Received fileId: ${fileId}`);
+        topics: [
+          process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment',
+        ],
+      },
+      {
+        eachBatch: async ({
+          batch,
+          resolveOffset,
+          heartbeat,
+          isRunning,
+          isStale,
+          commitOffsetsIfNecessary,
+        }) => {
+          for (const message of batch.messages) {
+            if (!isRunning() || isStale()) break;
 
-          try {
-            const response = await axios.get(
-              `${process.env.UPLOAD_FILE_S3_URL}/audio/${fileId}`,
-              { responseType: 'arraybuffer' },
-            );
+            const { fileId } = JSON.parse(message.value.toString());
+            this.logger.log(`Received fileId: ${fileId}`);
 
-            const mp3Buffer = Buffer.from(response.data);
-            this.logger.log(`Downloaded MP3 for fileId ${fileId}`);
+            const heartbeatInterval = setInterval(() => {
+              heartbeat().catch((err) =>
+                this.logger.warn(
+                  `Heartbeat failed during processing: ${err.message}`,
+                ),
+              );
+            }, 5000);
 
-            const filePath = join(FILE_UPLOAD_DIRECTORY, `${fileId}.mp3`);
-            await writeFile(filePath, mp3Buffer);
+            try {
+              const response = await axios.get(
+                `${process.env.UPLOAD_FILE_S3_URL}/audio/${fileId}`,
+                { responseType: 'arraybuffer' },
+              );
 
-            const mp3BufferFile: Express.Multer.File = {
-              fieldname: 'file',
-              originalname: `${fileId}.mp3`,
-              encoding: '7bit',
-              mimetype: 'audio/mpeg',
-              size: mp3Buffer.length,
-              buffer: mp3Buffer,
-              destination: FILE_UPLOAD_DIRECTORY,
-              filename: `${fileId}.mp3`,
-              path: filePath,
-              stream: null,
-            };
+              const mp3Buffer = Buffer.from(response.data);
+              this.logger.log(`Downloaded MP3 for fileId ${fileId}`);
 
-            const segments = await this.appService.getSegments(
-              fileId,
-              mp3BufferFile,
-            );
-            
-            await this.segmentService.saveSegments(fileId, segments["segments"]);
-            this.logger.log(`Segments saved in database for fileId ${fileId}`);
-          } catch (error) {
-            this.logger.error(
-              `Failed to fetch MP3 for fileId ${fileId}: ${error.message}`,
-            );
+              const filePath = join(FILE_UPLOAD_DIRECTORY, `${fileId}.mp3`);
+              await writeFile(filePath, mp3Buffer);
+
+              const mp3BufferFile: Express.Multer.File = {
+                fieldname: 'file',
+                originalname: `${fileId}.mp3`,
+                encoding: '7bit',
+                mimetype: 'audio/mpeg',
+                size: mp3Buffer.length,
+                buffer: mp3Buffer,
+                destination: FILE_UPLOAD_DIRECTORY,
+                filename: `${fileId}.mp3`,
+                path: filePath,
+                stream: null,
+              };
+
+              const segments = await this.appService.getSegments(
+                fileId,
+                mp3BufferFile,
+              );
+
+              await this.segmentService.saveSegments(fileId, segments['segments']);
+              this.logger.log(`Segments saved for fileId ${fileId}`);
+
+              resolveOffset(message.offset);
+              await commitOffsetsIfNecessary();
+            } catch (error) {
+              this.logger.error(
+                `Error processing fileId ${fileId}: ${error.message}`,
+              );
+            } finally {
+              clearInterval(heartbeatInterval);
+              await heartbeat();
+            }
           }
         },
       },
