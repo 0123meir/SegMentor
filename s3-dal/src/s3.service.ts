@@ -44,7 +44,7 @@ export class S3Service {
     bucket: S3Bucket,
     fileId: string,
     fileType: FileType,
-  ): Promise<string> {
+  ): Promise<Buffer> {
     const fileKey = `${fileId}${fileType.extension}`;
     try {
       const file = await this.s3Repository.getObject(bucket, fileKey);
