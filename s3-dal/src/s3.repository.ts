@@ -18,11 +18,13 @@ export class S3Repository {
     bucket: S3Bucket,
     key: string,
     fileContent: Buffer | Uint8Array | Blob | string | ReadStream,
+    mimeType: string,
   ): Promise<PutObjectCommandOutput> {
     const command = new PutObjectCommand({
       Bucket: bucket,
       Key: key,
       Body: fileContent,
+      ContentType: mimeType
     });
 
     return this.s3Client.send(command);

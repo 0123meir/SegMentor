@@ -27,6 +27,7 @@ export class S3Service {
         bucket,
         file.originalname,
         fileContent,
+        file.mimetype,
       );
 
       return result.$metadata;
