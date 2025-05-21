@@ -1,20 +1,25 @@
 import { useSegmentsStore } from "@/state/SegmentsStore";
+import { Segment } from "@/types/Segment";
 import React from "react";
 interface SegmentsTimelineProps {
   duration: number;
   currentTime: number;
   handleSeek: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  timelineRef?: React.RefObject<HTMLInputElement>;
 }
 
 const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
   duration,
   currentTime,
   handleSeek,
+  timelineRef,
 }) => {
   const placeholderSegment: Segment = {
     start: 0,
     end: duration,
     color: "#2563EB",
+    title: "",
+    description: ""
   };
 
 
@@ -22,7 +27,7 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
 
   return (
     <div
-      className="absolute bottom-9 left-0 w-full flex flex-col"
+      className="absolute bottom-9 left-0 w-full flex flex-col pointer-events-auto"
       style={{ direction: "ltr" }}
     >
       <div className="flex flex-row gap-1 w-full">
@@ -64,10 +69,12 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
       <input
         type="range"
         min="0"
+        ref={timelineRef}
         max={duration}
         value={currentTime}
         onChange={handleSeek}
         className="absolute left-0 mt-3 w-full h-5 bg-transparent appearance-none cursor-pointer transition-all
+          focus:outline-none focus:ring-0
           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 
           [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
         style={{ direction: "ltr" }}

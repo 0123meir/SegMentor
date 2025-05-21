@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import ReactPlayer from "react-player";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import ReactPlayer from 'react-player';
 
-import CustomControls from "./CustomControls";
-import SegmentsTimeline from "./SegmentsTimeLine";
+import CustomControls from './CustomControls';
+import SegmentsTimeline from './SegmentsTimeLine';
 
 export interface VideoPlayerProps {
   url: string;
@@ -10,6 +10,7 @@ export interface VideoPlayerProps {
 
 const VideoPlayer = (props: VideoPlayerProps) => {
   const videoContainerRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<ReactPlayer>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -47,9 +48,9 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, []);
 
   const toggleMute = useCallback(() => {
-    setVolume(isMuted ? 1 : 0)
+    setVolume(isMuted ? 1 : 0);
     setIsMuted((prev) => !prev);
-  },[isMuted]);
+  }, [isMuted]);
 
   useEffect(() => {
     if (volume === 0 && !isMuted) {
@@ -60,15 +61,15 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, [volume, isMuted]);
 
   useEffect(() => {
-    const TIME_AND_VOLUME_SEEKBAR = "INPUT";
-    const SPACE_KEY = " ";
-    const FULLSCREEN_KEY = "f";
-    const EXIT_FULLSCREEN_KEY = "Escape";
-    const MUTE_KEY = "m";
-    const SEEK_FORWARD_KEY = "ArrowRight";
-    const SEEK_BACKWARD_KEY = "ArrowLeft";
-    const VOLUME_UP_KEY = "ArrowUp";
-    const VOLUME_DOWN_KEY = "ArrowDown";
+    const TIME_AND_VOLUME_SEEKBAR = 'INPUT';
+    const SPACE_KEY = ' ';
+    const FULLSCREEN_KEY = 'f';
+    const EXIT_FULLSCREEN_KEY = 'Escape';
+    const MUTE_KEY = 'm';
+    const SEEK_FORWARD_KEY = 'ArrowRight';
+    const SEEK_BACKWARD_KEY = 'ArrowLeft';
+    const VOLUME_UP_KEY = 'ArrowUp';
+    const VOLUME_DOWN_KEY = 'ArrowDown';
 
     const handleKeyDown = (event: { key: any; preventDefault: () => void }) => {
       if (
@@ -105,6 +106,9 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             );
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
+            setTimeout(() => {
+              timelineRef.current?.focus({ preventScroll: true });
+            }, 10);
           }
           break;
         case SEEK_BACKWARD_KEY:
@@ -112,6 +116,9 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             const newTime = Math.max(videoRef.current.getCurrentTime() - 10, 0);
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
+            setTimeout(() => {
+              timelineRef.current?.focus({ preventScroll: true });
+            }, 10);
           }
           break;
         case VOLUME_UP_KEY:
@@ -119,20 +126,26 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             const newVolume = Math.min(prevVolume + 0.1, 1);
             return newVolume;
           });
+          setTimeout(() => {
+            timelineRef.current?.focus({ preventScroll: true });
+          }, 10);
           break;
         case VOLUME_DOWN_KEY:
           setVolume((prevVolume) => {
             const newVolume = Math.max(prevVolume - 0.1, 0);
             return newVolume;
           });
+          setTimeout(() => {
+            timelineRef.current?.focus({ preventScroll: true });
+          }, 10);
           break;
         default:
           break;
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
   return (
@@ -155,11 +168,14 @@ const VideoPlayer = (props: VideoPlayerProps) => {
         height="100%"
       />
 
-      <SegmentsTimeline
-        duration={duration}
-        currentTime={currentTime}
-        handleSeek={handleSeek}
-      />
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <SegmentsTimeline
+          duration={duration}
+          currentTime={currentTime}
+          handleSeek={handleSeek}
+          timelineRef={timelineRef}
+        />
+      </div>
 
       <CustomControls
         currentTime={currentTime}
