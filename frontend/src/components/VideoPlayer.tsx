@@ -52,6 +52,12 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     setIsMuted((prev) => !prev);
   }, [isMuted]);
 
+  const focusTimeline = () => {
+    setTimeout(() => {
+      timelineRef.current?.focus({ preventScroll: true });
+    }, 10);
+  };
+
   useEffect(() => {
     if (volume === 0 && !isMuted) {
       setIsMuted(true);
@@ -106,9 +112,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             );
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
-            setTimeout(() => {
-              timelineRef.current?.focus({ preventScroll: true });
-            }, 10);
+            focusTimeline();
           }
           break;
         case SEEK_BACKWARD_KEY:
@@ -116,9 +120,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             const newTime = Math.max(videoRef.current.getCurrentTime() - 10, 0);
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
-            setTimeout(() => {
-              timelineRef.current?.focus({ preventScroll: true });
-            }, 10);
+            focusTimeline();
           }
           break;
         case VOLUME_UP_KEY:
@@ -126,18 +128,14 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             const newVolume = Math.min(prevVolume + 0.1, 1);
             return newVolume;
           });
-          setTimeout(() => {
-            timelineRef.current?.focus({ preventScroll: true });
-          }, 10);
+          focusTimeline();
           break;
         case VOLUME_DOWN_KEY:
           setVolume((prevVolume) => {
             const newVolume = Math.max(prevVolume - 0.1, 0);
             return newVolume;
           });
-          setTimeout(() => {
-            timelineRef.current?.focus({ preventScroll: true });
-          }, 10);
+          focusTimeline();
           break;
         default:
           break;
