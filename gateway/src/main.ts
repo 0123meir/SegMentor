@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { coursesProxy } from './apiProxies/courses-proxy.middleware';
+import { videosProxy } from './apiProxies/videos-proxy.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use('/courses-service', coursesProxy);
+  app.use('/videos-service', videosProxy);
 
   await app.listen(process.env.PORT ?? 4000);
 }

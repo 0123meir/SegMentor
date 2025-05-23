@@ -96,11 +96,11 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   userId: null,
   initState: (api, userId) => set({ api, userId }),
   fetchCourses: async () => {
-    set({ isLoading: true, error: null });
     try {
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
+      set({ isLoading: true, error: null });
       const data = await get().api!.get<Course[]>(
         `/courses-service/courses?userId=${get().userId}`
       );

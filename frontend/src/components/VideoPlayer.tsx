@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import ReactPlayer from "react-player";
+import { Segment } from '@/types/Segment';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import ReactPlayer from 'react-player';
 
-import CustomControls from "./CustomControls";
-import SegmentsTimeline from "./SegmentsTimeLine";
+import CustomControls from './CustomControls';
+import SegmentsTimeline from './SegmentsTimeLine';
 
 export interface VideoPlayerProps {
   url: string;
+  segments: Segment[];
 }
 
-const VideoPlayer = (props: VideoPlayerProps) => {
+const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<ReactPlayer>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -47,9 +49,9 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, []);
 
   const toggleMute = useCallback(() => {
-    setVolume(isMuted ? 1 : 0)
+    setVolume(isMuted ? 1 : 0);
     setIsMuted((prev) => !prev);
-  },[isMuted]);
+  }, [isMuted]);
 
   useEffect(() => {
     if (volume === 0 && !isMuted) {
@@ -60,17 +62,17 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   }, [volume, isMuted]);
 
   useEffect(() => {
-    const TIME_AND_VOLUME_SEEKBAR = "INPUT";
-    const SPACE_KEY = " ";
-    const FULLSCREEN_KEY = "f";
-    const EXIT_FULLSCREEN_KEY = "Escape";
-    const MUTE_KEY = "m";
-    const SEEK_FORWARD_KEY = "ArrowRight";
-    const SEEK_BACKWARD_KEY = "ArrowLeft";
-    const VOLUME_UP_KEY = "ArrowUp";
-    const VOLUME_DOWN_KEY = "ArrowDown";
+    const TIME_AND_VOLUME_SEEKBAR = 'INPUT';
+    const SPACE_KEY = ' ';
+    const FULLSCREEN_KEY = 'f';
+    const EXIT_FULLSCREEN_KEY = 'Escape';
+    const MUTE_KEY = 'm';
+    const SEEK_FORWARD_KEY = 'ArrowRight';
+    const SEEK_BACKWARD_KEY = 'ArrowLeft';
+    const VOLUME_UP_KEY = 'ArrowUp';
+    const VOLUME_DOWN_KEY = 'ArrowDown';
 
-    const handleKeyDown = (event: { key: any; preventDefault: () => void }) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (
         document.activeElement?.tagName === TIME_AND_VOLUME_SEEKBAR &&
         [
@@ -131,8 +133,8 @@ const VideoPlayer = (props: VideoPlayerProps) => {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
   return (
@@ -143,7 +145,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
       <ReactPlayer
         className="absolute rounded-md"
         ref={videoRef}
-        url={props.url}
+        url={url}
         controls={false}
         playing={isPlaying}
         volume={volume}
@@ -156,6 +158,19 @@ const VideoPlayer = (props: VideoPlayerProps) => {
       />
 
       <SegmentsTimeline
+        segments={
+          segments.length > 0
+            ? segments
+            : [
+                {
+                  start: 0,
+                  end: duration,
+                  color: '#2563EB',
+                  title: '',
+                  description: '',
+                },
+              ]
+        }
         duration={duration}
         currentTime={currentTime}
         handleSeek={handleSeek}

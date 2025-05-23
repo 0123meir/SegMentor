@@ -1,34 +1,46 @@
-import { useEffect, useState } from 'react';
+import { useApi } from '@/hooks/useApi';
+import { useCoursesStore } from '@/state/CoursesStore';
+import { useVideoPlayerStore } from '@/state/VideoPlayerStore';
+import { useEffect } from 'react';
 
 import VideoPlayer from './VideoPlayer';
-import { useCoursesStore } from '@/state/CoursesStore';
-import { useSegmentsStore } from '@/state/SegmentsStore';
-import useAuthStore from '@/stores/AuthStore';
+import LoadingVideoPlayer from './LoadingVideoPlayer';
 
 const LecturePlayer = () => {
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
   const {activeLectureId} = useCoursesStore()
-  const {setSegments} = useSegmentsStore()
-  const {token} = useAuthStore();
 
+  const {
+    initState,
+    fetchVideoData,
+    videoError,
+    segments,
+    videoUrl,
+    isVideoLoading,
+  } = useVideoPlayerStore();
+
+  const api = useApi();
   useEffect(() => {
-    const onActiveLectureChange = async () => {
-        if (activeLectureId) {
-          setVideoUrl(`${import.meta.env.VITE_CLOUDFRONT_DOMAIN_URL}/${activeLectureId}.mp4`)
-          setSegments([])
-        }
-      }
 
-      onActiveLectureChange()
-  }, [activeLectureId, token, setSegments]);
+    if (activeLectureId) {
+      initState(api);
+      fetchVideoData(activeLectureId);
+    }
+  }, [activeLectureId]);
 
-  return (
-    <div className="flex flex-grow m-2 gap-1" style={{ height: '80rem' }}>
-      {videoUrl ? (
-        <VideoPlayer url={videoUrl} />
-      ): <>No Lecture Selected!</>}
-    </div>
-  );
+  if (isVideoLoading) {
+    return <LoadingVideoPlayer />;
+  }
+
+  if (videoError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <p className="text-red-500">{videoError}</p>
+      </div>
+    );
+  }
+
+  return videoUrl && <VideoPlayer url={videoUrl} segments={segments ?? []} />;
+
 };
 
 export default LecturePlayer;
