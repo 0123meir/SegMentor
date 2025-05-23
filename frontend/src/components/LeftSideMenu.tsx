@@ -23,10 +23,11 @@ export const LeftSideMenu = () => {
 
       <div
         onClick={toggle}
-        className="absolute top-1/2 -translate-y-1/2 -right-8 w-8 h-32 cursor-pointer flex items-center justify-center"
+        className="absolute -translate-y-1/2 -right-8 w-8 h-32 cursor-pointer flex items-center justify-center"
         style={{
           clipPath: 'polygon(0 0, 100% 15%, 100% 85%, 0 100%)',
           backgroundColor: '#E5E7EB',
+          marginTop: '5rem'
         }}
       >
         <div className="flex items-center justify-center h-full text-gray-600">
