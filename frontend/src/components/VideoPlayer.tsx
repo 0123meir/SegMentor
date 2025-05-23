@@ -1,3 +1,4 @@
+import { Segment } from '@/types/Segment';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
@@ -6,11 +7,11 @@ import SegmentsTimeline from './SegmentsTimeLine';
 
 export interface VideoPlayerProps {
   url: string;
+  segments: Segment[];
 }
 
-const VideoPlayer = (props: VideoPlayerProps) => {
+const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const videoContainerRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<ReactPlayer>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -18,6 +19,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const [volume, setVolume] = useState<number>(1);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
+  const [error, setError] = useState<string | null>(null);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -52,12 +54,6 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     setIsMuted((prev) => !prev);
   }, [isMuted]);
 
-  const focusTimeline = () => {
-    setTimeout(() => {
-      timelineRef.current?.focus({ preventScroll: true });
-    }, 10);
-  };
-
   useEffect(() => {
     if (volume === 0 && !isMuted) {
       setIsMuted(true);
@@ -77,7 +73,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     const VOLUME_UP_KEY = 'ArrowUp';
     const VOLUME_DOWN_KEY = 'ArrowDown';
 
-    const handleKeyDown = (event: { key: any; preventDefault: () => void }) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (
         document.activeElement?.tagName === TIME_AND_VOLUME_SEEKBAR &&
         [
@@ -112,7 +108,6 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             );
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
-            focusTimeline();
           }
           break;
         case SEEK_BACKWARD_KEY:
@@ -120,7 +115,6 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             const newTime = Math.max(videoRef.current.getCurrentTime() - 10, 0);
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
-            focusTimeline();
           }
           break;
         case VOLUME_UP_KEY:
@@ -128,14 +122,12 @@ const VideoPlayer = (props: VideoPlayerProps) => {
             const newVolume = Math.min(prevVolume + 0.1, 1);
             return newVolume;
           });
-          focusTimeline();
           break;
         case VOLUME_DOWN_KEY:
           setVolume((prevVolume) => {
             const newVolume = Math.max(prevVolume - 0.1, 0);
             return newVolume;
           });
-          focusTimeline();
           break;
         default:
           break;
@@ -146,34 +138,70 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
+  if (!url || !ReactPlayer.canPlay(url)) {
+    return (
+      <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
+        Video couldn't be loaded. Try again later.
+        {error && `Error: ${error}}`}
+      </div>
+    );
+  }
   return (
     <div
       ref={videoContainerRef}
       className="relative w-full bg-black rounded-lg"
+      style={{ aspectRatio: '16/9', minHeight: 240 }}
     >
-      <ReactPlayer
-        className="absolute rounded-md"
-        ref={videoRef}
-        url={props.url}
-        controls={false}
-        playing={isPlaying}
-        volume={volume}
-        playbackRate={playbackRate}
-        onClick={togglePlayPause}
-        onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
-        onDuration={(duration) => setDuration(duration)}
-        width="100%"
-        height="100%"
-      />
-
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <SegmentsTimeline
-          duration={duration}
-          currentTime={currentTime}
-          handleSeek={handleSeek}
-          timelineRef={timelineRef}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <ReactPlayer
+          className="rounded-md"
+          ref={videoRef}
+          url={url}
+          controls={false}
+          playing={isPlaying}
+          volume={volume}
+          playbackRate={playbackRate}
+          onClick={togglePlayPause}
+          onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
+          onDuration={(duration) => setDuration(duration)}
+          onError={(e) => {
+            setError(
+              typeof e === 'string'
+                ? e
+                : e?.message ||
+                    'An unknown error occurred while loading the video.'
+            );
+          }}
+          width="100%"
+          height="100%"
         />
       </div>
+      {error && (
+        <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
+          <div>
+            <strong>Playback Error:</strong> {error}
+          </div>
+        </div>
+      )}
+
+      <SegmentsTimeline
+        segments={
+          segments.length > 0
+            ? segments
+            : [
+                {
+                  start: 0,
+                  end: duration,
+                  color: '#2563EB',
+                  title: '',
+                  description: '',
+                },
+              ]
+        }
+        duration={duration}
+        currentTime={currentTime}
+        handleSeek={handleSeek}
+      />
 
       <CustomControls
         currentTime={currentTime}
