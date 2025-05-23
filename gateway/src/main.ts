@@ -13,6 +13,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use('/courses-service', coursesProxy);
+<<<<<<< Updated upstream
+=======
+  app.use('/videos-service/:videoId', videosProxy);
+>>>>>>> Stashed changes
 
   await app.listen(process.env.PORT ?? 4000);
 }

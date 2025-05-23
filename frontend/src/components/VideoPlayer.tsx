@@ -18,6 +18,7 @@ const VideoPlayer = (props: VideoPlayerProps) => {
   const [volume, setVolume] = useState<number>(1);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
+  const [error, setError] = useState<string | null>(null);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -146,25 +147,51 @@ const VideoPlayer = (props: VideoPlayerProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlayPause, toggleFullscreen, toggleMute]);
 
+  if (!url || !ReactPlayer.canPlay(url)) {
+    return (
+      <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
+        Video couldn't be loaded. Try again later.
+        {error && `Error: ${error}}`}
+      </div>
+    );
+  }
   return (
     <div
       ref={videoContainerRef}
       className="relative w-full bg-black rounded-lg"
+      style={{ aspectRatio: '16/9', minHeight: 240 }}
     >
-      <ReactPlayer
-        className="absolute rounded-md"
-        ref={videoRef}
-        url={props.url}
-        controls={false}
-        playing={isPlaying}
-        volume={volume}
-        playbackRate={playbackRate}
-        onClick={togglePlayPause}
-        onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
-        onDuration={(duration) => setDuration(duration)}
-        width="100%"
-        height="100%"
-      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <ReactPlayer
+          className="rounded-md"
+          ref={videoRef}
+          url={url}
+          controls={false}
+          playing={isPlaying}
+          volume={volume}
+          playbackRate={playbackRate}
+          onClick={togglePlayPause}
+          onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
+          onDuration={(duration) => setDuration(duration)}
+          onError={(e) => {
+            setError(
+              typeof e === 'string'
+                ? e
+                : e?.message ||
+                    'An unknown error occurred while loading the video.'
+            );
+          }}
+          width="100%"
+          height="100%"
+        />
+      </div>
+      {error && (
+        <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
+          <div>
+            <strong>Playback Error:</strong> {error}
+          </div>
+        </div>
+      )}
 
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
         <SegmentsTimeline
