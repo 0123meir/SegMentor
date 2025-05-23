@@ -1,29 +1,18 @@
-import { useSegmentsStore } from "@/state/SegmentsStore";
 import { Segment } from "@/types/Segment";
-import React from "react";
+import { ChangeEvent } from "react";
 interface SegmentsTimelineProps {
+  segments: Segment[];
   duration: number;
   currentTime: number;
-  handleSeek: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  timelineRef?: React.RefObject<HTMLInputElement>;
+  handleSeek: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
+const SegmentsTimeline = ({
+  segments,
   duration,
   currentTime,
   handleSeek,
-  timelineRef,
-}) => {
-  const placeholderSegment: Segment = {
-    start: 0,
-    end: duration,
-    color: "#2563EB",
-    title: "",
-    description: ""
-  };
-
-
-  const {segments} = useSegmentsStore();
+}: SegmentsTimelineProps) => {
 
   return (
     <div
@@ -31,7 +20,7 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
       style={{ direction: "ltr" }}
     >
       <div className="flex flex-row gap-1 w-full">
-        {(segments.length === 0 ? [placeholderSegment] : segments).map(
+        {segments.map(
           (segment, index) => (
             <div
               key={index}
