@@ -12,6 +12,7 @@ export interface VideoPlayerProps {
 
 const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const videoContainerRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<ReactPlayer>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -62,6 +63,12 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
     }
   }, [volume, isMuted]);
 
+  const focusTimeline = () => {
+    setTimeout(() => {
+      timelineRef.current?.focus({ preventScroll: true });
+    }, 10);
+  };
+
   useEffect(() => {
     const TIME_AND_VOLUME_SEEKBAR = 'INPUT';
     const SPACE_KEY = ' ';
@@ -90,6 +97,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
         case SPACE_KEY:
           togglePlayPause();
           event.preventDefault();
+          focusTimeline();
           break;
         case FULLSCREEN_KEY:
           toggleFullscreen();
@@ -106,8 +114,10 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
               videoRef.current.getCurrentTime() + 10,
               videoRef.current.getDuration()
             );
+            focusTimeline();
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
+            focusTimeline();
           }
           break;
         case SEEK_BACKWARD_KEY:
@@ -115,6 +125,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
             const newTime = Math.max(videoRef.current.getCurrentTime() - 10, 0);
             setCurrentTime(newTime);
             videoRef.current.seekTo(newTime);
+            focusTimeline();
           }
           break;
         case VOLUME_UP_KEY:
@@ -177,7 +188,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
         />
       </div>
       {error && (
-        <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
+        <div className="flex items-center justify-center w-full h-full text-white">
           <div>
             <strong>Playback Error:</strong> {error}
           </div>
@@ -190,34 +201,21 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           currentTime={currentTime}
           handleSeek={handleSeek}
           timelineRef={timelineRef}
+          segments={
+            segments.length > 0
+              ? segments
+              : [
+                  {
+                    start: 0,
+                    end: duration,
+                    color: '#2563EB',
+                    title: '',
+                    description: '',
+                  },
+                ]
+          }
         />
       </div>
-      {error && (
-        <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
-          <div>
-            <strong>Playback Error:</strong> {error}
-          </div>
-        </div>
-      )}
-
-      <SegmentsTimeline
-        segments={
-          segments.length > 0
-            ? segments
-            : [
-                {
-                  start: 0,
-                  end: duration,
-                  color: '#2563EB',
-                  title: '',
-                  description: '',
-                },
-              ]
-        }
-        duration={duration}
-        currentTime={currentTime}
-        handleSeek={handleSeek}
-      />
 
       <CustomControls
         currentTime={currentTime}

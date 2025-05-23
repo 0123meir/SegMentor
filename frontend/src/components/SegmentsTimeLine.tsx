@@ -1,10 +1,12 @@
-import { Segment } from "@/types/Segment";
-import { ChangeEvent } from "react";
+import { Segment } from '@/types/Segment';
+import { ChangeEvent } from 'react';
+
 interface SegmentsTimelineProps {
   segments: Segment[];
   duration: number;
   currentTime: number;
   handleSeek: (event: ChangeEvent<HTMLInputElement>) => void;
+  timelineRef?: React.RefObject<HTMLInputElement>;
 }
 
 const SegmentsTimeline = ({
@@ -12,47 +14,45 @@ const SegmentsTimeline = ({
   duration,
   currentTime,
   handleSeek,
+  timelineRef,
 }: SegmentsTimelineProps) => {
-
   return (
     <div
       className="absolute bottom-9 left-0 w-full flex flex-col pointer-events-auto"
-      style={{ direction: "ltr" }}
+      style={{ direction: 'ltr' }}
     >
       <div className="flex flex-row gap-1 w-full">
-        {segments.map(
-          (segment, index) => (
-            <div
-              key={index}
-              className="relative flex flex-col items-center"
-              style={{ flex: `${segment.end - segment.start} 0 auto` }}
-            >
-              <div className="h-4 mb-1 flex items-center justify-center">
-                {segment.title && (
-                  <div className="text-white text-xs relative group cursor-pointer">
-                    {segment.title}
-                    <div
-                      className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-black text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{
-                        minWidth: "150px",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word",
-                        textAlign: "center",
-                      }}
-                    >
-                      {segment.description}
-                    </div>
+        {segments.map((segment, index) => (
+          <div
+            key={index}
+            className="relative flex flex-col items-center"
+            style={{ flex: `${segment.end - segment.start} 0 auto` }}
+          >
+            <div className="h-4 mb-1 flex items-center justify-center">
+              {segment.title && (
+                <div className="text-white text-xs relative group cursor-pointer">
+                  {segment.title}
+                  <div
+                    className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-black text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{
+                      minWidth: '150px',
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {segment.description}
                   </div>
-                )}
-              </div>
-
-              <div
-                style={{ backgroundColor: segment.color }}
-                className="h-1 w-full rounded-full cursor-pointer"
-              />
+                </div>
+              )}
             </div>
-          )
-        )}
+
+            <div
+              style={{ backgroundColor: segment.color }}
+              className="h-1 w-full rounded-full cursor-pointer"
+            />
+          </div>
+        ))}
       </div>
 
       <input
@@ -66,7 +66,7 @@ const SegmentsTimeline = ({
           focus:outline-none focus:ring-0
           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 
           [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
-        style={{ direction: "ltr" }}
+        style={{ direction: 'ltr' }}
       />
     </div>
   );
