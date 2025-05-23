@@ -184,6 +184,22 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
         </div>
       )}
 
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <SegmentsTimeline
+          duration={duration}
+          currentTime={currentTime}
+          handleSeek={handleSeek}
+          timelineRef={timelineRef}
+        />
+      </div>
+      {error && (
+        <div className="flex items-center justify-center w-full h-64 bg-gray-900 rounded-lg text-white">
+          <div>
+            <strong>Playback Error:</strong> {error}
+          </div>
+        </div>
+      )}
+
       <SegmentsTimeline
         segments={
           segments.length > 0

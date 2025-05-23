@@ -27,16 +27,13 @@ export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
   api: null,
   initState: (api) => set({ api }),
   fetchVideoData: async (videoId: string) => {
-    console.log('videoId', videoId);
-    
     try {
       if (!get().api) throw new Error('store not initialized');
       set({ isVideoLoading: true, isSegmentsLoading: true });
-console.log('videoId', videoId);
+
       const videoUrl = await get().api!.get<string>(
-        `/videos-service/video/${videoId}`
+        `/videos-service/${videoId}`
       );
-      console.log('videoUrl', videoUrl);
       set({ videoUrl, isVideoLoading: false });
     } catch (error) {
       console.log(error);
