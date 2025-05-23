@@ -3,11 +3,11 @@ import { useCoursesStore } from '@/state/CoursesStore';
 import { useVideoPlayerStore } from '@/state/VideoPlayerStore';
 import { useEffect } from 'react';
 
-import VideoPlayer from './VideoPlayer';
 import LoadingVideoPlayer from './LoadingVideoPlayer';
+import VideoPlayer from './VideoPlayer';
 
 const LecturePlayer = () => {
-  const {activeLectureId} = useCoursesStore()
+  const { activeLectureId } = useCoursesStore();
 
   const {
     initState,
@@ -20,7 +20,6 @@ const LecturePlayer = () => {
 
   const api = useApi();
   useEffect(() => {
-
     if (activeLectureId) {
       initState(api);
       fetchVideoData(activeLectureId);
@@ -40,7 +39,6 @@ const LecturePlayer = () => {
   }
 
   return videoUrl && <VideoPlayer url={videoUrl} segments={segments ?? []} />;
-
 };
 
 export default LecturePlayer;
