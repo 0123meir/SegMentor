@@ -18,7 +18,7 @@ import { kafkaConfig } from './config/kafka.config';
       isGlobal: true,
       load: [appConfig, openAIConfig, s3DalConfig, kafkaConfig],
     }),
-    MongooseModule.forRoot(`${process.env.MONGO_URL}`),
+    MongooseModule.forRoot(`${process.env.MONGODB_URI}`),
     TranscriptionsModule,
     SegmentsModule,
     KafkaModule,
