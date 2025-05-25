@@ -12,13 +12,13 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { PERMISSIONS_URL } from './routes-constants';
+import { PERMISSIONS_URL } from './routes.constants';
 import { CreateUserDto } from './dto/create-user.dts';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as jwt from 'jsonwebtoken';
 
 @Controller('users')
-export class AppController {
+export class UsersController {
   constructor(private readonly httpService: HttpService) {}
 
   @Post()

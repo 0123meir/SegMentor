@@ -23,13 +23,14 @@ const LecturePlayer = () => {
   useEffect(() => {
     if (videoFile) {
       console.log('start upload of ', videoFile);
-      uploadFile(videoFile);
+      uploadFile(videoFile, '');
     }
   }, [videoFile]);
 
   return (
     <div className="flex flex-grow m-2 gap-1" style={{ height: '80rem' }}>
       {!videoFile && (
+        // TODO: REMOVE THIS
         <FileDropZone
           dropZoneOptions={{
             accept: { 'video/mp4': ['.mp4'] },

@@ -5,6 +5,9 @@ import { segmentsColors } from '@/utils/Colors';
 import { timeToSeconds } from '@/utils/Time';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { GATEWAY_URL } from '@/globals/urls.tsx';
+import Cookies from 'js-cookie';
+
 
 export type UploadState = 'none' | 'uploading' | 'error' | 'success';
 
@@ -15,19 +18,26 @@ export const useFileUploader = () => {
   useEffect(() => {
     console.log(uploadState);
   }, [uploadState]);
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File | null, courseId: string, title: string) => {
+    if (!file) {
+      setUploadState('error');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('title', title);
+    formData.append('courseId', courseId);
 
     setUploadState('uploading');
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_VIDEO_INITIALIZER_URL}/extract-mp3`,
+        `${GATEWAY_URL}/video-initializer/extract-mp3`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${Cookies.get('authToken')}`,
           },
         }
       );
