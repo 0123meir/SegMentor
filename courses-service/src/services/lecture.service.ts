@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { isValidObjectId, Model, Types } from 'mongoose';
 import { Lecture } from '../schemas/lecture.schema';
 import { CreateLectureDto, UpdateLectureDto } from '../dto/lecture.dto';
 import { Course } from 'src/schemas/course.schema';
@@ -41,6 +41,10 @@ export class LectureService {
   }
 
   async findOne(id: string): Promise<Lecture> {
+    if (!isValidObjectId(id)) {
+      return null;
+    }
+
     return this.lectureModel.findById(id).exec();
   }
 
