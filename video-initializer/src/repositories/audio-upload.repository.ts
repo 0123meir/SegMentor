@@ -34,7 +34,7 @@ export class AudioUploadRepository {
   async uploadFileIdToKafka(fileId: string): Promise<void> {
     Logger.log('Uploading fileId to Kafka:', fileId);
     await this.producerService.produce({
-      topic: process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment',
+      topic: process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video-to-segment',
       messages: [
         {
           key: fileId,

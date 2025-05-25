@@ -30,6 +30,8 @@ services:
       - "3001:3001"
     env_file:
       - ./permission-service/.env
+    environment:
+      - MONGODB_URI=mongodb://host.docker.internal:27017/segmentor
 
   video-analyzer:
     build:
@@ -40,6 +42,9 @@ services:
       - "3000:3000"
     env_file:
       - ./video-analyzer/.env
+    environment:
+      - MONGODB_URI=mongodb://host.docker.internal:27017/segmentor
+      - KAFKA_URL=host.docker.internal:9092
 
   video-initializer:
     build:
@@ -50,6 +55,8 @@ services:
       - "3005:3005"
     env_file:
       - ./video-initializer/.env
+    environment:
+      - KAFKA_URL=host.docker.internal:9092
 
   transcript-service:
     build:
@@ -70,3 +77,5 @@ services:
       - "3002:3002"
     env_file:
       - ./courses-service/.env
+    environment:
+      - MONGODB_URI=mongodb://host.docker.internal:27017/segmentor
