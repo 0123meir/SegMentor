@@ -20,16 +20,16 @@ export const useFileUploader = () => {
 
     setUploadState('uploading');
 
-    // try {
-    //   setUploadState('success');
-    // } catch (error) {
-    //   console.error('Error uploading file:', error);
-    //   setUploadState('error');
-    // } finally {
-    //   setTimeout(() => {
-    //     setUploadState('none');
-    //   }, 3000);
-    // }
+    try {
+      setUploadState('success');
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setUploadState('error');
+    } finally {
+      setTimeout(() => {
+        setUploadState('none');
+      }, 3000);
+    }
   };
 
   return { uploadFile, uploadState };

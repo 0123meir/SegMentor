@@ -7,24 +7,24 @@ import { create } from 'zustand';
 
 interface VideoPlayerStore {
   segments: Segment[];
-  videoUrl: string | null;
-  api: UseApiType | null;
+  videoUrl?: string;
+  api?: UseApiType;
   isVideoLoading: boolean;
   isSegmentsLoading: boolean;
-  videoError: string | null;
-  segmentError: string | null;
+  videoError?: string;
+  segmentError?: string;
   fetchVideoData: (videoId: string) => void;
   initState: (api: UseApiType) => void;
 }
 
 export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
-  videoUrl: null,
+  videoUrl: undefined,
   segments: [],
   isVideoLoading: false,
   isSegmentsLoading: false,
-  videoError: null,
-  segmentError: null,
-  api: null,
+  videoError: undefined,
+  segmentError: undefined,
+  api: undefined,
   initState: (api) => set({ api }),
   fetchVideoData: async (videoId: string) => {
     try {
