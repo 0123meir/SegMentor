@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./gateway/.env
+
+  s3-dal:
+    build:
+      context: ./s3-dal
+      dockerfile: Dockerfile
+    container_name: s3-dal
+    ports:
+      - "3004:3004"
+    env_file:
+      - ./s3-dal/.env
+
+  permission-service:
+    build:
+      context: ./permission-service
+      dockerfile: Dockerfile
+    container_name: permission-service
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./permission-service/.env
+
+  video-analyzer:
+    build:
+      context: ./video-analyzer
+      dockerfile: Dockerfile
+    container_name: video-analyzer
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./video-analyzer/.env
+
+  video-initializer:
+    build:
+      context: ./video-initializer
+      dockerfile: Dockerfile
+    container_name: video-initializer
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./video-initializer/.env
+
+  transcript-service:
+    build:
+      context: ./transcript-service
+      dockerfile: Dockerfile
+    container_name: transcript-service
+    ports:
+      - "3006:3006"
+    env_file:
+      - ./transcript-service/.env
+
+  courses-service:
+    build:
+      context: ./courses-service
+      dockerfile: Dockerfile
+    container_name: courses-service
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./courses-service/.env
