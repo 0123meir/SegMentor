@@ -15,8 +15,12 @@ interface ApiError {
 export const useApi = () => {
   const fetchWithAuth = useCallback(
     async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
+      const contentType =
+        options?.headers && (options.headers as Record<string, string>)['Content-Type']
+          ? (options.headers as Record<string, string>)['Content-Type']
+          : 'application/json';
       const headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': contentType,
         Authorization: `Bearer ${Cookies.get('authToken')}`,
         ...options?.headers,
       };
