@@ -1,51 +1,44 @@
-import { useFileUploader } from '@/hooks/useFileUploader';
-import { useEffect, useState } from 'react';
+import { useApi } from '@/hooks/useApi';
+import { useCoursesStore } from '@/state/CoursesStore';
+import { useVideoPlayerStore } from '@/state/VideoPlayerStore';
+import { useEffect } from 'react';
 
-import FileDropZone from './FileDropZone';
-import UploadSnackbar from './UploadSnackbar';
+import LoadingVideoPlayer from './LoadingVideoPlayer';
 import VideoPlayer from './VideoPlayer';
 
 const LecturePlayer = () => {
-  const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
+  const { activeLectureId } = useCoursesStore();
 
-  const { uploadFile, uploadState } = useFileUploader();
+  const {
+    initState,
+    fetchVideoData,
+    videoError,
+    segments,
+    videoUrl,
+    isVideoLoading,
+  } = useVideoPlayerStore();
 
-  const handleFileUpload = (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-
-    if (file.type.startsWith('video/') && !videoFile) {
-      setVideoFile(file);
-      setVideoUrl(URL.createObjectURL(file));
-    }
-  };
-
+  const api = useApi();
   useEffect(() => {
-    if (videoFile) {
-      console.log('start upload of ', videoFile);
-      uploadFile(videoFile, '');
+    if (activeLectureId) {
+      initState(api);
+      fetchVideoData(activeLectureId);
     }
-  }, [videoFile]);
+  }, [activeLectureId]);
 
-  return (
-    <div className="flex flex-grow m-2 gap-1" style={{ height: '80rem' }}>
-      {!videoFile && (
-        // TODO: REMOVE THIS
-        <FileDropZone
-          dropZoneOptions={{
-            accept: { 'video/mp4': ['.mp4'] },
-            onDrop: handleFileUpload,
-          }}
-        />
-      )}
+  if (isVideoLoading) {
+    return <LoadingVideoPlayer />;
+  }
 
-      {videoFile && videoUrl && (
-        <VideoPlayer url={videoUrl} />
-      )}
+  if (videoError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <p className="text-red-500">{videoError}</p>
+      </div>
+    );
+  }
 
-      <UploadSnackbar uploadState={uploadState} />
-    </div>
-  );
+  return videoUrl && <VideoPlayer url={videoUrl} segments={segments ?? []} />;
 };
 
 export default LecturePlayer;

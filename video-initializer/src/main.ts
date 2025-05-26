@@ -13,7 +13,7 @@ async function bootstrap() {
     SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, documentFactory);
 
-  await app.listen(process.env.PORT ?? 3000);
-  Logger.log(`App listening on port ${process.env.PORT ?? 3000}`);
+  await app.listen(process.env.PORT ?? 3005);
+  Logger.log(`App listening on port ${process.env.PORT ?? 3005}`);
 }
 bootstrap();

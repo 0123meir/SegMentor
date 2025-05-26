@@ -4,6 +4,9 @@ export interface KafkaConfig {
   brokers: string[];
 }
 
-export const kafkaConfig = registerAs('kafka', (): KafkaConfig => ({
-  brokers: [process.env.KAFKA_URL ?? 'localhost:9092'],
-}));
+export const kafkaConfig = registerAs(
+  'kafka',
+  (): KafkaConfig => ({
+    brokers: [process.env.KAFKA_URL ?? 'localhost:9092'],
+  }),
+);

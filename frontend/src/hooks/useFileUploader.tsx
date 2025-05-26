@@ -1,4 +1,4 @@
-import { useSegmentsStore } from '@/state/SegmentsStore';
+import { useVideoPlayerStore } from '@/state/VideoPlayerStore';
 import { Segment } from '@/types/Segment';
 import { SegmentDto } from '@/types/dtos/SegmentDto';
 import { segmentsColors } from '@/utils/Colors';
@@ -13,7 +13,6 @@ export type UploadState = 'none' | 'uploading' | 'error' | 'success';
 
 export const useFileUploader = () => {
   const [uploadState, setUploadState] = useState<UploadState>('none');
-  const { setSegments } = useSegmentsStore();
 
   useEffect(() => {
     console.log(uploadState);
@@ -59,7 +58,6 @@ export const useFileUploader = () => {
 
       setSegments(segmentsForTimeline);
       setUploadState('success');
-      return segments;
     } catch (error) {
       console.error('Error uploading file:', error);
       setUploadState('error');
