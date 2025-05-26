@@ -88,15 +88,13 @@ export class SegmentsService {
     try {
       await axios.put(`${process.env.LECTURE_SERVICE_URL}/lectures/${fileId}`, {
         status: 'Done',
-        // need to change it to Asaf's url
-        videoUrl: `https://eu-north-1.console.aws.amazon.com/s3/buckets/segmentor-raw-video/${fileId}`,
       });
       this.logger.log(
-        `Lecture updated with status and video URL for fileId ${fileId}`,
+        `Lecture's status updated for fileId ${fileId}`,
       );
     } catch (error) {
       this.logger.error({
-        message: 'failed updating lecture status and video url',
+        message: 'failed updating lecture status',
         fileId,
         error,
       });
