@@ -1,8 +1,8 @@
 import { useCoursesStore } from '@/state/CoursesStore';
 import { Course } from '@/types/Course';
+import { detectTextDirection } from '@/utils/detectTextDirection';
 import { BiBook } from 'react-icons/bi';
 
-import { detectTextDirection } from '@/utils/detectTextDirection';
 import { CourseItem } from './CourseItem';
 
 export const CourseList = () => {
@@ -24,14 +24,14 @@ export const CourseList = () => {
   };
 
   const handleLectureClick = async (courseId: string, lectureIndex: number) => {
-    const course = courses.find((c) => c._id === courseId);
+    const course = courses?.find((c) => c._id === courseId);
     if (!course) return;
 
     const lecture = course.lectures[lectureIndex];
     if (!lecture) return;
 
     // set the lecture as active
-  setActiveLecture(lecture._id!);
+    setActiveLecture(lecture._id!);
 
     // TODO: navigate to the lecture
 
@@ -55,7 +55,7 @@ export const CourseList = () => {
     );
   }
 
-  if (courses.length === 0) {
+  if (!courses || (courses && courses.length === 0)) {
     return (
       <div className="max-w-3xl mx-auto p-4 text-center text-gray-600">
         <p className="mb-2">No courses found.</p>
@@ -77,7 +77,7 @@ export const CourseList = () => {
         <h2 className="text-2xl font-bold text-gray-800">{sectionName}</h2>
       </div>
       <div className="space-y-3">
-        {courses.map((course: Course) => (
+        {courses?.map((course: Course) => (
           <CourseItem
             key={course._id}
             course={course}

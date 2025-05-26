@@ -27,6 +27,7 @@ export class S3Service {
         bucket,
         file.originalname,
         fileContent,
+        file.mimetype,
       );
 
       return result.$metadata;
@@ -44,8 +45,8 @@ export class S3Service {
     fileId: string,
     fileType: FileType,
   ): Promise<Buffer> {
+    const fileKey = `${fileId}${fileType.extension}`;
     try {
-      const fileKey = `${fileId}${fileType.extension}`;
       const file = await this.s3Repository.getObject(bucket, fileKey);
 
       if (file.Body instanceof Readable) {
@@ -70,7 +71,7 @@ export class S3Service {
       throw new InternalServerErrorException({
         message: 'File retrieval failure',
         error: error.message,
-        fileId,
+        fileKey,
       });
     }
   }

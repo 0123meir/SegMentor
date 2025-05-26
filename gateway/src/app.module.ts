@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { HttpModule } from '@nestjs/axios';
 import { AuthMiddleware } from './middlewares/auth.middleware';
@@ -19,6 +19,6 @@ export class AppModule {
     consumer
       .apply(AuthMiddleware)
       .exclude('/users/login', '/users')
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes('*');
   }
 }

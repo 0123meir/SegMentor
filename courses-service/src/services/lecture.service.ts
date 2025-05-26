@@ -18,8 +18,11 @@ export class LectureService {
   async create(
     createLectureDto: CreateLectureDto & { courseId: string },
   ): Promise<Lecture> {
-    // Create and save the lecture to get a proper Mongoose document
-    const lecture = new this.lectureModel(createLectureDto);
+    // Set the date field to now
+    const lecture = new this.lectureModel({
+      ...createLectureDto,
+      date: new Date(),
+    });
     const createdLecture = await lecture.save();
 
     // Add the lectureId to the course
@@ -45,8 +48,13 @@ export class LectureService {
     id: string,
     updateLectureDto: UpdateLectureDto,
   ): Promise<Lecture> {
+    // Update the date field to now
     return this.lectureModel
-      .findByIdAndUpdate(id, updateLectureDto, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { ...updateLectureDto, date: new Date() },
+        { new: true },
+      )
       .exec();
   }
 

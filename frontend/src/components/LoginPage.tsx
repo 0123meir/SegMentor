@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
-import useAuthStore from '@/stores/AuthStore.tsx';
+import useAuthStore from '@/state/AuthStore.tsx';
 import { GATEWAY_URL } from '@/globals/urls.tsx';
 import Cookies from 'js-cookie';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = Cookies.get('authToken');
+    if (token) {
+      navigate('/home');
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,10 +24,13 @@ const LoginPage: React.FC = () => {
 
     try {
       const LOGIN_URL = `${GATEWAY_URL}/users/login`;
-      const response: AxiosResponse<{token: string}> = await axios.post(LOGIN_URL, { username: username, password: password });
+      const response: AxiosResponse<{token: string, user: {id: string, role: string, username: string}}> =
+        await axios.post(LOGIN_URL, { username: username, password: password });
 
       useAuthStore.getState().setToken(response.data.token);
+      useAuthStore.getState().setUser(response.data.user);
       Cookies.set('authToken', useAuthStore.getState().token, { expires: 7, secure: true, sameSite: 'strict' });
+
       navigate('/home');
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');

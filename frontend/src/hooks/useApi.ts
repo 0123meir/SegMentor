@@ -5,6 +5,7 @@ interface HttpError extends Error {
 }
 
 import { config } from '../config/config';
+import Cookies from 'js-cookie';
 
 interface ApiError {
   message: string;
@@ -14,9 +15,13 @@ interface ApiError {
 export const useApi = () => {
   const fetchWithAuth = useCallback(
     async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
+      const contentType =
+        options?.headers && (options.headers as Record<string, string>)['Content-Type']
+          ? (options.headers as Record<string, string>)['Content-Type']
+          : 'application/json';
       const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.MOCK_JWT}`, //TODO: replace with real JWT token
+        'Content-Type': contentType,
+        Authorization: `Bearer ${Cookies.get('authToken')}`,
         ...options?.headers,
       };
 

@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { UserType } from './UserType';
 
 @Injectable()
 export class UsersService {
@@ -14,8 +15,13 @@ export class UsersService {
   async register(
     username: string,
     password: string,
-  ): Promise<{ user: UserDocument; token: string }> {
-    console.log(username, password);
+  ): Promise<{ user: UserType; token: string }> {
+    const existingUser = await this.userModel.findOne({ username });
+
+    if (existingUser) {
+      throw new Error('Username is already registered');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({
       username,
@@ -31,13 +37,16 @@ export class UsersService {
       { expiresIn: '24h' },
     );
 
-    return { user: savedUser, token };
+    const { _id: id, ...rest } = user.toObject();
+    const transformedUser: UserType = { id, ...rest };
+
+    return { user: transformedUser, token };
   }
 
   async login(
     username: string,
     password: string,
-  ): Promise<{ user: UserDocument; token: string }> {
+  ): Promise<{ user: UserType; token: string }> {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');
@@ -54,6 +63,22 @@ export class UsersService {
       { expiresIn: '24h' },
     );
 
-    return { user, token };
+    const { _id: id, ...rest } = user.toObject();
+    const transformedUser: UserType = { id, ...rest };
+
+    return { user: transformedUser, token };
+  }
+
+  async updateUserRole(username: string, role: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ username });
+    if (!user) return false;
+
+    user.role = role;
+    await user.save();
+    return true;
+  }
+
+  async findByUsername(username: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ username }).exec();
   }
 }
