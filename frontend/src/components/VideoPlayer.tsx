@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
-import SegmentsTimeline from './SegmentsTimeLine';
+import SegmentsTimeline from './timeline/SegmentsTimeLine';
 
 export interface VideoPlayerProps {
   url: string;
