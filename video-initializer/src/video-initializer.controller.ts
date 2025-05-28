@@ -59,7 +59,7 @@ export class VideoInitializerController {
       properties: {
         fileId: {
           type: 'string',
-          example: '123e4567-e89b-12d3-a456-426614174000',
+          example: '64b7f8e2f1a3c4d5e6f7a8b9',
         },
       },
     },
@@ -89,11 +89,7 @@ export class VideoInitializerController {
     const newFileName = `${fileId}.mp4`;
     const newFilePath = path.join(path.dirname(file.path), newFileName);
 
-    console.log(file.path);
     fs.renameSync(file.path, newFilePath);
-
-    console.log(file.path);
-    console.log(newFilePath);
 
     await this.videoInitializerService.extractMp3(newFilePath, fileId);
 

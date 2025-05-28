@@ -8,7 +8,6 @@ interface CourseCardProps {
   courseIndex: number;
   lectureTitle: string;
   setLectureTitle: (title: string) => void;
-  onAddLecture: (courseIndex: number) => void;
   onEditLecture: (courseIndex: number, lectureIndex: number) => void;
   onDeleteLecture: (courseIndex: number, lectureIndex: number) => void;
 }
@@ -18,7 +17,6 @@ const CourseCard = ({
   courseIndex,
   lectureTitle,
   setLectureTitle,
-  onAddLecture,
   onEditLecture,
   onDeleteLecture,
 } :CourseCardProps) => {
@@ -53,12 +51,6 @@ const CourseCard = ({
           placeholder="Enter lecture title"
           className="w-full p-3 border border-gray-300 rounded-md mb-4 text-base"
         />
-        <button
-          onClick={() => onAddLecture(courseIndex)}
-          className="bg-blue-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-blue-600"
-        >
-          Add Lecture
-        </button>
       </>
 
       <LectureList

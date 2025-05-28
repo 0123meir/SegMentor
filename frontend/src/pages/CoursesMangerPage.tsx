@@ -15,7 +15,6 @@ const CoursesManagerPage = () => {
     setCourses,
     isLoading,
     error,
-    addLecture,
     deleteLecture,
     addCourse,
   } = useCoursesStore();
@@ -60,21 +59,6 @@ const CoursesManagerPage = () => {
       ...prev,
       [courseIndex]: title,
     }));
-  };
-
-  const handleAddLecture = (courseIndex: number): void => {
-    const title = lectureTitles[courseIndex];
-    if (title?.trim()) {
-      const courseId = courses![courseIndex]._id;
-      addLecture(courseId, {
-        title,
-        description: '', //TODO: add description in uploud lecture popup
-      });
-      setLectureTitles((prev) => ({
-        ...prev,
-        [courseIndex]: '',
-      }));
-    }
   };
 
   const handleEditLecture = (
@@ -144,7 +128,6 @@ const CoursesManagerPage = () => {
             setLectureTitle={(title) =>
               handleSetLectureTitle(courseIndex, title)
             }
-            onAddLecture={handleAddLecture}
             onEditLecture={handleEditLecture}
             onDeleteLecture={handleDeleteLecture}
           />
