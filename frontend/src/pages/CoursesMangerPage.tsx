@@ -5,6 +5,7 @@ import { useApi } from '@/hooks/useApi';
 import useAuthStore from '@/state/AuthStore';
 import { useCoursesStore } from '@/state/CoursesStore';
 import { useEffect, useState } from 'react';
+import { Lecture } from '@/types/Course.ts';
 
 const CoursesManagerPage = () => {
   const { token, user } = useAuthStore();
@@ -15,6 +16,7 @@ const CoursesManagerPage = () => {
     setCourses,
     isLoading,
     error,
+    addLecture,
     deleteLecture,
     addCourse,
   } = useCoursesStore();
@@ -59,6 +61,10 @@ const CoursesManagerPage = () => {
       ...prev,
       [courseIndex]: title,
     }));
+  };
+
+  const handleAddLecture = (courseId: string, lecture: Lecture): void => {
+    addLecture(courseId, lecture);
   };
 
   const handleEditLecture = (
@@ -128,6 +134,7 @@ const CoursesManagerPage = () => {
             setLectureTitle={(title) =>
               handleSetLectureTitle(courseIndex, title)
             }
+            onAddLecture={handleAddLecture}
             onEditLecture={handleEditLecture}
             onDeleteLecture={handleDeleteLecture}
           />

@@ -20,6 +20,13 @@ import { diskStorage } from 'multer';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
+export interface CoursesManagerResponseData {
+  _id: string;
+  date: string;
+  title: string;
+  description: string;
+}
+
 @Controller('video-initializer')
 export class VideoInitializerController {
   constructor(
@@ -71,28 +78,25 @@ export class VideoInitializerController {
     @UploadedFile() file: Express.Multer.File,
     @Body('courseId') courseId: string,
     @Body('title') title: string,
-  ) {
+  ): Promise<CoursesManagerResponseData> {
     if (!file) {
       throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
     }
 
-    const response = await axios.post(
-      `${process.env.COURSES_SERVICE_URL}/lectures`,
-      {
-        title,
-        courseId,
-      },
-    );
+    const lecture: CoursesManagerResponseData = (
+      await axios.post<CoursesManagerResponseData>(`${process.env.COURSES_SERVICE_URL}/lectures`, {
+          title,
+          courseId,
+        },
+      )
+    ).data;
 
-    const fileId: string = response.data._id;
-
+    const fileId: string = lecture._id;
     const newFileName = `${fileId}.mp4`;
-    const newFilePath = path.join(path.dirname(file.path), newFileName);
-
+    const newFilePath: string = path.join(path.dirname(file.path), newFileName);
     fs.renameSync(file.path, newFilePath);
-
     await this.videoInitializerService.extractMp3(newFilePath, fileId);
 
-    return fileId;
+    return lecture;
   }
 }

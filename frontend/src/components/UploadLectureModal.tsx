@@ -2,14 +2,16 @@ import { useState } from 'react';
 import FileDropZone from '@/components/FileDropZone.tsx';
 import { useFileUploader } from '@/hooks/useFileUploader.tsx';
 import UploadSnackbar from '@/components/UploadSnackbar.tsx';
+import { Lecture } from '@/types/Course.ts';
 
 interface LectureModalProps {
   isOpen: boolean;
   onClose: () => void;
   courseId: string;
+  uploadLecture: (courseId: string, lecture: Lecture) => void;
 }
 
-const LectureModal = ({ isOpen, onClose, courseId }: LectureModalProps) => {
+const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModalProps) => {
   const [title, setTitle] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
@@ -17,7 +19,8 @@ const LectureModal = ({ isOpen, onClose, courseId }: LectureModalProps) => {
 
   const handleSubmit = async () => {
     if (title.trim()) {
-      await uploadFile(videoFile, courseId, title);
+      const responseLecture: Lecture= await uploadFile(videoFile, courseId, title);
+      uploadLecture(courseId, responseLecture);
 
       setTitle('');
       setVideoFile(null);
