@@ -80,9 +80,6 @@ export class VideoSegmentationConsumer implements OnModuleInit {
                 fileId,
                 segments['segments'],
               );
-              this.logger.log(`Segments saved for fileId ${fileId}`);
-
-              await this.segmentService.updateLectureStatus(fileId);
 
               resolveOffset(message.offset);
               await commitOffsetsIfNecessary();

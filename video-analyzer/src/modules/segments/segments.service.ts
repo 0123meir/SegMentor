@@ -76,25 +76,22 @@ export class SegmentsService {
   ];
 
   async saveSegments(fileId: string, segments: Segment[]) {
-    const doc = {
-      fileId,
-      segments,
-    };
-
-    return this.segmentsModel.create(doc);
-  }
-
-  async updateLectureStatus(fileId: string) {
     try {
+      for (const segment of segments) {
+        await axios.post(
+          `${process.env.LECTURE_SERVICE_URL}/segments/${fileId}`,
+            segment,
+        );
+      }
+
       await axios.put(`${process.env.LECTURE_SERVICE_URL}/lectures/${fileId}`, {
         status: 'Done',
       });
-      this.logger.log(
-        `Lecture's status updated for fileId ${fileId}`,
-      );
+
+      this.logger.log(`Segments saved for fileId ${fileId}`);
     } catch (error) {
       this.logger.error({
-        message: 'failed updating lecture status',
+        message: 'failed updating lecture segments and status',
         fileId,
         error,
       });
