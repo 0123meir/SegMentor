@@ -160,8 +160,11 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   return (
     <div
       ref={videoContainerRef}
-      className="relative w-full bg-black rounded-lg h-[50vh] mx-auto my-4" // Changed height and added margin
-      style={{ aspectRatio: '16/9', maxHeight: '600px' }} // Added max height
+      className="relative w-full bg-black rounded-lg h-[56.25vh] mx-auto my-4" // 16:9 aspect ratio
+      style={{
+        aspectRatio: '16/9',
+        maxHeight: '720px', // Standard YouTube height
+      }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
         <ReactPlayer
@@ -180,7 +183,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
               typeof e === 'string'
                 ? e
                 : e?.message ||
-                  'An unknown error occurred while loading the video.'
+                    'An unknown error occurred while loading the video.'
             );
           }}
           width="100%"
