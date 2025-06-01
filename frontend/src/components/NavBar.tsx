@@ -17,11 +17,11 @@ const NavBar = () => {
   const isActiveLink = (path: string) => location.pathname === path;
 
   return (
-    <nav className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-6 py-2.5 shadow-md">
+    <nav dir="ltr" className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white px-6 py-2.5 shadow-md">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <span className="font-bold text-lg tracking-wide text-white group-hover:text-blue-100 transition-colors">
-            Segmentor
+            SegMentor
           </span>
 
           <Link
