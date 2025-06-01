@@ -79,12 +79,12 @@ export class SegmentsService {
     try {
       for (const segment of segments) {
         await axios.post(
-          `${process.env.LECTURE_SERVICE_URL}/segments/${fileId}`,
+          `${process.env.COURSES_SERVICE_URL}/segments/${fileId}`,
             segment,
         );
       }
 
-      await axios.put(`${process.env.LECTURE_SERVICE_URL}/lectures/${fileId}`, {
+      await axios.put(`${process.env.COURSES_SERVICE_URL}/lectures/${fileId}`, {
         status: 'Done',
       });
 
