@@ -2,9 +2,10 @@ import noPermission from '@/assets/no-permission.jpg';
 import AddCourseForm from '@/components/Courses/manager/AddCourseForm';
 import CourseCard from '@/components/Courses/manager/CourseCard';
 import { useApi } from '@/hooks/useApi';
-import useAuthStore from '@/state/AuthStore';
+import useAuthStore, { UserRoles } from '@/state/AuthStore';
 import { useCoursesStore } from '@/state/CoursesStore';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CoursesManagerPage = () => {
   const { token, user } = useAuthStore();
@@ -21,10 +22,15 @@ const CoursesManagerPage = () => {
   } = useCoursesStore();
 
   const api = useApi();
+  const navigate = useNavigate();
 
-  const isAllowed = user?.role === 'admin' || user?.role === 'lecturer';
+  const isAllowed = user?.role === UserRoles.Admin || user?.role === UserRoles.Lecturer;
 
   useEffect(() => {
+    if (!isAllowed) {
+      navigate('/home', { replace: true });
+      return;
+    }
     if (token && user && isAllowed && !courses) {
       initState(api, user.id);
       fetchCourses();
