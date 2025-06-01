@@ -10,6 +10,7 @@ import {
   s3DalConfigKey,
 } from 'src/config/s3-dal.config';
 import { HttpModule } from '@nestjs/axios';
+import { SummaryModule } from './summary.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { HttpModule } from '@nestjs/axios';
       },
       inject: [s3DalConfigKey],
     }),
+    SummaryModule,
   ],
   controllers: [SearchController],
   providers: [SearchService, Logger],

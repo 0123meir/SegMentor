@@ -20,7 +20,6 @@ export class SummaryService {
   ) {}
 
   async expandSummary(shortSummary: string, topic?: string): Promise<string> {
-    this.logger.log({ message: 'expanding summary' });
     try {
       const response = await this.openAI.chat.completions.create({
         model: AI_MODEL,
@@ -32,6 +31,11 @@ export class SummaryService {
         presence_penalty,
       });
 
+      Logger.log({
+        message: 'summary expanded successfully',
+        summary: response.choices[0].message.content?.trim(),
+      });
+      
       return response.choices[0].message.content?.trim() || '';
     } catch (error) {
       this.logger.error({ message: 'failed expanding summary', error });
