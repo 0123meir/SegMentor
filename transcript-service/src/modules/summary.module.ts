@@ -10,6 +10,7 @@ import {
 } from 'src/config/s3-dal.config';
 import { SummaryController } from 'src/controllers/summary.controller';
 import { SummaryService } from 'src/services/summary.service';
+import { OpenAIModule } from './open-ai.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SummaryService } from 'src/services/summary.service';
       },
       inject: [s3DalConfigKey],
     }),
+    OpenAIModule,
   ],
   controllers: [SummaryController],
   providers: [SummaryService, Logger],
