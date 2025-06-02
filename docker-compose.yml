@@ -1,6 +1,13 @@
-version: '3.8'
-
 services:
+  client:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    ports: 
+      - "8000:8000"
+    env_file:
+      - ./frontend/.env
+
   gateway:
     build:
       context: ./gateway
@@ -10,6 +17,10 @@ services:
       - "4000:4000"
     env_file:
       - ./gateway/.env
+    environment:
+      - PERMISSION_SERVICE_URL=http://permission-service:3001
+      - COURSES_SERVICE_URL=http://courses-service:3002
+      - CLIENTURL=http://localhost:8000
 
   s3-dal:
     build:
@@ -45,6 +56,7 @@ services:
     environment:
       - MONGODB_URI=mongodb://host.docker.internal:27017/segmentor
       - KAFKA_URL=host.docker.internal:9092
+      - S3_DAL_URL=http://s3-dal:3004
 
   video-initializer:
     build:
@@ -67,6 +79,8 @@ services:
       - "3006:3006"
     env_file:
       - ./transcript-service/.env
+    environment:
+      - S3_DAL_URL=http://s3-dal:3004
 
   courses-service:
     build:
