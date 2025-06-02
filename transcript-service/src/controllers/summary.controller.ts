@@ -15,7 +15,7 @@ export class SummaryController {
   async expandSummary(
     @Body('shortSummary') shortSummary: string,
     @Body('topic') topic?: string,
-  ): Promise<string> {
+  ): Promise<{ expandedSummary: string }> {
     if (!shortSummary) {
       throw new HttpException(
         'Short summary is required',
@@ -24,7 +24,8 @@ export class SummaryController {
     }
 
     try {
-      return await this.summaryService.expandSummary(shortSummary, topic);
+      const summary = await this.summaryService.expandSummary(shortSummary, topic);
+      return { expandedSummary: summary }; 
     } catch (error) {
       throw new HttpException(
         'Failed to expand summary',

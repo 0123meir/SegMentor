@@ -1,5 +1,5 @@
 import lecturesImage from '@/assets/lectures.svg';
-import { AIAssistant } from '@/components/AIAssistant';
+import AIAssistant from '@/components/AIAssistant';
 import LecturePlayer from '@/components/LecturePlayer';
 import { LeftSideMenu } from '@/components/LeftSideMenu';
 import { useApi } from '@/hooks/useApi';
@@ -22,7 +22,7 @@ const WatchLecturePage = () => {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <div className="flex flex-col flex-grow min-w-0">
+      <div className="flex flex-col w-full flex-grow min-w-0">
         {activeLectureId ? (
           <>
             <LecturePlayer />

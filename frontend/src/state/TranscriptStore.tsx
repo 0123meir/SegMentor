@@ -4,6 +4,7 @@ import { UseApiType } from '@/hooks/useApi';
 interface TranscriptStore {
   api?: UseApiType;
   expandedSummary?: string;
+  summaryTitle?: string;
   isLoading: boolean;
   error?: string;
   initState: (api: UseApiType) => void;
@@ -23,12 +24,12 @@ export const useTranscriptStore = create<TranscriptStore>((set, get) => ({
       if (!get().api) throw new Error('API not initialized');
       set({ isLoading: true, error: undefined });
 
-      const result = await get().api!.post<string>(
+      const { expandedSummary } = await get().api!.post<{ expandedSummary: string }>(
         '/transcript-service/expand-summary',
         { shortSummary, topic }
       );
 
-      set({ expandedSummary: result, isLoading: false });
+      set({ expandedSummary, summaryTitle: topic, isLoading: false });
     } catch (error) {
       console.error(error);
       set({

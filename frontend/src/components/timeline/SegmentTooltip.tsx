@@ -6,7 +6,7 @@ interface SegmentTooltipProps {
   title?: string;
   description?: string;
 }
-//TODO: change the tooltip, maybe a popup on the video, or make a tab for the description in the AI section
+
 const SegmentTooltip: React.FC<SegmentTooltipProps> = ({
   title,
   description,
@@ -14,18 +14,14 @@ const SegmentTooltip: React.FC<SegmentTooltipProps> = ({
   const rawApi = useApi();
   const api = useMemo(() => rawApi, []);
 
-  const { initState, expandSummary, isLoading, expandedSummary } =
-    useTranscriptStore();
+  const { initState, expandSummary, isLoading } = useTranscriptStore();
 
   useEffect(() => {
     initState(api);
   }, [api]);
 
   const handleExpand = async () => {
-    if (description) {
-      const x = await expandSummary(description, title);
-      console.log('Expand Summary Result:', x);
-    }
+    if (description) await expandSummary(description, title);
   };
 
   return (
@@ -52,11 +48,6 @@ const SegmentTooltip: React.FC<SegmentTooltipProps> = ({
       >
         {isLoading ? 'Expanding...' : 'Expand Summary'}
       </button>
-      {expandedSummary && (
-        <div className="mt-2 text-[10px] text-black font-medium">
-          {expandedSummary}
-        </div>
-      )}
       <div
         className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 
         w-2 h-2 bg-white/90 rotate-45 shadow-lg"
