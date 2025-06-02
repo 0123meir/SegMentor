@@ -1,13 +1,57 @@
 services:
+  mongodb:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092" # Internal Docker network port
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
   client:
     build:
       context: ./frontend
       dockerfile: dockerfile
-    ports: 
-      - "8000:8000"
+    ports:
+      - "80:80"
+      - "443:443"
     env_file:
       - ./frontend/.env
-
   gateway:
     build:
       context: ./gateway
@@ -20,8 +64,9 @@ services:
     environment:
       - PERMISSION_SERVICE_URL=http://permission-service:3001
       - COURSES_SERVICE_URL=http://courses-service:3002
-      - CLIENTURL=http://localhost:8000
-
+      - TRANSCRIPT_SERVICE_URL=http://transcript-service:3006
+      - CLIENTURL=http://localhost
+      - VITE_CLOUDFRONT_DOMAIN_URL=https://d1bxigp1z5p4f8.cloudfront.net
   s3-dal:
     build:
       context: ./s3-dal
@@ -57,6 +102,9 @@ services:
       - MONGODB_URI=mongodb://host.docker.internal:27017/segmentor
       - KAFKA_URL=host.docker.internal:9092
       - S3_DAL_URL=http://s3-dal:3004
+    depends_on:
+      - kafka
+      - mongodb
 
   video-initializer:
     build:
@@ -69,6 +117,8 @@ services:
       - ./video-initializer/.env
     environment:
       - KAFKA_URL=host.docker.internal:9092
+    depends_on:
+      - kafka
 
   transcript-service:
     build:
@@ -93,3 +143,5 @@ services:
       - ./courses-service/.env
     environment:
       - MONGODB_URI=mongodb://host.docker.internal:27017/segmentor
+    depends_on:
+      - mongodb

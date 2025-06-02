@@ -4,6 +4,7 @@ import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
 import SegmentsTimeline from './timeline/SegmentsTimeLine';
+import { SearchBar } from './SearchBar';
 
 export interface VideoPlayerProps {
   url: string;
@@ -164,6 +165,12 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
       style={{ aspectRatio: '16/9' }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
+      <SearchBar onResultClick={(seekTime: number) => {
+    if (videoRef.current) {
+      setCurrentTime(seekTime);
+      videoRef.current.seekTo(seekTime);
+    }
+      }}/>
       <ReactPlayer
       className="rounded-md"
       ref={videoRef}
