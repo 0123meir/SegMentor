@@ -4,7 +4,6 @@ import { GATEWAY_URL } from '@/globals/urls.tsx';
 import Cookies from 'js-cookie';
 import { Lecture } from '@/types/Course.ts';
 
-
 export type UploadState = 'none' | 'uploading' | 'error' | 'success';
 
 export const useFileUploader = () => {
