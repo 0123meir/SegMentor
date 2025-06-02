@@ -1,8 +1,9 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { UsersController } from './users.controller';
 import { HttpModule } from '@nestjs/axios';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { ConfigModule } from '@nestjs/config';
+import { VideoInitializerController } from './video-initializer.controllers';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }),
   ],
-  controllers: [AppController],
+  controllers: [UsersController, VideoInitializerController],
   providers: [],
 })
 export class AppModule {
