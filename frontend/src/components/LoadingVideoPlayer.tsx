@@ -3,15 +3,16 @@ import loadingAnimation from '@/assets/loading.webm';
 const LoadingVideoPlayer = () => (
   <div
     style={{
-      width: '800px',
-      height: '450px',
+      width: '100%',
+      height: '56.25vh',
+      maxHeight: '720px',
       background: '#222',
       borderRadius: '12px',
       boxShadow: '0 2px 16px rgba(0,0,0,0.2)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      margin: '40px auto',
+      margin: '1rem auto',
       position: 'relative',
     }}
   >
