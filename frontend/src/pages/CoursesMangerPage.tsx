@@ -5,6 +5,7 @@ import { useApi } from '@/hooks/useApi';
 import useAuthStore from '@/state/AuthStore';
 import { useCoursesStore } from '@/state/CoursesStore';
 import { useEffect, useState } from 'react';
+import { Lecture } from '@/types/Course.ts';
 
 const CoursesManagerPage = () => {
   const { token, user } = useAuthStore();
@@ -62,19 +63,8 @@ const CoursesManagerPage = () => {
     }));
   };
 
-  const handleAddLecture = (courseIndex: number): void => {
-    const title = lectureTitles[courseIndex];
-    if (title?.trim()) {
-      const courseId = courses![courseIndex]._id;
-      addLecture(courseId, {
-        title,
-        description: '', //TODO: add description in uploud lecture popup
-      });
-      setLectureTitles((prev) => ({
-        ...prev,
-        [courseIndex]: '',
-      }));
-    }
+  const handleAddLecture = (courseId: string, lecture: Lecture): void => {
+    addLecture(courseId, lecture);
   };
 
   const handleEditLecture = (

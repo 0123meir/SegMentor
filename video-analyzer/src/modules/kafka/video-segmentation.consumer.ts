@@ -20,7 +20,7 @@ export class VideoSegmentationConsumer implements OnModuleInit {
     await this.consumerService.consume(
       {
         topics: [
-          process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video.to-segment',
+          process.env.KAFKA_VIDEO_TO_SEGMENTS_TOPIC ?? 'video-to-segment',
         ],
       },
       {
@@ -76,8 +76,10 @@ export class VideoSegmentationConsumer implements OnModuleInit {
                 mp3BufferFile,
               );
 
-              await this.segmentService.saveSegments(fileId, segments['segments']);
-              this.logger.log(`Segments saved for fileId ${fileId}`);
+              await this.segmentService.saveSegments(
+                fileId,
+                segments['segments'],
+              );
 
               resolveOffset(message.offset);
               await commitOffsetsIfNecessary();

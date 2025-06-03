@@ -148,6 +148,10 @@ export class S3Controller {
       FileType.MP4,
     );
 
+    if (!fileContent) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
     res.send(fileContent);
   }
 }

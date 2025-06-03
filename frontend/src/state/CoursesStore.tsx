@@ -3,7 +3,6 @@ import {
   AddCourseRequest,
   Course,
   Lecture,
-  LectureUpdate,
 } from '@/types/Course';
 import { create } from 'zustand';
 
@@ -19,7 +18,7 @@ interface CoursesState {
   fetchCourses: () => Promise<void>;
   markLectureWatched: (courseId: string, lectureId: string) => Promise<void>;
   setCourses: (courses: Course[]) => void;
-  addLecture: (courseId: string, lectureData: LectureUpdate) => void;
+  addLecture: (courseId: string, lectureData: Lecture) => void;
   deleteLecture: (courseId: string, lectureId: string) => void;
   setActiveCourse: (courseId: string) => void;
   setActiveLecture: (lectureId: string) => void;
@@ -96,11 +95,11 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   userId: null,
   initState: (api, userId) => set({ api, userId }),
   fetchCourses: async () => {
-    set({ isLoading: true, error: null });
     try {
       if (!get().api) {
         throw new Error('API not initialized. Please call initState first.');
       }
+      set({ isLoading: true, error: null });
       const data = await get().api!.get<Course[]>(
         `/courses-service/courses?userId=${get().userId}`
       );
@@ -140,28 +139,15 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
       console.error('Failed to mark lecture as watched', err);
     }
   },
-  addLecture: async (courseId: string, lectureData: Partial<Lecture>) => {
-    if (!lectureData.title) {
-      throw new Error('Lecture title is required');
-    }
+  addLecture: async (courseId: string, lectureData: Lecture) => {
     try {
-      if (!get().api) {
-        throw new Error('API not initialized. Please call initState first.');
-      }
-      const createdLecture = await get().api!.post<Lecture>(
-        `/courses-service/lectures`,
-        {
-          ...lectureData,
-          courseId,
-        }
-      );
       set((state) => {
         const courseIdx = state.courses?.findIndex((c) => c._id === courseId);
         if (courseIdx === undefined || courseIdx === -1) return state;
         const updatedCourses = [...state.courses!];
         updatedCourses[courseIdx].lectures = [
           ...updatedCourses[courseIdx].lectures,
-          createdLecture,
+          lectureData,
         ];
         return { ...state, courses: updatedCourses };
       });
