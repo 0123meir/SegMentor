@@ -4,8 +4,8 @@ import CourseCard from '@/components/Courses/manager/CourseCard';
 import { useApi } from '@/hooks/useApi';
 import useAuthStore from '@/state/AuthStore';
 import { useCoursesStore } from '@/state/CoursesStore';
-import { useEffect, useState } from 'react';
 import { Lecture } from '@/types/Course.ts';
+import { useEffect, useMemo, useState } from 'react';
 
 const CoursesManagerPage = () => {
   const { token, user } = useAuthStore();
@@ -39,11 +39,13 @@ const CoursesManagerPage = () => {
 
   const userId = user?.id;
 
-  const filteredCourses =
-    courses &&
-    courses.filter((course) =>
-      course.lecturer.find((lecturer) => lecturer._id === userId)
-    );
+  const filteredCourses = useMemo(
+    () =>
+      courses?.filter((course) =>
+        course.lecturer.find((lecturer) => lecturer._id === userId)
+      ),
+    [courses, userId]
+  );
 
   const handleAddCourse = async (): Promise<void> => {
     if (currentCourse.trim() && isAllowed && userId) {
@@ -53,6 +55,7 @@ const CoursesManagerPage = () => {
         lectures: [],
       });
       setCurrentCourse('');
+      fetchCourses();
     }
   };
 

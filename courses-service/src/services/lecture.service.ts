@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model, Types } from 'mongoose';
 import { Lecture } from '../schemas/lecture.schema';
@@ -28,7 +28,10 @@ export class LectureService {
     // Add the lectureId to the course
     const course = await this.courseModel.findById(createLectureDto.courseId);
     if (!course) {
-      throw new Error('Course not found');
+      throw new NotFoundException({
+        message: 'Course Not Found',
+        id: createLectureDto.courseId,
+      });
     }
     course.lectures.push(createdLecture._id as unknown as Types.ObjectId);
     await course.save();
