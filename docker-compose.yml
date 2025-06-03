@@ -20,6 +20,7 @@ services:
     environment:
       - PERMISSION_SERVICE_URL=http://permission-service:3001
       - COURSES_SERVICE_URL=http://courses-service:3002
+      - VIDEO_INITIALIZER_SERVICE_URL=http://video-initializer:3005
       - CLIENTURL=http://localhost:8000
 
   s3-dal:
