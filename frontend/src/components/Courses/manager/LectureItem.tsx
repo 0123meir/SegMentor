@@ -39,40 +39,6 @@ const LectureItem = ({
     pollFunction: pollLecture,
   });
 
-  //   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
-  //   const pollingTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  //   useEffect(() => {
-  //     if (isUploadInProgress) {
-  //       pollingInterval.current = setInterval(() => {
-  //         pollInProgressLecture(courseIndex, lecture._id!, lectureIndex);
-  //       }, POLL_INTERVAL_MS);
-
-  //       pollingTimeout.current = setTimeout(() => {
-  //         if (pollingInterval.current) {
-  //           clearInterval(pollingInterval.current);
-  //           pollingInterval.current = null;
-  //         }
-  //       }, POLL_TIMEOUT_MS);
-  //     }
-
-  //     return () => {
-  //       if (pollingInterval.current) {
-  //         clearInterval(pollingInterval.current);
-  //       }
-
-  //       if (pollingTimeout.current) {
-  //         clearTimeout(pollingTimeout.current);
-  //       }
-  //     };
-  //   }, [
-  //     courseIndex,
-  //     isUploadInProgress,
-  //     lecture._id,
-  //     lectureIndex,
-  //     pollInProgressLecture,
-  //   ]);
-
   return (
     <li className="flex items-center p-3 border-b border-gray-200 last:border-b-0">
       <span className="flex-1 min-w-0 break-words max-w-xs">
