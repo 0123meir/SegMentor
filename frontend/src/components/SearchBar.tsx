@@ -43,7 +43,7 @@ export const SearchBar = (props: {
   }, [query, activeLectureId]);
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 justify-self-center self-start">
+    <div className="w-full max-w-xl mx-auto px-4 justify-self-center self-start" onBlur={() => setTimeout(() => setShowResults(false), 100)}>
       <div className="relative">
         <div>
           <div className="relative w-full">
@@ -53,7 +53,6 @@ export const SearchBar = (props: {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setShowResults(true)}
-              onBlur={() => setShowResults(false)}
               placeholder="Search subtitles..."
               className="w-full mt-5 pr-12 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md text-white placeholder-white/70 border border-white/20 focus:outline-none transition hover:bg-white/20"
             />
