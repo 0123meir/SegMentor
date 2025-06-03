@@ -191,13 +191,13 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           height="100%"
         />
       </div>
-      <SearchBar onResultClick={(seekTime: number) => {
+      {!error && <SearchBar onResultClick={(seekTime: number) => {
         if (videoRef.current) {
           setCurrentTime(seekTime);
           videoRef.current.seekTo(seekTime);
           setIsPlaying(true);
         }
-      }}/>
+      }}/>}
       {error && (
         <div className="flex items-center justify-center w-full h-full text-white">
           <div>
