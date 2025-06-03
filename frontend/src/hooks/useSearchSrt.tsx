@@ -1,3 +1,4 @@
+import { SearchResultDto } from '@/types/dtos/SearchDto';
 import { useApi } from './useApi'; // adjust path as needed
 
 export const useSearchSrt = () => {
@@ -5,7 +6,7 @@ export const useSearchSrt = () => {
 
   const searchSrt = async (fileId: string, prompt: string) => {
     const endpoint = `/transcript-service/search/${fileId}?prompt=${encodeURIComponent(prompt)}`;
-    return await get<{ result: string }>(endpoint);
+    return await get<SearchResultDto[]>(endpoint);
   };
 
   return { searchSrt };

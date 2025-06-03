@@ -165,12 +165,6 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
       style={{ aspectRatio: '16/9' }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
-      <SearchBar onResultClick={(seekTime: number) => {
-    if (videoRef.current) {
-      setCurrentTime(seekTime);
-      videoRef.current.seekTo(seekTime);
-    }
-      }}/>
       <ReactPlayer
       className="rounded-md"
       ref={videoRef}
@@ -183,17 +177,24 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
       onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
       onDuration={(duration) => setDuration(duration)}
       onError={(e) => {
-      setError(
-        typeof e === 'string'
-        ? e
-        : e?.message ||
-        'An unknown error occurred while loading the video.'
-      );
+        setError(
+          typeof e === 'string'
+          ? e
+          : e?.message ||
+          'An unknown error occurred while loading the video.'
+        );
       }}
       width="100%"
       height="100%"
       />
       </div>
+      <SearchBar onResultClick={(seekTime: number) => {
+        if (videoRef.current) {
+          setCurrentTime(seekTime);
+          videoRef.current.seekTo(seekTime);
+          setIsPlaying(true);
+        }
+      }}/>
       {error && (
       <div className="flex items-center justify-center w-full h-full text-white">
       <div>
