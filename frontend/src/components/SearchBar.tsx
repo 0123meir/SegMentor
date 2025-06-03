@@ -1,5 +1,4 @@
 import { useSearchSrt } from '@/hooks/useSearchSrt';
-// adjust path if needed
 import { useCoursesStore } from '@/state/CoursesStore';
 import { SearchResultDto } from '@/types/dtos/SearchDto';
 import { timeToSeconds } from '@/utils/Time';
