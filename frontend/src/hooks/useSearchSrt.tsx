@@ -1,5 +1,5 @@
 import { SearchResultDto } from '@/types/dtos/SearchDto';
-import { useApi } from './useApi'; // adjust path as needed
+import { useApi } from './useApi';
 
 export const useSearchSrt = () => {
   const { get } = useApi();
