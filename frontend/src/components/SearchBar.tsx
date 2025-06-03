@@ -3,6 +3,7 @@ import { useSearchSrt } from '@/hooks/useSearchSrt'; // adjust path if needed
 import { useCoursesStore } from '@/state/CoursesStore';
 import { timeToSeconds } from '@/utils/Time';
 import { SearchResultDto } from '@/types/dtos/SearchDto';
+import ProgressBar from './ProgressBar';
 
 
 export const SearchBar = (props: {onResultClick: (seekTime: number)=> void}) => {
@@ -39,8 +40,9 @@ export const SearchBar = (props: {onResultClick: (seekTime: number)=> void}) => 
   }, [query, activeLectureId]);
 
   return (
-    <div className="w-full max-w-xl mx-auto mt-5 px-4 justify-self-center self-start">
+    <div className="w-full max-w-xl mx-auto px-4 justify-self-center self-start">
       <div className="relative">
+        <div>
         <input
           dir='ltr'
           type="text"
@@ -48,8 +50,10 @@ export const SearchBar = (props: {onResultClick: (seekTime: number)=> void}) => 
           onChange={e => setQuery(e.target.value)}
           onFocus={()=>setShowResults(true)}
           placeholder="Search subtitles..."
-          className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md text-white placeholder-white/70 border border-white/20 focus:outline-none transition"
-        />
+          className="w-full mt-5 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md text-white placeholder-white/70 border border-white/20 focus:outline-none transition hover:bg-white/20"
+          />
+        {isLoading && <ProgressBar/>}
+          </div>
 
         {results.length > 0 && showResults && (
           <ul dir='ltr' className="absolute left-0 right-0 mt-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl max-h-64 overflow-y-auto text-white cursor-pointer focus:outline-none">
