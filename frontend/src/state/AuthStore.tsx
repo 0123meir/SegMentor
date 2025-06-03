@@ -1,9 +1,14 @@
 import { create } from 'zustand';
 
+export enum UserRoles {
+    Student = 'student',
+    Lecturer = 'lecturer',
+    Admin = 'admin',
+}
 interface User {
   id: string;
   username: string;
-  role: string;
+  role: UserRoles;
 }
 
 interface AuthState {
@@ -12,7 +17,7 @@ interface AuthState {
   setToken: (token: string) => void;
   clearToken: () => void;
   setUser: (user: User) => void;
-  clearUser: () => void;
+  clearState: () => void;
 }
 
 const useAuthStore = create<AuthState>((set) => ({
@@ -21,7 +26,7 @@ const useAuthStore = create<AuthState>((set) => ({
   setToken: (token) => set({ token }),
   clearToken: () => set({ token: '' }),
   setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
+  clearState: () => set({ token: '', user: null })
 }));
 
 export default useAuthStore;
