@@ -3,6 +3,7 @@ import {
   AddCourseRequest,
   Course,
   Lecture,
+  LectureStatus,
 } from '@/types/Course';
 import { create } from 'zustand';
 
@@ -23,6 +24,11 @@ interface CoursesState {
   setActiveCourse: (courseId: string) => void;
   setActiveLecture: (lectureId: string) => void;
   addCourse: (courseData: AddCourseRequest) => Promise<void>;
+  getExistingLecture: (
+    courseIndex: number,
+    lectureId: string,
+    lectureIndex: number
+  ) => Promise<void>;
 }
 
 function optimisticMarkLectureWatched(
@@ -85,6 +91,16 @@ function rollbackDeleteLecture(
   return { ...state, courses: updatedCourses };
 }
 
+const getElementIndex = <T extends Course | Lecture>(
+  elements: T[] | null,
+  elementId: string
+): number | null => {
+  const elementIndex = elements?.findIndex((c) => c._id === elementId);
+  if (elementIndex === undefined || elementIndex === -1) return null;
+
+  return elementIndex;
+};
+
 export const useCoursesStore = create<CoursesState>((set, get) => ({
   courses: null,
   activeCourseId: null,
@@ -142,8 +158,10 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
   addLecture: async (courseId: string, lectureData: Lecture) => {
     try {
       set((state) => {
-        const courseIdx = state.courses?.findIndex((c) => c._id === courseId);
-        if (courseIdx === undefined || courseIdx === -1) return state;
+        const courseIdx = getElementIndex(state.courses, courseId);
+
+        if (!courseIdx) return state;
+
         const updatedCourses = [...state.courses!];
         updatedCourses[courseIdx].lectures = [
           ...updatedCourses[courseIdx].lectures,
@@ -184,10 +202,45 @@ export const useCoursesStore = create<CoursesState>((set, get) => ({
         }
       );
       set((state) => ({
+        ...state,
         courses: [...state.courses!, created],
       }));
     } catch (e) {
       console.error('Failed to add course', e);
+    }
+  },
+  getExistingLecture: async (
+    courseIndex: number,
+    lectureId: string,
+    lectureIndex: number
+  ) => {
+    try {
+      if (!get().api) {
+        throw new Error('API not initialized. Please call initState first.');
+      }
+
+      const lecture = await get().api!.get<Lecture>(
+        `/courses-service/lectures/${lectureId}`
+      );
+
+      if (lecture.status === LectureStatus.DONE) {
+        set((state) => {
+          const updatedCourses = [...state.courses!];
+
+          updatedCourses[courseIndex].lectures = [
+            ...updatedCourses[courseIndex].lectures,
+          ];
+
+          updatedCourses[courseIndex].lectures[lectureIndex] = lecture;
+
+          return { ...state, courses: updatedCourses };
+        });
+      }
+    } catch (err) {
+      console.error(
+        { message: 'Failed to poll lecture', lecture: lectureId },
+        err
+      );
     }
   },
 }));

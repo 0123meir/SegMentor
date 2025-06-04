@@ -1,8 +1,14 @@
-const CircularProgress = () => {
+interface CircularProgressProps {
+  className?: string;
+}
+
+const CircularProgress = ({ className }: CircularProgressProps) => {
   return (
     <svg
       aria-hidden="true"
-      className="w-8 h-8 animate-spin dark:text-blue-600 fill-slate-50"
+      className={`w-8 h-8 animate-spin dark:text-blue-600 fill-slate-50 ${
+        className ?? ''
+      }`}
       viewBox="0 0 100 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

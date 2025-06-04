@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CourseModule } from './modules/course.module';
@@ -23,5 +23,6 @@ import { SegmentModule } from './modules/segment.module';
     LectureModule,
     SegmentModule,
   ],
+  providers: [Logger],
 })
 export class AppModule {}
