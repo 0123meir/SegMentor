@@ -66,7 +66,6 @@ services:
       - COURSES_SERVICE_URL=http://courses-service:3002
       - TRANSCRIPT_SERVICE_URL=http://transcript-service:3006
       - CLIENTURL=http://localhost
-      - VITE_CLOUDFRONT_DOMAIN_URL=https://d1bxigp1z5p4f8.cloudfront.net
   s3-dal:
     build:
       context: ./s3-dal

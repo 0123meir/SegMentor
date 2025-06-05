@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 
 import ProgressBar from './ProgressBar';
 
+const DEBOUNCE_TIME_MS = 300;
+
 export const SearchBar = (props: {
   onResultClick: (seekTime: number) => void;
 }) => {
@@ -17,7 +19,6 @@ export const SearchBar = (props: {
   const [results, setResults] = useState<SearchResultDto[]>([]);
 
   useEffect(() => {
-    const DEBOUNCE_TIME_MS = 300;
 
     const delayDebounce = setTimeout(() => {
       const run = async () => {
@@ -39,7 +40,7 @@ export const SearchBar = (props: {
     }, DEBOUNCE_TIME_MS);
 
     return () => clearTimeout(delayDebounce);
-  }, [query, activeLectureId]);
+  }, [query, activeLectureId, searchSrt]);
 
   return (
     <div className="w-full max-w-xl mx-auto px-4 justify-self-center self-start" onBlur={() => setTimeout(() => setShowResults(false), 100)}>
