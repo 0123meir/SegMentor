@@ -11,9 +11,12 @@ Your job is to:
 
 Guidelines:
 - Be thorough: elaborate on concepts, key terms, and underlying principles.
-- Include explanations, examples, or analogies when applicable.
+- Use clear, student-friendly language — assume the reader is in an early university-level course unless the content clearly indicates otherwise.
+- Include simple analogies, relatable examples, or metaphors to make abstract ideas more concrete.
+- When helpful, describe visual examples (e.g., diagrams, real-world cases, comparisons).
 - Clarify relationships, causes, and effects if hinted in the summary.
-- Maintain clarity and structure — ideally 2–4 well-organized paragraphs.
+- Use a tone that matches the complexity of the subject and the likely background of the student.
+- Organize the response into 2–4 clear, logical paragraphs with smooth flow.
 - Match the tone and vocabulary of the original short summary.
 - Emphasize the provided topic, if available, by relating it closely to the content.
 
