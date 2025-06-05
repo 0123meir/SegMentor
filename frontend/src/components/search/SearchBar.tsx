@@ -3,8 +3,9 @@ import { useCoursesStore } from '@/state/CoursesStore';
 import { SearchResultDto } from '@/types/dtos/SearchDto';
 import { timeToSeconds } from '@/utils/Time';
 import { useEffect, useState } from 'react';
+import './SearchBar.css'
 
-import ProgressBar from './ProgressBar';
+import ProgressBar from '../ProgressBar';
 
 const DEBOUNCE_TIME_MS = 300;
 
@@ -99,25 +100,6 @@ export const SearchBar = (props: {
                 </li>
               ))}
             </ul>
-
-            <style>{`
-      .custom-scrollbar {
-        scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
-      }
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 2rem;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2rem;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 2rem;
-        border: 0.5rem solid transparent;
-        background-clip: padding-box;
-      }
-    `}</style>
           </>
         )}
       </div>

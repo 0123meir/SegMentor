@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
 import SegmentsTimeline from './timeline/SegmentsTimeLine';
-import { SearchBar } from './SearchBar';
+import { SearchBar } from './search/SearchBar';
 
 export interface VideoPlayerProps {
   url: string;
