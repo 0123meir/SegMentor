@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConsumerService } from './consumer.service';
 import axios from 'axios';
 import { AppService } from 'src/app.service';
@@ -6,6 +6,7 @@ import { SegmentsService } from '../segments/segments.service';
 import { FILE_UPLOAD_DIRECTORY } from '../../constants/file-upload-directory';
 import { join } from 'path';
 import { writeFile } from 'fs/promises';
+import { S3DalConfig, s3DalConfigKey } from 'src/config/s3-dal.config';
 
 @Injectable()
 export class VideoSegmentationConsumer implements OnModuleInit {
@@ -14,6 +15,7 @@ export class VideoSegmentationConsumer implements OnModuleInit {
     private readonly logger: Logger,
     private readonly appService: AppService,
     private readonly segmentService: SegmentsService,
+    @Inject(s3DalConfigKey) private readonly s3Config: S3DalConfig,
   ) {}
 
   async onModuleInit() {
@@ -48,7 +50,7 @@ export class VideoSegmentationConsumer implements OnModuleInit {
 
             try {
               const response = await axios.get(
-                `${process.env.UPLOAD_FILE_S3_URL}/audio/${fileId}`,
+                `${this.s3Config.s3DalUrl}/audio/${fileId}`,
                 { responseType: 'arraybuffer' },
               );
 

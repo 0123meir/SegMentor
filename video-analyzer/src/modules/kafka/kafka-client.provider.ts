@@ -6,8 +6,6 @@ import { KAFKA_CLIENT } from 'src/constants/kafka-client-provider';
 export const kafkaClientProvider: FactoryProvider<Kafka> = {
   provide: KAFKA_CLIENT,
   useFactory: (config: KafkaConfig) => {
-    console.log(config.brokers);
-
     return new Kafka({
       brokers: config.brokers,
     });

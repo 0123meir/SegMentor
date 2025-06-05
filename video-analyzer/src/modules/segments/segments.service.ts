@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import axios from 'axios';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { OPEN_AI_CLIENT } from '../open-ai/constants';
@@ -15,17 +16,12 @@ import {
 import { segmentsSchema } from './constants/segments-schema';
 import { Segment } from './types/segment';
 import { getSystemPromptText } from './utils/get-system-prompt-text';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Segments, SegmentsDocument } from './types/segments.schema';
-import axios from 'axios';
 
 @Injectable()
 export class SegmentsService {
   constructor(
     @Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI,
     private readonly logger: Logger,
-    @InjectModel(Segments.name) private segmentsModel: Model<SegmentsDocument>,
   ) {}
 
   createSegmentsFromTranscription = async (
@@ -80,7 +76,7 @@ export class SegmentsService {
       for (const segment of segments) {
         await axios.post(
           `${process.env.COURSES_SERVICE_URL}/segments/${fileId}`,
-            segment,
+          segment,
         );
       }
 

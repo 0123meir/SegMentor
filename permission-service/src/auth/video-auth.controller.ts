@@ -2,10 +2,12 @@ import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { S3 } from 'aws-sdk';
 
+const VIDEO_S3_BUCKET = 'segmentor-raw-video';
+
 @Controller('video')
 export class VideoController {
   private s3 = new S3({
-    region: process.env.AWS_REGION,
+    region: process.env.AWS_REGION ?? 'eu-north-1',
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
@@ -29,7 +31,7 @@ export class VideoController {
       }
 
       const s3Params = {
-        Bucket: process.env.AWS_S3_BUCKET!,
+        Bucket: VIDEO_S3_BUCKET,
         Key: `${videoKey}`,
         Expires: 60 * 60 * 3,
       };
@@ -38,7 +40,7 @@ export class VideoController {
 
       return { videoUrl };
     } catch (error) {
-      throw new UnauthorizedException('Invalid token or video request');
+      throw new UnauthorizedException('Invalid token or video request', error);
     }
   }
 }
