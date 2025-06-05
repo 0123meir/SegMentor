@@ -1,8 +1,15 @@
+export const LectureStatus = {
+  IN_PROGRESS: 'In Progress',
+  DONE: 'Done',
+} as const;
+export type LectureStatus = (typeof LectureStatus)[keyof typeof LectureStatus];
+
 export interface Lecture {
   _id: string;
   date: string;
   title: string;
   description: string;
+  status: LectureStatus;
 }
 
 export interface LectureUpdate {
