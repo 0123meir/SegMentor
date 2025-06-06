@@ -45,7 +45,6 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
 
- # TODO: check client with certs, and gateway connection, vite config overrides      
   client:
     build:
       context: ./frontend
