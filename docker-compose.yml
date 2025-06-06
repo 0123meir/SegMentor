@@ -18,6 +18,11 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server=localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     container_name: kafka
     depends_on:
       - zookeeper
@@ -109,7 +114,8 @@ services:
       - S3_DAL_URL=http://s3-dal:3004
       - COURSES_SERVICE_URL=http://courses-service:3002
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
 
   video-initializer:
     build:
@@ -125,7 +131,8 @@ services:
       - COURSES_SERVICE_URL=http://courses-service:3002
       - S3_DAL_URL=http://s3-dal:3004
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
 
   transcript-service:
     build:
