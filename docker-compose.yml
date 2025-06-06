@@ -69,7 +69,7 @@ services:
       - PERMISSION_SERVICE_URL=http://permission-service:3001
       - COURSES_SERVICE_URL=http://courses-service:3002
       - VIDEO_INITIALIZER_URL=http://video-initializer:3005
-      - CLIENTURL=http://localhost
+      - CLIENTURL=https://localhost
       - VITE_CLOUDFRONT_DOMAIN_URL=https://d1bxigp1z5p4f8.cloudfront.net
 
   s3-dal:
