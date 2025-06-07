@@ -81,4 +81,30 @@ export class UsersService {
   async findByUsername(username: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ username }).exec();
   }
+
+  async getCurrentUser(token: string) {
+    try {
+      if (!token) {
+        throw new UnauthorizedException('Token missing');
+      }
+
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || 'development_secret',
+      ) as { id: string };
+
+      const user = await this.userModel.findById(decoded.id);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }

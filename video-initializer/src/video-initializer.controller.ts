@@ -84,7 +84,7 @@ export class VideoInitializerController {
     }
 
     const lecture: CoursesManagerResponseData = (
-      await axios.post<CoursesManagerResponseData>(`${process.env.COURSES_SERVICE_URL}/lectures`, {
+      await axios.post<CoursesManagerResponseData>(`${process.env.COURSES_SERVICE_URL ?? 'http://localhost:3002'}/lectures`, {
           title,
           courseId,
         },

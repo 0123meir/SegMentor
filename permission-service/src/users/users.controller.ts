@@ -7,10 +7,14 @@ import {
   HttpStatus,
   UseGuards,
   SetMetadata,
+  Get,
+  Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RolesGuard } from './roles.guards';
 import { UserType } from './UserType';
+import * as jwt from 'jsonwebtoken';
 
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
@@ -56,5 +60,11 @@ export class UsersController {
     }
 
     return { message: `User ${username}'s role updated to ${role}` };
+  }
+
+  @Get('me')
+  async getMe(@Headers('authorization') auth: string) {
+    const token = auth?.split(' ')[1];
+    return this.usersService.getCurrentUser(token);
   }
 }
