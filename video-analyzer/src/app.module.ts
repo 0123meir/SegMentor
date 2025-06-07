@@ -10,6 +10,8 @@ import { KafkaModule } from './modules/kafka/kafka.module';
 import { VideoSegmentationConsumer } from './modules/kafka/video-segmentation.consumer';
 import { SegmentsModule } from './modules/segments/segments.module';
 import { TranscriptionsModule } from './modules/transcriptions/transcriptions.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './filters/http-exception.filter';
 
 @Module({
   imports: [
@@ -22,6 +24,14 @@ import { TranscriptionsModule } from './modules/transcriptions/transcriptions.mo
     KafkaModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Logger, VideoSegmentationConsumer],
+  providers: [
+    AppService,
+    Logger,
+    VideoSegmentationConsumer,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
