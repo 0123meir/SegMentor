@@ -4,12 +4,14 @@ import { SearchService } from 'src/services/search.service';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig } from 'src/config/app.config';
 import { openAIConfig } from 'src/config/open-ai.config';
+import { APP_FILTER } from '@nestjs/core';
 import {
   S3DalConfig,
   s3DalConfig,
   s3DalConfigKey,
 } from 'src/config/s3-dal.config';
 import { HttpModule } from '@nestjs/axios';
+import { HttpExceptionFilter } from '../filters/http-exception.filter';
 
 @Module({
   imports: [
@@ -27,6 +29,13 @@ import { HttpModule } from '@nestjs/axios';
     }),
   ],
   controllers: [SearchController],
-  providers: [SearchService, Logger],
+  providers: [
+    SearchService,
+    Logger,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class SearchModule {}
