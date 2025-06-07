@@ -11,16 +11,16 @@ const DEBOUNCE_TIME_MS = 300;
 
 export const SearchBar = (props: {
   onResultClick: (seekTime: number) => void;
+  handleFocusChange: (value: boolean) => void;
+  isFocused: boolean;
 }) => {
   const { searchSrt } = useSearchSrt();
   const { activeLectureId } = useCoursesStore();
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<SearchResultDto[]>([]);
 
   useEffect(() => {
-
     const delayDebounce = setTimeout(() => {
       const run = async () => {
         if (activeLectureId && query.trim().length > 1) {
@@ -44,7 +44,7 @@ export const SearchBar = (props: {
   }, [query, activeLectureId, searchSrt]);
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 justify-self-center self-start" onBlur={() => setTimeout(() => setShowResults(false), 100)}>
+    <div className="w-full max-w-xl mx-auto px-4 justify-self-center self-start" onBlur={() => setTimeout(() => props.handleFocusChange(false), 100)}>
       <div className="relative">
         <div>
           <div className="relative w-full">
@@ -53,7 +53,7 @@ export const SearchBar = (props: {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setShowResults(true)}
+              onFocus={() => props.handleFocusChange(true)}
               placeholder="Search subtitles..."
               className="w-full mt-5 pr-12 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md text-white placeholder-white/70 border border-white/20 focus:outline-none transition hover:bg-white/20"
             />
@@ -78,7 +78,7 @@ export const SearchBar = (props: {
           {isLoading && <ProgressBar />}
         </div>
 
-        {results.length > 0 && showResults && (
+        {results.length > 0 && props.isFocused && (
           <>
             <ul
               dir="ltr"
@@ -90,7 +90,7 @@ export const SearchBar = (props: {
                   className="px-4 py-2 hover:bg-white/20 transition"
                   onClick={() => {
                     props.onResultClick(timeToSeconds(res.start));
-                    setShowResults(false);
+                    props.handleFocusChange(false);
                   }}
                 >
                   <div className="text-sm text-white/70">
