@@ -59,7 +59,6 @@ services:
       - "443:443"
     env_file:
       - ./frontend/.env
-
   gateway:
     build:
       context: ./gateway
@@ -75,7 +74,7 @@ services:
       - VIDEO_INITIALIZER_SERVICE_URL=http://video-initializer:3005
       - CLIENTURL=https://localhost
       - VITE_CLOUDFRONT_DOMAIN_URL=https://d1bxigp1z5p4f8.cloudfront.net
-
+      - TRANSCRIPT_SERVICE_URL=http://transcript-service:3006
   s3-dal:
     build:
       context: ./s3-dal
