@@ -3,8 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
-import SegmentsTimeline from './timeline/SegmentsTimeLine';
+import LoadingVideoPlayer from './LoadingVideoPlayer';
 import { SearchBar } from './search/SearchBar';
+import SegmentsTimeline from './timeline/SegmentsTimeLine';
 
 export interface VideoPlayerProps {
   url: string;
@@ -23,6 +24,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -104,7 +106,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           }
           break;
         case FULLSCREEN_KEY:
-            toggleFullscreen();          
+          toggleFullscreen();
           break;
         case EXIT_FULLSCREEN_KEY:
           if (document.fullscreenElement) document.exitFullscreen();
@@ -161,13 +163,18 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
       </div>
     );
   }
+
+  if (!isVideoReady) {
+    return <LoadingVideoPlayer />;
+  }
+
   return (
     <div
       ref={videoContainerRef}
-      className="relative w-full bg-black rounded-lg h-[56.25vh] mx-auto my-4" // 16:9 aspect ratio
+      className="relative w-full bg-black rounded-lg h-[56.25vh] mx-auto my-4"
       style={{
         aspectRatio: '16/9',
-        maxHeight: '720px', // Standard YouTube height
+        maxHeight: '720px',
       }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
@@ -182,6 +189,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           onClick={togglePlayPause}
           onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
           onDuration={(duration) => setDuration(duration)}
+          onReady={() => setIsVideoReady(true)}
           onError={(e) => {
             setError(
               typeof e === 'string'
@@ -194,13 +202,19 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           height="100%"
         />
       </div>
-      {!error && <SearchBar isFocused={isSearchFocused} handleFocusChange={setIsSearchFocused} onResultClick={(seekTime: number) => {
-        if (videoRef.current) {
-          setCurrentTime(seekTime);
-          videoRef.current.seekTo(seekTime);
-          setIsPlaying(true);
-        }
-      }}/>}
+      {!error && (
+        <SearchBar
+          isFocused={isSearchFocused}
+          handleFocusChange={setIsSearchFocused}
+          onResultClick={(seekTime: number) => {
+            if (videoRef.current) {
+              setCurrentTime(seekTime);
+              videoRef.current.seekTo(seekTime);
+              setIsPlaying(true);
+            }
+          }}
+        />
+      )}
       {error && (
         <div className="flex items-center justify-center w-full h-full text-white">
           <div>
