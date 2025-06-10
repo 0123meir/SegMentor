@@ -79,27 +79,24 @@ export class UsersController {
       );
     }
 
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      throw new HttpException('Token missing', HttpStatus.UNAUTHORIZED);
-    }
-
     try {
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'development_secret',
-      ) as {
-        id: string;
-        username: string;
-        role: string;
-      };
+      const response = await firstValueFrom(
+        this.httpService.get(`${PERMISSIONS_URL}/users/me`, {
+          headers: {
+            Authorization: authHeader,
+          },
+          // Prevent caching
+          params: {
+            _t: Date.now(),
+          },
+        }),
+      );
 
-      const { id, username, role } = decoded;
-      return { id, username, role };
+      return response.data;
     } catch (error) {
       throw new HttpException(
-        'Invalid or expired token',
-        HttpStatus.UNAUTHORIZED,
+        error.response?.data || 'Error fetching user data',
+        error.response?.status || HttpStatus.UNAUTHORIZED,
       );
     }
   }
