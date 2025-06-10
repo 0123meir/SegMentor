@@ -1,17 +1,16 @@
+import { HttpModule } from '@nestjs/axios';
 import { Logger, Module } from '@nestjs/common';
-import { SearchController } from '../controllers/search.controller';
-import { SearchService } from 'src/services/search.service';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig } from 'src/config/app.config';
 import { openAIConfig } from 'src/config/open-ai.config';
 import {
-  S3DalConfig,
   s3DalConfig,
+  S3DalConfig,
   s3DalConfigKey,
 } from 'src/config/s3-dal.config';
-import { HttpModule } from '@nestjs/axios';
-import { SummaryModule } from './summary.module';
-import { ChatModule } from './chat.module';
+import { OpenAIModule } from './open-ai.module';
+import { ChatController } from 'src/controllers/chat.controller';
+import { ChatService } from 'src/services/chat.service';
 
 @Module({
   imports: [
@@ -27,10 +26,9 @@ import { ChatModule } from './chat.module';
       },
       inject: [s3DalConfigKey],
     }),
-    SummaryModule,
-    ChatModule,
+    OpenAIModule,
   ],
-  controllers: [SearchController],
-  providers: [SearchService, Logger],
+  controllers: [ChatController],
+  providers: [ChatService, Logger],
 })
-export class SearchModule {}
+export class ChatModule {}
