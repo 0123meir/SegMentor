@@ -1,5 +1,5 @@
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { TRANSCRIPT_URL } from 'src/routes-constants';
+import { TRANSCRIPT_URL } from 'src/routes.constants';
 
 export const transcriptProxy = createProxyMiddleware({
   target: TRANSCRIPT_URL,

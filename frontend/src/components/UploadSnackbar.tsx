@@ -1,7 +1,6 @@
-import { UploadState } from '@/hooks/useFileUploader';
 import { ReactNode } from 'react';
 import { BiCheck, BiError } from 'react-icons/bi';
-
+import { UploadState } from '@/context/SnackbarContext.tsx';
 import CircularProgress from './common/CircularProgress';
 
 interface UploadSnackbarProps {

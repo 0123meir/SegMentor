@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FileDropZone from '@/components/FileDropZone.tsx';
 import { useFileUploader } from '@/hooks/useFileUploader.tsx';
-import UploadSnackbar from '@/components/UploadSnackbar.tsx';
+import { useSnackbar } from '@/context/SnackbarContext.tsx';
 import { Lecture } from '@/types/Course.ts';
 
 interface LectureModalProps {
@@ -15,17 +15,32 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
   const [title, setTitle] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
-  const { uploadFile, uploadState } = useFileUploader();
+  const { uploadFile } = useFileUploader();
+  const { showSnackbar, fadeSnackbar } = useSnackbar();
 
   const handleSubmit = async () => {
     if (title.trim()) {
-      const responseLecture: Lecture= await uploadFile(videoFile, courseId, title);
-      uploadLecture(courseId, responseLecture);
-
-      setTitle('');
-      setVideoFile(null);
       onClose();
+
+      try {
+        showSnackbar('uploading');
+        const responseLecture: Lecture = await uploadFile(videoFile, courseId, title);
+        uploadLecture(courseId, responseLecture);
+
+        showSnackbar('success');
+      } catch (error) {
+        showSnackbar('error');
+      } finally {
+        fadeSnackbar();
+        clearData();
+      }
     }
+  };
+
+  const clearData = () => {
+    setTitle('');
+    setVideoFile(null);
+    onClose();
   };
 
   const handleFileUpload = async (acceptedFiles: File[]) => {
@@ -66,13 +81,11 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
           />
         )}
 
-        <UploadSnackbar uploadState={uploadState} />
-
         <br/>
 
         <div className="flex justify-end">
           <button
-            onClick={onClose}
+            onClick={clearData}
             className="bg-gray-300 text-black py-2 px-4 rounded-md mr-2 hover:bg-gray-400"
           >
             Cancel

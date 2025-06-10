@@ -47,16 +47,6 @@ const CourseCard = ({
         courseId={course._id}
       />
 
-      <>
-        <input
-          type="text"
-          value={lectureTitle}
-          onChange={(e) => setLectureTitle(e.target.value)}
-          placeholder="Enter lecture title"
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 text-base"
-        />
-      </>
-
       <LectureList
         lectures={course.lectures}
         onEdit={onEditLecture}
