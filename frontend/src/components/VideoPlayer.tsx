@@ -1,3 +1,4 @@
+import useKeyboardLockStore from '@/stores/KeyboardLockStore';
 import { Segment } from '@/types/Segment';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
@@ -21,6 +22,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
+  const inputFocused = useKeyboardLockStore((s) => s.inputFocused);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -81,6 +83,8 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
     const VOLUME_DOWN_KEY = 'ArrowDown';
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (inputFocused) return;
+
       if (
         document.activeElement?.tagName === TIME_AND_VOLUME_SEEKBAR &&
         [
@@ -147,7 +151,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, toggleFullscreen, toggleMute]);
+  }, [inputFocused, togglePlayPause, toggleFullscreen, toggleMute]);
 
   if (!url || !ReactPlayer.canPlay(url)) {
     return (

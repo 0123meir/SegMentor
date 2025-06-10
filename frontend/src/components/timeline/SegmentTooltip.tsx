@@ -1,5 +1,6 @@
 import { useApi } from '@/hooks/useApi';
 import { useTranscriptStore } from '@/state/TranscriptStore';
+import { detectTextDirection } from '@/utils/detectTextDirection';
 import React, { useEffect, useMemo } from 'react';
 
 interface SegmentTooltipProps {
@@ -26,6 +27,7 @@ const SegmentTooltip: React.FC<SegmentTooltipProps> = ({
 
   return (
     <div
+      dir={detectTextDirection(description ?? '')}
       className="absolute bottom-8 left-1/2 transform -translate-x-1/2 
       bg-white/90 backdrop-blur-sm text-black text-xs rounded-lg px-3 py-2 
       opacity-0 group-hover:opacity-100 transition-opacity duration-200 
@@ -42,6 +44,7 @@ const SegmentTooltip: React.FC<SegmentTooltipProps> = ({
         <div className="text-gray-600 text-[11px]">{description}</div>
       )}
       <button
+        dir="ltr"
         className="mt-2 bg-blue-500 hover:bg-blue-600 text-white text-[10px] px-2 py-1 rounded"
         onClick={handleExpand}
         disabled={isLoading}
