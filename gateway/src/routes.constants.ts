@@ -4,3 +4,6 @@ export const COURSES_URL =
   process.env.COURSES_SERVICE_URL || 'http://localhost:3002';
 export const VIDEO_INITIALIZER_URL =
   process.env.VIDEO_INITIALIZER_SERVICE_URL || 'http://localhost:3005';
+
+export const TRANSCRIPT_URL =
+  process.env.TRANSCRIPT_SERVICE_URL || 'http://localhost:3006';

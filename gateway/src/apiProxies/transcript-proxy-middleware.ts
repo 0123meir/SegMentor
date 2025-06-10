@@ -1,10 +1,8 @@
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { TRANSCRIPT_URL } from 'src/routes.constants';
 
 export const transcriptProxy = createProxyMiddleware({
-  target: process.env.TRANSCRIPT_SERVICE_URL || 'http://localhost:3006',
+  target: TRANSCRIPT_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/transcript-service': '',
-  },
+  pathRewrite: { '^/transcript-service': '' },
 });
-

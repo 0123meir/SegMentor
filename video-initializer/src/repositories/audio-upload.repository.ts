@@ -17,7 +17,7 @@ export class AudioUploadRepository {
 
     try {
       const response = await axios.post(
-        `${process.env.UPLOAD_FILE_S3_URL}/${fileType}`,
+        `${process.env.S3_DAL_URL ?? 'http://localhost:3004'}/${fileType}`,
         formData,
         {
           headers: formData.getHeaders(),

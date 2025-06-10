@@ -5,6 +5,7 @@ import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
 import SegmentsTimeline from './timeline/SegmentsTimeLine';
+import { SearchBar } from './search/SearchBar';
 
 export interface VideoPlayerProps {
   url: string;
@@ -22,6 +23,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const inputFocused = useKeyboardLockStore((s) => s.inputFocused);
 
   const togglePlayPause = useCallback(() => {
@@ -99,12 +101,14 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
       switch (event.key) {
         case SPACE_KEY:
-          togglePlayPause();
-          event.preventDefault();
-          focusTimeline();
+          if (!isSearchFocused) {
+            togglePlayPause();
+            event.preventDefault();
+            focusTimeline();
+          }
           break;
         case FULLSCREEN_KEY:
-          toggleFullscreen();
+            toggleFullscreen();          
           break;
         case EXIT_FULLSCREEN_KEY:
           if (document.fullscreenElement) document.exitFullscreen();
@@ -151,7 +155,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [inputFocused, togglePlayPause, toggleFullscreen, toggleMute]);
+  }, [inputFocused, togglePlayPause, toggleFullscreen, toggleMute, isSearchFocused]);
 
   if (!url || !ReactPlayer.canPlay(url)) {
     return (
@@ -194,6 +198,13 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           height="100%"
         />
       </div>
+      {!error && <SearchBar isFocused={isSearchFocused} handleFocusChange={setIsSearchFocused} onResultClick={(seekTime: number) => {
+        if (videoRef.current) {
+          setCurrentTime(seekTime);
+          videoRef.current.seekTo(seekTime);
+          setIsPlaying(true);
+        }
+      }}/>}
       {error && (
         <div className="flex items-center justify-center w-full h-full text-white">
           <div>
