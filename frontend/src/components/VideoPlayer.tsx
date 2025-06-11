@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
-import LoadingVideoPlayer from './LoadingVideoPlayer';
 import { SearchBar } from './search/SearchBar';
 import SegmentsTimeline from './timeline/SegmentsTimeLine';
 
@@ -24,7 +23,6 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -164,10 +162,6 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
     );
   }
 
-  if (!isVideoReady) {
-    return <LoadingVideoPlayer />;
-  }
-
   return (
     <div
       ref={videoContainerRef}
@@ -189,7 +183,6 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
           onClick={togglePlayPause}
           onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
           onDuration={(duration) => setDuration(duration)}
-          onReady={() => setIsVideoReady(true)}
           onError={(e) => {
             setError(
               typeof e === 'string'
