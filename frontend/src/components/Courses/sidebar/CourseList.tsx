@@ -19,24 +19,16 @@ export const CourseList = () => {
 
   const sectionName = 'My Courses';
 
-  const handleCourseClick = (course: Course) => {
-    setActiveCourse(course._id);
+  const handleCourseClick = (courseId: string) => {
+    setActiveCourse(courseId);
   };
 
-  const handleLectureClick = async (courseId: string, lectureIndex: number) => {
-    const course = courses?.find((c) => c._id === courseId);
-    if (!course) return;
-
-    const lecture = course.lectures[lectureIndex];
-    if (!lecture) return;
-
+  const handleLectureClick = async (courseId: string, lectureId: string) => {
     // set the lecture as active
-    setActiveLecture(lecture._id!);
-
-    // TODO: navigate to the lecture
+    setActiveLecture(lectureId);
 
     // Delegate to hook for optimistic update and API call
-    await markLectureWatched(courseId, lecture._id!);
+    await markLectureWatched(courseId, lectureId);
   };
 
   if (isLoading) {
@@ -77,16 +69,28 @@ export const CourseList = () => {
         <h2 className="text-2xl font-bold text-gray-800">{sectionName}</h2>
       </div>
       <div className="space-y-3">
-        {courses?.map((course: Course) => (
-          <CourseItem
-            key={course._id}
-            course={course}
-            activeLecture={activeLectureId}
-            onClick={() => handleCourseClick(course)}
-            isActive={activeCourseId === course._id}
-            onLectureClick={(index) => handleLectureClick(course._id, index)}
-          />
-        ))}
+        {courses?.map((course: Course) => {
+          // Filter out lectures with status "Done"
+          const filteredCourse = {
+            ...course,
+            lectures: course.lectures.filter(
+              (lecture) => lecture.status === 'Done'
+            ),
+          };
+
+          return (
+            <CourseItem
+              key={course._id}
+              course={filteredCourse}
+              activeLecture={activeLectureId}
+              onClick={() => handleCourseClick(course._id)}
+              isActive={activeCourseId === course._id}
+              onLectureClick={(lectureId) =>
+                handleLectureClick(course._id, lectureId)
+              }
+            />
+          );
+        })}
       </div>
     </div>
   );

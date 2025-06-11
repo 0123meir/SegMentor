@@ -10,7 +10,7 @@ interface CourseItemProps {
   onClick: () => void;
   isActive?: boolean;
   activeLecture: string | null;
-  onLectureClick?: (lectureIndex: number) => void;
+  onLectureClick?: (lectureId: string) => void;
 }
 
 export const CourseItem = ({
@@ -27,9 +27,9 @@ export const CourseItem = ({
     setIsOpen(!isOpen);
   };
 
-  const handleLectureClick = (e: React.MouseEvent, index: number) => {
+  const handleLectureClick = (e: React.MouseEvent, lectureId: string) => {
     e.stopPropagation(); // Prevent triggering the course click
-    onLectureClick?.(index);
+    onLectureClick?.(lectureId);
   };
 
   return (
@@ -57,7 +57,7 @@ export const CourseItem = ({
             {course.name}
           </h3>
           <p className="text-sm text-gray-500">
-            {course.watchedLectures.length} Lectures of {course.lectures.length}
+            {Math.min(course.watchedLectures.length, course.lectures.length)} Lectures of {course.lectures.length}
           </p>
         </div>
         {isOpen ? (
@@ -70,10 +70,10 @@ export const CourseItem = ({
       {isOpen && (
         <div className="border-t border-gray-100">
           <ul className="divide-y divide-gray-100">
-            {course.lectures.map((lecture, index) => (
+            {course.lectures.map((lecture) => (
               <li
                 key={lecture._id}
-                onClick={(e) => handleLectureClick(e, index)}
+                onClick={(e) => handleLectureClick(e, lecture._id!)}
                 className={`p-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer
                   ${
                     activeLecture === lecture._id

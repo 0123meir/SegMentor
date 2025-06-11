@@ -24,6 +24,16 @@ const SegmentsTimeline: React.FC<SegmentsTimelineProps> = ({
   >
     <div className="relative w-full">
       <div className="absolute top-3 left-0 w-full h-1">
+        {/* Background segment */}
+        <div
+          className="absolute h-full rounded-full"
+          style={{
+            width: '100%',
+            backgroundColor: '#2563EB',
+            opacity: 0.3,
+          }}
+        />
+        {/* Actual segments */}
         {segments.map((segment, idx) => (
           <SegmentItem key={idx} segment={segment} duration={duration} />
         ))}
