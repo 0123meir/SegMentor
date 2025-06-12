@@ -1,6 +1,6 @@
-import { FC, useState } from "react";
-import { BsFullscreen } from "react-icons/bs";
-import { FaPause, FaPlay, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { FC, useState } from 'react';
+import { BsFullscreen } from 'react-icons/bs';
+import { FaPause, FaPlay, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 
 interface CustomControlsProps {
   currentTime: number;
@@ -38,16 +38,19 @@ const CustomControls: FC<CustomControlsProps> = ({
     const seconds = Math.floor(timeInSeconds % 60);
 
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds
         .toString()
-        .padStart(2, "0")}`;
+        .padStart(2, '0')}`;
     } else {
-      return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
   };
 
   return (
-    <div className="absolute bottom-0 left-1 w-full p-2 flex items-center justify-between z-10 text-white">
+    <div
+      className="absolute bottom-0 left-1 w-full p-2 flex items-center justify-between text-white"
+      style={{ zIndex: 60 }}
+    >
       <div className="flex items-center gap-4">
         <button
           onClick={toggleFullscreen}
@@ -74,7 +77,7 @@ const CustomControls: FC<CustomControlsProps> = ({
                     setShowSpeedMenu(false);
                   }}
                   className={`block px-3 py-1 w-full text-left hover:bg-gray-700 rounded ${
-                    playbackRate === rate ? "bg-gray-700" : ""
+                    playbackRate === rate ? 'bg-gray-700' : ''
                   }`}
                 >
                   {rate}x
@@ -103,7 +106,7 @@ const CustomControls: FC<CustomControlsProps> = ({
               [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
               [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full 
               [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:-mt-1.5"
-          style={{ width: "60px", direction: "ltr" }}
+          style={{ width: '60px', direction: 'ltr' }}
         />
 
         <button onClick={toggleMute} className="hover:text-blue-500">
