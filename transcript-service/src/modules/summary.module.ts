@@ -1,18 +1,16 @@
+import { HttpModule } from '@nestjs/axios';
 import { Logger, Module } from '@nestjs/common';
-import { SearchController } from '../controllers/search.controller';
-import { SearchService } from 'src/services/search.service';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig } from 'src/config/app.config';
 import { openAIConfig } from 'src/config/open-ai.config';
-import { APP_FILTER } from '@nestjs/core';
 import {
-  S3DalConfig,
   s3DalConfig,
+  S3DalConfig,
   s3DalConfigKey,
 } from 'src/config/s3-dal.config';
-import { HttpModule } from '@nestjs/axios';
-import { SummaryModule } from './summary.module';
-import { HttpExceptionFilter } from '../filters/http-exception.filter';
+import { SummaryController } from 'src/controllers/summary.controller';
+import { SummaryService } from 'src/services/summary.service';
+import { OpenAIModule } from './open-ai.module';
 
 @Module({
   imports: [
@@ -28,16 +26,9 @@ import { HttpExceptionFilter } from '../filters/http-exception.filter';
       },
       inject: [s3DalConfigKey],
     }),
-    SummaryModule,
+    OpenAIModule,
   ],
-  controllers: [SearchController],
-  providers: [
-    SearchService,
-    Logger,
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
-  ],
+  controllers: [SummaryController],
+  providers: [SummaryService, Logger],
 })
-export class SearchModule {}
+export class SummaryModule {}
