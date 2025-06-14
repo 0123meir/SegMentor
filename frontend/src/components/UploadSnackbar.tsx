@@ -5,6 +5,7 @@ import CircularProgress from './common/CircularProgress';
 
 interface UploadSnackbarProps {
   uploadState: UploadState;
+  title: string
 }
 
 const UploadSnackbar = (props: UploadSnackbarProps) => {
@@ -27,9 +28,10 @@ const UploadSnackbar = (props: UploadSnackbarProps) => {
       <div
         dir="ltr"
         id="toast-simple"
-        className="absolute bottom-0 m-4 flex items-center p-4 space-x-4 rtl:space-x-reverse text-gray-50 bg-white rounded-lg shadow-sm dark:text-gray-900 light:bg-gray-800"
+        className="flex items-center p-4 space-x-4 rtl:space-x-reverse bg-gray-50 rounded-lg shadow-sm text-gray-900"
         role="alert"
       >
+        { props.title }
         {uploadStateToIcon[props.uploadState]}
         <div className="ps-4 text-sm font-normal text-start">
           {uploadStateToMessage[props.uploadState]}

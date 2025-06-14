@@ -9,10 +9,12 @@ import AppRoutes from './AppRoutes';
 import { useSnackbar } from '@/context/SnackbarContext.tsx';
 import UploadSnackbar from '@/components/UploadSnackbar.tsx';
 
+import './App.css';
+
 const App = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const setToken = useAuthStore((state) => state.setToken);
-  const { uploadState } = useSnackbar();
+  const { snackbars } = useSnackbar();
 
   useEffect(() => {
     const token = Cookies.get('authToken');
@@ -43,7 +45,13 @@ const App = () => {
       <Router>
         <AppRoutes />
       </Router>
-      {uploadState && <UploadSnackbar uploadState={uploadState} />}
+      <div className="snackbar-container">
+        {snackbars.map((snackbar) => (
+          <div className="snackbar-item">
+            <UploadSnackbar key={snackbar.title} uploadState={snackbar.state} title={snackbar.title} />
+          </div>
+        ))}
+      </div>
     </>
   );
 };

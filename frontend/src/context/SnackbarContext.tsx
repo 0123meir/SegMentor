@@ -1,27 +1,38 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 export type UploadState = 'none' | 'uploading' | 'error' | 'success';
+export type LectureSnackbar = { state: UploadState, title: string };
 
 interface SnackbarContextProps {
-  uploadState: UploadState | null;
-  showSnackbar: (state: UploadState) => void;
-  fadeSnackbar: () => void;
+  snackbars: { state: UploadState, title: string }[];
+  createSnackbar: (title: string) => void;
+  showSnackbar: (state: UploadState, title: string) => void;
+  fadeSnackbar: (title: string) => void;
 }
 
 const SnackbarContext = createContext<SnackbarContextProps | undefined>(undefined);
 
 export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
-  const [uploadState, setUploadState] = useState<UploadState | null>(null);
+  const [snackbars, setSnackbars] = useState<LectureSnackbar[]>([]);
 
-  const showSnackbar = (state: UploadState) => setUploadState(state);
-  const fadeSnackbar = () => {
+  const createSnackbar = (title: string) => {
+    setSnackbars((prev: LectureSnackbar[]) => [...prev, { state: 'none', title }]);
+  };
+  const showSnackbar = (state: UploadState, title: string) => {
+    setSnackbars((prev: LectureSnackbar[]) =>
+      prev.map((snackbar: LectureSnackbar) =>
+        snackbar.title === title ? { ...snackbar, state } : snackbar
+      )
+    );
+  };
+  const fadeSnackbar = (title: string) => {
     setTimeout(() => {
-      setUploadState('none');
+      setSnackbars((prev) => prev.filter((snackbar: LectureSnackbar) => snackbar.title !== title));
     }, 8000);
   };
 
   return (
-    <SnackbarContext.Provider value={{ uploadState, showSnackbar, fadeSnackbar }}>
+    <SnackbarContext.Provider value={{ snackbars, createSnackbar, showSnackbar, fadeSnackbar }}>
       {children}
     </SnackbarContext.Provider>
   );

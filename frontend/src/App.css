@@ -1,0 +1,12 @@
+.snackbar-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+}
+
+.snackbar-item {
+    background-color: white;
+}

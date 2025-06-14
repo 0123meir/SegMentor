@@ -16,23 +16,26 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const { uploadFile } = useFileUploader();
-  const { showSnackbar, fadeSnackbar } = useSnackbar();
+  const { createSnackbar, showSnackbar, fadeSnackbar } = useSnackbar();
 
   const handleSubmit = async () => {
     if (title.trim()) {
       onClose();
 
       try {
-        showSnackbar('uploading');
-        const responseLecture: Lecture = await uploadFile(videoFile, courseId, title);
+        createSnackbar(title);
+        showSnackbar('uploading', title);
+        const data = {videoFile, courseId, title};
+        clearData();
+        const responseLecture: Lecture = await uploadFile(data.videoFile, data.courseId, data.title);
         uploadLecture(courseId, responseLecture);
 
-        showSnackbar('success');
+        showSnackbar('success', title);
       } catch (error) {
-        showSnackbar('error');
+        showSnackbar('error', title);
       } finally {
-        fadeSnackbar();
-        clearData();
+        fadeSnackbar(title);
+        onClose();
       }
     }
   };
@@ -40,6 +43,10 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
   const clearData = () => {
     setTitle('');
     setVideoFile(null);
+  };
+
+  const closeModal = () => {
+    clearData();
     onClose();
   };
 
@@ -54,8 +61,7 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 1050 }}>      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-lg font-semibold mb-4">Upload Lecture</h2>
         <input
           type="text"
@@ -85,7 +91,7 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
 
         <div className="flex justify-end">
           <button
-            onClick={clearData}
+            onClick={closeModal}
             className="bg-gray-300 text-black py-2 px-4 rounded-md mr-2 hover:bg-gray-400"
           >
             Cancel
