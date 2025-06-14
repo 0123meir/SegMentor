@@ -3,6 +3,7 @@ import { usePolling } from '@/hooks/usePolling';
 import { useCoursesStore } from '@/state/CoursesStore';
 import { Lecture, LectureStatus } from '@/types/Course';
 import { useCallback } from 'react';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 interface LectureItemProps {
   lecture: Partial<Lecture>;
@@ -40,28 +41,30 @@ const LectureItem = ({
   });
 
   return (
-    <li className="flex items-center p-3 border-b border-gray-200 last:border-b-0">
-      <span className="flex-1 min-w-0 break-words max-w-xs">
+    <li className="flex items-center justify-between py-1.5 px-2 border-b border-gray-200 last:border-b-0 text-sm">
+      <span className="flex-1 min-w-0 break-words max-w-[60%] truncate">
         {lecture.title}
       </span>
       {isUploadInProgress ? (
-        <div className="flex gap-2 items-center">
-          <span>Uploading</span>
-          <CircularProgress className="w-4 h-4" />
+        <div className="flex gap-1 items-center ml-auto">
+          <span className="text-xs">Uploading</span>
+          <CircularProgress className="w-3 h-3" />
         </div>
       ) : (
-        <div className="flex gap-2">
+        <div className="flex gap-1 ml-auto">
           <button
             onClick={() => onEdit(courseIndex, lectureIndex)}
-            className="bg-blue-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-blue-600"
+            className="p-1 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+            title="Edit lecture"
           >
-            Edit
+            <FiEdit2 size={16} />
           </button>
           <button
             onClick={() => onDelete(courseIndex, lectureIndex)}
-            className="bg-red-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base hover:bg-red-600"
+            className="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+            title="Delete lecture"
           >
-            Delete
+            <FiTrash2 size={16} />
           </button>
         </div>
       )}
