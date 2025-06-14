@@ -52,7 +52,7 @@ export const AISummary = () => {
   return (
     <div
       dir={textDir}
-      className="bg-gray-100 p-4 rounded shadow w-full max-h-[200px] overflow-y-auto"
+      className="bg-gray-100 p-4 rounded shadow w-full"
     >
       {summaryTitle && (
         <h3 className="text-md font-semibold mb-2">{summaryTitle}</h3>

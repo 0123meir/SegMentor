@@ -1,38 +1,44 @@
 import { useTranscriptStore } from '@/state/TranscriptStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { BsStars } from 'react-icons/bs';
+import { FaCommentDots } from 'react-icons/fa';
 
 import { AIChat } from './ai/AIChat';
 import { AISummary } from './ai/AISummary';
 
 export const AIAssistant = () => {
-  const { error } = useTranscriptStore();
+  const { isLoading, error } = useTranscriptStore();
   const [mode, setMode] = useState<'summary' | 'chat'>('chat');
+
+  useEffect(() => {
+    if (isLoading) {
+      setMode('summary');
+    }
+  }, [isLoading]);
 
   return (
     <div
       dir="ltr"
-      className="bg-white rounded-lg shadow-sm border border-gray-200 my-4 h-[calc(50vh-5rem)] flex flex-col"
+      className="relative bg-white rounded-lg shadow-sm border border-gray-200 my-4 h-[calc(50vh-5rem)] flex flex-col"
     >
-      <div className="flex h-10 text-sm font-medium border-b border-gray-200">
+      <div className="absolute top-2 left-2 flex gap-2 z-10">
         <button
           onClick={() => setMode('chat')}
-          className={`w-1/2 px-4 py-2 transition ${
-            mode === 'chat'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          className={`p-2 rounded-full text-white shadow transition ${
+            mode === 'chat' ? 'bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'
           }`}
+          title="Chat"
         >
-          Chat
+          <FaCommentDots size={16} />
         </button>
         <button
           onClick={() => setMode('summary')}
-          className={`w-1/2 px-4 py-2 transition ${
-            mode === 'summary'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          className={`p-2 rounded-full text-white shadow transition ${
+            mode === 'summary' ? 'bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'
           }`}
+          title="Summary"
         >
-          Summary
+          <BsStars size={16} />
         </button>
       </div>
       {error ? (
