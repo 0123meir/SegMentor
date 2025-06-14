@@ -11,7 +11,7 @@ export const AIAssistant = () => {
   return (
     <div
       dir="ltr"
-      className="bg-white rounded-lg shadow-sm border border-gray-200 my-4 h-[calc(50vh-3rem)] flex flex-col"
+      className="bg-white rounded-lg shadow-sm border border-gray-200 my-4 h-[calc(50vh-5rem)] flex flex-col"
     >
       <div className="flex h-10 text-sm font-medium border-b border-gray-200">
         <button
@@ -38,7 +38,7 @@ export const AIAssistant = () => {
       {error ? (
         <div
           dir="ltr"
-          className="bg-white rounded-lg shadow-sm border border-gray-200 my-4 p-4 h-[calc(50vh-3rem)]"
+          className="bg-white rounded-lg shadow-sm border border-gray-200 my-4 p-4 h-[calc(50vh-5rem)]"
         >
           <div className="flex items-start gap-2 p-3 bg-red-50 text-red-800 border border-red-300 rounded-md shadow-sm">
             <div className="text-sm">
