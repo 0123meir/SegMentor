@@ -40,9 +40,8 @@ const CoursesManagerPage = () => {
   }, [user?.id, token, isAllowed]);
 
   const [currentCourse, setCurrentCourse] = useState<string>('');
-  const [lectureTitles, setLectureTitles] = useState<{ [key: number]: string }>(
-    {}
-  );
+
+
 
   const userId = user?.id;
 
@@ -64,13 +63,6 @@ const CoursesManagerPage = () => {
       setCurrentCourse('');
       fetchCourses();
     }
-  };
-
-  const handleSetLectureTitle = (courseIndex: number, title: string) => {
-    setLectureTitles((prev) => ({
-      ...prev,
-      [courseIndex]: title,
-    }));
   };
 
   const handleAddLecture = (courseId: string, lecture: Lecture): void => {
@@ -140,10 +132,6 @@ const CoursesManagerPage = () => {
             key={`${course._id}-${courseIndex}`}
             course={course}
             courseIndex={courseIndex}
-            lectureTitle={lectureTitles[courseIndex] || ''}
-            setLectureTitle={(title) =>
-              handleSetLectureTitle(courseIndex, title)
-            }
             onAddLecture={handleAddLecture}
             onEditLecture={handleEditLecture}
             onDeleteLecture={handleDeleteLecture}
