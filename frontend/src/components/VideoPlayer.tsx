@@ -1,3 +1,4 @@
+import useKeyboardLockStore from '@/stores/KeyboardLockStore';
 import { Segment } from '@/types/Segment';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
@@ -23,6 +24,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const inputFocused = useKeyboardLockStore((s) => s.inputFocused);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -83,6 +85,8 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
     const VOLUME_DOWN_KEY = 'ArrowDown';
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (inputFocused || isSearchFocused) return;
+
       if (
         document.activeElement?.tagName === TIME_AND_VOLUME_SEEKBAR &&
         [
@@ -97,11 +101,9 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
       switch (event.key) {
         case SPACE_KEY:
-          if (!isSearchFocused) {
-            togglePlayPause();
-            event.preventDefault();
-            focusTimeline();
-          }
+          togglePlayPause();
+          event.preventDefault();
+          focusTimeline();
           break;
         case FULLSCREEN_KEY:
           toggleFullscreen();
@@ -151,7 +153,13 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, toggleFullscreen, toggleMute, isSearchFocused]);
+  }, [
+    inputFocused,
+    togglePlayPause,
+    toggleFullscreen,
+    toggleMute,
+    isSearchFocused,
+  ]);
 
   if (!url || !ReactPlayer.canPlay(url)) {
     return (
