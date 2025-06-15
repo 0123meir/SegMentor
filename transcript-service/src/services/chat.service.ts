@@ -10,7 +10,8 @@ import {
 } from 'src/constants/model-params';
 import { OPEN_AI_CLIENT } from 'src/constants/open-ai-client-provider';
 import { getChatPrompt } from 'src/utils/chat-prompt-text';
-import axios from 'axios';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class ChatService {
@@ -19,6 +20,7 @@ export class ChatService {
 
   constructor(
     @Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI,
+    private readonly s3DalHttpService: HttpService,
     private readonly logger: Logger,
   ) {}
 
@@ -85,9 +87,8 @@ export class ChatService {
 
   private async fetchTranscript(transcriptId: string): Promise<string> {
     try {
-      const response = await axios.get(
-        `${process.env.S3_DAL_URL}/srt/${transcriptId}`,
-        { responseType: 'text' },
+      const { data: fileContent } = await firstValueFrom(
+        this.s3DalHttpService.get<string>(`/srt/${transcriptId}`),
       );
 
       this.logger.log({
@@ -95,7 +96,7 @@ export class ChatService {
         transcriptId,
       });
 
-      return response.data as string;
+      return fileContent as string;
     } catch (err) {
       this.logger.error({
         message: 'error on receiving transcript',
