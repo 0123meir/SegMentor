@@ -60,7 +60,7 @@ export const AIAssistant = () => {
           </div>
         </div>
       ) : (
-        <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto mb-4">
           {mode === 'summary' ? <AISummary /> : <AIChat />}
         </div>
       )}
