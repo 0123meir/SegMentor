@@ -118,7 +118,7 @@ const CoursesManagerPage = () => {
     );
   }
   return (
-    <div className="max-w-[1200px] mx-auto p-8" dir="ltr">
+    <div className="max-w-[1200px] mx-auto p-8 h-screen overflow-y-auto" dir="ltr">
       {isAllowed && (
         <AddCourseForm
           onAdd={handleAddCourse}

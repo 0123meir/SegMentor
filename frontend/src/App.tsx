@@ -9,8 +9,6 @@ import AppRoutes from './AppRoutes';
 import { useSnackbar } from '@/context/SnackbarContext.tsx';
 import UploadSnackbar from '@/components/UploadSnackbar.tsx';
 
-import './App.css';
-
 const App = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const setToken = useAuthStore((state) => state.setToken);
@@ -45,9 +43,9 @@ const App = () => {
       <Router>
         <AppRoutes />
       </Router>
-      <div className="snackbar-container">
+      <div className="absolute bottom-0 right-0 flex flex-col-reverse items-end">
         {snackbars.map((snackbar) => (
-          <div className="snackbar-item">
+          <div className="bg-white">
             <UploadSnackbar key={snackbar.title} uploadState={snackbar.state} title={snackbar.title} />
           </div>
         ))}

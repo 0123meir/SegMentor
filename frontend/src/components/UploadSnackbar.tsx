@@ -8,7 +8,7 @@ interface UploadSnackbarProps {
   title: string
 }
 
-const UploadSnackbar = (props: UploadSnackbarProps) => {
+const UploadSnackbar = ({ uploadState, title }: UploadSnackbarProps) => {
   const uploadStateToMessage: Record<UploadState, string> = {
     uploading: 'Upload in progress...',
     error: 'Failed to upload files to the server',
@@ -24,17 +24,17 @@ const UploadSnackbar = (props: UploadSnackbarProps) => {
   };
 
   return (
-    props.uploadState !== 'none' && (
+    uploadState !== 'none' && (
       <div
         dir="ltr"
         id="toast-simple"
         className="flex items-center p-4 space-x-4 rtl:space-x-reverse bg-gray-50 rounded-lg shadow-sm text-gray-900"
         role="alert"
       >
-        { props.title }
-        {uploadStateToIcon[props.uploadState]}
+        { title }
+        {uploadStateToIcon[uploadState]}
         <div className="ps-4 text-sm font-normal text-start">
-          {uploadStateToMessage[props.uploadState]}
+          {uploadStateToMessage[uploadState]}
         </div>
       </div>
     )

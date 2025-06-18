@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import FileDropZone from '@/components/FileDropZone.tsx';
-import { useFileUploader } from '@/hooks/useFileUploader.tsx';
 import { useSnackbar } from '@/context/SnackbarContext.tsx';
+import { useFileUploader } from '@/hooks/useFileUploader.tsx';
 import { Lecture } from '@/types/Course.ts';
+import { useState } from 'react';
 
 interface LectureModalProps {
   isOpen: boolean;
@@ -11,7 +11,12 @@ interface LectureModalProps {
   uploadLecture: (courseId: string, lecture: Lecture) => void;
 }
 
-const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModalProps) => {
+const LectureModal = ({
+  isOpen,
+  onClose,
+  courseId,
+  uploadLecture,
+}: LectureModalProps) => {
   const [title, setTitle] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
@@ -25,9 +30,13 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
       try {
         createSnackbar(title);
         showSnackbar('uploading', title);
-        const data = {videoFile, courseId, title};
+        const data = { videoFile, courseId, title };
         clearData();
-        const responseLecture: Lecture = await uploadFile(data.videoFile, data.courseId, data.title);
+        const responseLecture: Lecture = await uploadFile(
+          data.videoFile,
+          data.courseId,
+          data.title
+        );
         uploadLecture(courseId, responseLecture);
 
         showSnackbar('success', title);
@@ -61,7 +70,11 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 1050 }}>      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      style={{ zIndex: 1050 }}
+    >
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-lg font-semibold mb-4">Upload Lecture</h2>
         <input
           type="text"
@@ -71,14 +84,11 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
           className="w-full p-3 border border-gray-300 rounded-md mb-4 text-base"
         />
 
-        {(videoFile) ?
-          (
-            <div className="text-green-500 text-center">
-              Video file selected: {videoFile.name}
-            </div>
-          )
-          :
-          (
+        {videoFile ? (
+          <div className="text-green-500 text-center">
+            Video file selected: {videoFile.name}
+          </div>
+        ) : (
           <FileDropZone
             dropZoneOptions={{
               accept: { 'video/mp4': ['.mp4'] },
@@ -87,7 +97,7 @@ const LectureModal = ({ isOpen, onClose, courseId, uploadLecture }: LectureModal
           />
         )}
 
-        <br/>
+        <br />
 
         <div className="flex justify-end">
           <button
