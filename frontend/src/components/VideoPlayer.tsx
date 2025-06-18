@@ -1,10 +1,11 @@
+import useKeyboardLockStore from '@/stores/KeyboardLockStore';
 import { Segment } from '@/types/Segment';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
 import CustomControls from './CustomControls';
-import SegmentsTimeline from './timeline/SegmentsTimeLine';
 import { SearchBar } from './search/SearchBar';
+import SegmentsTimeline from './timeline/SegmentsTimeLine';
 
 export interface VideoPlayerProps {
   url: string;
@@ -23,6 +24,7 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const inputFocused = useKeyboardLockStore((s) => s.inputFocused);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -83,6 +85,8 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
     const VOLUME_DOWN_KEY = 'ArrowDown';
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (inputFocused || isSearchFocused) return;
+
       if (
         document.activeElement?.tagName === TIME_AND_VOLUME_SEEKBAR &&
         [
@@ -97,14 +101,12 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
       switch (event.key) {
         case SPACE_KEY:
-          if (!isSearchFocused) {
-            togglePlayPause();
-            event.preventDefault();
-            focusTimeline();
-          }
+          togglePlayPause();
+          event.preventDefault();
+          focusTimeline();
           break;
         case FULLSCREEN_KEY:
-            toggleFullscreen();          
+          toggleFullscreen();
           break;
         case EXIT_FULLSCREEN_KEY:
           if (document.fullscreenElement) document.exitFullscreen();
@@ -151,7 +153,13 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, toggleFullscreen, toggleMute, isSearchFocused]);
+  }, [
+    inputFocused,
+    togglePlayPause,
+    toggleFullscreen,
+    toggleMute,
+    isSearchFocused,
+  ]);
 
   if (!url || !ReactPlayer.canPlay(url)) {
     return (
@@ -161,89 +169,101 @@ const VideoPlayer = ({ url, segments }: VideoPlayerProps) => {
       </div>
     );
   }
+
   return (
-    <div
-      ref={videoContainerRef}
-      className="relative w-full bg-black rounded-lg h-[56.25vh] mx-auto my-4" // 16:9 aspect ratio
-      style={{
-        aspectRatio: '16/9',
-        maxHeight: '720px', // Standard YouTube height
-      }}
-    >
-      <div className="absolute inset-0 flex items-center justify-center">
-        <ReactPlayer
-          className="rounded-md"
-          ref={videoRef}
-          url={url}
-          controls={false}
-          playing={isPlaying}
-          volume={volume}
-          playbackRate={playbackRate}
-          onClick={togglePlayPause}
-          onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
-          onDuration={(duration) => setDuration(duration)}
-          onError={(e) => {
-            setError(
-              typeof e === 'string'
-                ? e
-                : e?.message ||
-                    'An unknown error occurred while loading the video.'
-            );
-          }}
-          width="100%"
-          height="100%"
-        />
-      </div>
-      {!error && <SearchBar isFocused={isSearchFocused} handleFocusChange={setIsSearchFocused} onResultClick={(seekTime: number) => {
-        if (videoRef.current) {
-          setCurrentTime(seekTime);
-          videoRef.current.seekTo(seekTime);
-          setIsPlaying(true);
-        }
-      }}/>}
-      {error && (
-        <div className="flex items-center justify-center w-full h-full text-white">
-          <div>
-            <strong>Playback Error:</strong> {error}
-          </div>
+    <div className="w-full my-4">
+      {!error && (
+        <div className="relative z-50">
+          <SearchBar
+            isFocused={isSearchFocused}
+            handleFocusChange={setIsSearchFocused}
+            onResultClick={(seekTime: number) => {
+              if (videoRef.current) {
+                setCurrentTime(seekTime);
+                videoRef.current.seekTo(seekTime);
+                setIsPlaying(true);
+              }
+            }}
+          />
         </div>
       )}
 
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <SegmentsTimeline
-          duration={duration}
+      <div
+        ref={videoContainerRef}
+        className="relative w-full bg-black rounded-lg h-[56.25vh] mx-auto mt-4"
+        style={{
+          aspectRatio: '16/9',
+          maxHeight: '720px',
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <ReactPlayer
+            className="rounded-md"
+            ref={videoRef}
+            url={url}
+            controls={false}
+            playing={isPlaying}
+            volume={volume}
+            playbackRate={playbackRate}
+            onClick={togglePlayPause}
+            onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
+            onDuration={(duration) => setDuration(duration)}
+            onError={(e) => {
+              setError(
+                typeof e === 'string'
+                  ? e
+                  : e?.message ||
+                      'An unknown error occurred while loading the video.'
+              );
+            }}
+            width="100%"
+            height="100%"
+          />
+        </div>
+        {error && (
+          <div className="flex items-center justify-center w-full h-full text-white">
+            <div>
+              <strong>Playback Error:</strong> {error}
+            </div>
+          </div>
+        )}
+
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <SegmentsTimeline
+            duration={duration}
+            currentTime={currentTime}
+            handleSeek={handleSeek}
+            timelineRef={timelineRef}
+            segments={
+              segments.length > 0
+                ? segments
+                : [
+                    {
+                      start: 0,
+                      end: duration,
+                      color: '#2563EB',
+                      title: '',
+                      description: '',
+                    },
+                  ]
+            }
+          />
+        </div>
+
+        <CustomControls
           currentTime={currentTime}
-          handleSeek={handleSeek}
-          timelineRef={timelineRef}
-          segments={
-            segments.length > 0
-              ? segments
-              : [
-                  {
-                    start: 0,
-                    end: duration,
-                    color: '#2563EB',
-                    title: '',
-                    description: '',
-                  },
-                ]
-          }
+          duration={duration}
+          isPlaying={isPlaying}
+          togglePlayPause={togglePlayPause}
+          volume={volume}
+          handleVolumeChange={handleVolumeChange}
+          toggleFullscreen={toggleFullscreen}
+          toggleMute={toggleMute}
+          isMuted={isMuted}
+          playbackRate={playbackRate}
+          setPlaybackRate={setPlaybackRate}
         />
       </div>
-
-      <CustomControls
-        currentTime={currentTime}
-        duration={duration}
-        isPlaying={isPlaying}
-        togglePlayPause={togglePlayPause}
-        volume={volume}
-        handleVolumeChange={handleVolumeChange}
-        toggleFullscreen={toggleFullscreen}
-        toggleMute={toggleMute}
-        isMuted={isMuted}
-        playbackRate={playbackRate}
-        setPlaybackRate={setPlaybackRate}
-      />
     </div>
   );
 };

@@ -17,6 +17,7 @@ async function bootstrap() {
   app.use('/courses-service', coursesProxy);
   app.use('/transcript-service', transcriptProxy);
   app.use('/videos-service/:videoId', videosProxy);
+  app.use('/transcript-service', transcriptProxy);
 
   await app.listen(process.env.PORT ?? 4000);
 }

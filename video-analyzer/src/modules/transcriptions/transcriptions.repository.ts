@@ -2,6 +2,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  Logger,
   OnModuleInit,
 } from '@nestjs/common';
 import fs from 'fs';
@@ -15,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { isErrorHttpResponseCode } from 'src/utils/is-error-http-response';
 import { TranscriptionData } from './types/transcription-data.type';
 import FormData from 'form-data';
+import { executeAsyncWithRetry } from 'src/utils/execute-async-with-retry';
 
 @Injectable()
 export class TranscriptionsRepository implements OnModuleInit {
@@ -27,6 +29,7 @@ export class TranscriptionsRepository implements OnModuleInit {
   constructor(
     @Inject(OPEN_AI_CLIENT) private readonly openAI: OpenAI,
     private readonly s3DalHttpService: HttpService,
+    private readonly logger: Logger,
   ) {}
 
   onModuleInit() {
@@ -65,28 +68,50 @@ export class TranscriptionsRepository implements OnModuleInit {
     return data;
   }
 
-  private async generateTranscriptionSRT(filePath: string) {
-    const file = fs.createReadStream(filePath);
+  private generateTranscriptionSRT(filePath: string) {
+    return executeAsyncWithRetry(
+      async () => {
+        const file = fs.createReadStream(filePath);
 
-    const transcription = await this.openAI.audio.transcriptions.create({
-      file,
-      model: AI_MODEL,
-      response_format: 'srt',
-    });
+        const transcription = await this.openAI.audio.transcriptions.create({
+          file,
+          model: AI_MODEL,
+          response_format: 'srt',
+        });
 
-    return transcription;
+        return transcription;
+      },
+      {
+        onAttemptError: (attempt, retryCount) => {
+          this.logger.warn(
+            `Retrying to generating srt, attempt ${attempt}/${retryCount}`,
+          );
+        },
+      },
+    );
   }
 
-  private async generateTranscriptionJSON(filePath: string) {
-    const file = fs.createReadStream(filePath);
+  private generateTranscriptionJSON(filePath: string) {
+    return executeAsyncWithRetry(
+      async () => {
+        const file = fs.createReadStream(filePath);
 
-    const transcription = await this.openAI.audio.transcriptions.create({
-      file,
-      model: AI_MODEL,
-      timestamp_granularities: ['segment'],
-      response_format: 'verbose_json',
-    });
+        const transcription = await this.openAI.audio.transcriptions.create({
+          file,
+          model: AI_MODEL,
+          timestamp_granularities: ['segment'],
+          response_format: 'verbose_json',
+        });
 
-    return transcription;
+        return transcription;
+      },
+      {
+        onAttemptError: (attempt, retryCount) => {
+          this.logger.warn(
+            `Retrying to generating json, attempt ${attempt}/${retryCount}`,
+          );
+        },
+      },
+    );
   }
 }

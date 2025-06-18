@@ -21,7 +21,7 @@ const WatchLecturePage = () => {
   }, [user?.id, token]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-scroll">
       <div className="flex flex-col flex-grow min-w-0 bg-gray-50 px-8">
         <div className="max-w-5xl mx-auto w-full">
           {activeLectureId ? (

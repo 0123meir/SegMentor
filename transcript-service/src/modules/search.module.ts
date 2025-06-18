@@ -11,7 +11,9 @@ import {
   s3DalConfigKey,
 } from 'src/config/s3-dal.config';
 import { HttpModule } from '@nestjs/axios';
+import { SummaryModule } from './summary.module';
 import { HttpExceptionFilter } from '../filters/http-exception.filter';
+import { ChatModule } from './chat.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { HttpExceptionFilter } from '../filters/http-exception.filter';
       },
       inject: [s3DalConfigKey],
     }),
+    SummaryModule,
+    ChatModule,
   ],
   controllers: [SearchController],
   providers: [
