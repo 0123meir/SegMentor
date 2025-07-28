@@ -6,10 +6,13 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import AppRoutes from './AppRoutes';
+import { useSnackbar } from '@/context/SnackbarContext.tsx';
+import UploadSnackbar from '@/components/UploadSnackbar.tsx';
 
 const App = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const setToken = useAuthStore((state) => state.setToken);
+  const { snackbars } = useSnackbar();
 
   useEffect(() => {
     const token = Cookies.get('authToken');
@@ -36,9 +39,18 @@ const App = () => {
   }, [setUser, setToken]);
 
   return (
-    <Router>
-      <AppRoutes />
-    </Router>
+    <>
+      <Router>
+        <AppRoutes />
+      </Router>
+      <div className="absolute bottom-0 right-0 flex flex-col-reverse items-end">
+        {snackbars.map((snackbar) => (
+          <div className="bg-white">
+            <UploadSnackbar key={snackbar.title} uploadState={snackbar.state} title={snackbar.title} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 

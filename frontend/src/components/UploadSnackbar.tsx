@@ -1,14 +1,14 @@
-import { UploadState } from '@/hooks/useFileUploader';
 import { ReactNode } from 'react';
 import { BiCheck, BiError } from 'react-icons/bi';
-
+import { UploadState } from '@/context/SnackbarContext.tsx';
 import CircularProgress from './common/CircularProgress';
 
 interface UploadSnackbarProps {
   uploadState: UploadState;
+  title: string
 }
 
-const UploadSnackbar = (props: UploadSnackbarProps) => {
+const UploadSnackbar = ({ uploadState, title }: UploadSnackbarProps) => {
   const uploadStateToMessage: Record<UploadState, string> = {
     uploading: 'Upload in progress...',
     error: 'Failed to upload files to the server',
@@ -24,16 +24,17 @@ const UploadSnackbar = (props: UploadSnackbarProps) => {
   };
 
   return (
-    props.uploadState !== 'none' && (
+    uploadState !== 'none' && (
       <div
         dir="ltr"
         id="toast-simple"
-        className="absolute bottom-0 m-4 flex items-center p-4 space-x-4 rtl:space-x-reverse text-gray-50 bg-white rounded-lg shadow-sm dark:text-gray-900 light:bg-gray-800"
+        className="flex items-center p-4 space-x-4 rtl:space-x-reverse bg-gray-50 rounded-lg shadow-sm text-gray-900"
         role="alert"
       >
-        {uploadStateToIcon[props.uploadState]}
+        { title }
+        {uploadStateToIcon[uploadState]}
         <div className="ps-4 text-sm font-normal text-start">
-          {uploadStateToMessage[props.uploadState]}
+          {uploadStateToMessage[uploadState]}
         </div>
       </div>
     )
