@@ -8,7 +8,9 @@ export const AISummary = () => {
   const [dots, setDots] = useState('');
 
   const textDir = useMemo<'ltr' | 'rtl'>(() => {
-    return expandedSummary && detectTextDirection(expandedSummary) ? 'rtl' : 'ltr';
+    if (expandedSummary)
+      return detectTextDirection(expandedSummary);
+    return 'ltr';
   }, [expandedSummary]);
 
   useEffect(() => {
@@ -50,10 +52,7 @@ export const AISummary = () => {
   }
 
   return (
-    <div
-      dir={textDir}
-      className="bg-gray-100 p-4 rounded shadow w-full"
-    >
+    <div dir={textDir} className="bg-gray-100 p-4 rounded shadow w-full">
       {summaryTitle && (
         <h3 className="text-md font-semibold mb-2">{summaryTitle}</h3>
       )}
