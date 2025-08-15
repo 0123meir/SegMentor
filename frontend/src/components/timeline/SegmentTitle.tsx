@@ -25,7 +25,8 @@ const SegmentTitle: React.FC<SegmentTitleProps> = ({
       </div>
       {displayTitle && (
         <div
-          className="text-white text-xs cursor-pointer hover:font-bold transition-all duration-150"
+          className="text-white text-xs cursor-pointer hover:font-bold transition-all duration-150
+          overflow-hidden whitespace-nowrap text-ellipsis"
           onClick={onClick}
         >
           {displayTitle}
