@@ -8,9 +8,7 @@ export const AISummary = () => {
   const [dots, setDots] = useState('');
 
   const textDir = useMemo<'ltr' | 'rtl'>(() => {
-    if (expandedSummary)
-      return detectTextDirection(expandedSummary);
-    return 'ltr';
+    return expandedSummary ? detectTextDirection(expandedSummary) : 'ltr';
   }, [expandedSummary]);
 
   useEffect(() => {
