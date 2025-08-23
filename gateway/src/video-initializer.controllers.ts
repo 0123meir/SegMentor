@@ -21,7 +21,11 @@ export class VideoInitializerController {
 
   @Post('extract-mp3')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 500 * 1024 * 1024 }, // 500MB
+    }),
+  )
   async extractMp3(
     @UploadedFile() file: Express.Multer.File,
     @Body('courseId') courseId: string,

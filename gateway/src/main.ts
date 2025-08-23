@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -6,10 +7,14 @@ import { videosProxy } from './apiProxies/videos-proxy.middleware';
 import { transcriptProxy } from './apiProxies/transcript-proxy-middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync('/app/ssl/myserver.key'),
+    cert: fs.readFileSync('/app/ssl/CSB.crt'),
+  };
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: process.env.CLIENTURL ?? 'http://localhost:5174',
+    origin: process.env.CLIENTURL ?? 'https://localhost',
     credentials: true,
   });
 

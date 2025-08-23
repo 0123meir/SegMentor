@@ -19,7 +19,12 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server=localhost:9092"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server=localhost:9092",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,6 +59,8 @@ services:
     build:
       context: ./frontend
       dockerfile: dockerfile
+      args:
+        VITE_API_URL: "https://shiryj.cs.colman.ac.il/api"
     ports:
       - "80:80"
       - "443:443"
@@ -72,7 +79,7 @@ services:
       - PERMISSION_SERVICE_URL=http://permission-service:3001
       - COURSES_SERVICE_URL=http://courses-service:3002
       - VIDEO_INITIALIZER_SERVICE_URL=http://video-initializer:3005
-      - CLIENTURL=https://localhost
+      - CLIENTURL=https://shiryj.cs.colman.ac.il
       - VITE_CLOUDFRONT_DOMAIN_URL=https://d1bxigp1z5p4f8.cloudfront.net
       - TRANSCRIPT_SERVICE_URL=http://transcript-service:3006
   s3-dal:
