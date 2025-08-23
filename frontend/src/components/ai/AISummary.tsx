@@ -22,9 +22,7 @@ export const AISummary = () => {
   }, [api]);
 
   const textDir = useMemo<'ltr' | 'rtl'>(() => {
-    return expandedSummary && detectTextDirection(expandedSummary)
-      ? 'rtl'
-      : 'ltr';
+    return expandedSummary ? detectTextDirection(expandedSummary) : 'ltr';
   }, [expandedSummary]);
 
   useEffect(() => {
