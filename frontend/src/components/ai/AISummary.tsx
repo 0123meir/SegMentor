@@ -1,14 +1,30 @@
+import { useApi } from '@/hooks/useApi';
 import { useTranscriptStore } from '@/state/TranscriptStore';
 import { renderTextWithMath } from '@/utils/renderTextWithMath';
 import { useEffect, useMemo, useState } from 'react';
 import { detectTextDirection } from '../../utils/detectTextDirection';
 
 export const AISummary = () => {
-  const { expandedSummary, summaryTitle, isLoading } = useTranscriptStore();
+  const {
+    initState,
+    expandSummary,
+    expandedSummary,
+    summaryTitle,
+    isLoading,
+    isExpanded,
+  } = useTranscriptStore();
   const [dots, setDots] = useState('');
+  const rawApi = useApi();
+  const api = useMemo(() => rawApi, []);
+
+  useEffect(() => {
+    initState(api);
+  }, [api]);
 
   const textDir = useMemo<'ltr' | 'rtl'>(() => {
-    return expandedSummary && detectTextDirection(expandedSummary) ? 'rtl' : 'ltr';
+    return expandedSummary && detectTextDirection(expandedSummary)
+      ? 'rtl'
+      : 'ltr';
   }, [expandedSummary]);
 
   useEffect(() => {
@@ -50,16 +66,21 @@ export const AISummary = () => {
   }
 
   return (
-    <div
-      dir={textDir}
-      className="bg-gray-100 p-4 rounded shadow w-full"
-    >
+    <div dir={textDir} className="bg-gray-100 p-4 rounded shadow w-full">
       {summaryTitle && (
         <h3 className="text-md font-semibold mb-2">{summaryTitle}</h3>
       )}
       <p className="whitespace-pre-line">
         {renderTextWithMath(expandedSummary)}
       </p>
+      {!isExpanded && (
+        <button
+          className="mt-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={() => expandSummary(expandedSummary, summaryTitle)}
+        >
+          Expand summary
+        </button>
+      )}
     </div>
   );
 };

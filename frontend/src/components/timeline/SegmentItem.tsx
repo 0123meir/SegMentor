@@ -1,10 +1,10 @@
+import { useTranscriptStore } from '@/state/TranscriptStore';
 import { Segment } from '@/types/Segment';
 import { useMemo } from 'react';
 import useMeasure from 'react-use-measure';
 
 import SegmentBar from './SegmentBar';
 import SegmentTitle from './SegmentTitle';
-import SegmentTooltip from './SegmentTooltip';
 
 interface SegmentItemProps {
   segment: Segment;
@@ -14,6 +14,14 @@ interface SegmentItemProps {
 const SegmentItem: React.FC<SegmentItemProps> = ({ segment, duration }) => {
   const [segmentRef, segmentBounds] = useMeasure();
   const [titleRef, titleBounds] = useMeasure();
+  const { setSummary, setMode } = useTranscriptStore();
+
+  const handleTitleClick = () => {
+    if (segment.description) {
+      setSummary(segment.description, segment.title);
+      setMode('summary');
+    }
+  };
 
   const getDisplayTitle = (
     title?: string,
@@ -68,9 +76,9 @@ const SegmentItem: React.FC<SegmentItemProps> = ({ segment, duration }) => {
         title={segment.title}
         displayTitle={displayTitle}
         titleRef={titleRef}
+        onClick={handleTitleClick}
       />
       <SegmentBar color={segment.color} />
-      <SegmentTooltip title={segment.title} description={segment.description} />
     </div>
   );
 };

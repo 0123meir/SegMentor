@@ -12,13 +12,18 @@ interface TranscriptStore {
   summaryTitle?: string;
   isLoading: boolean;
   error?: string;
+  isExpanded?: boolean;
 
   chatHistory: ChatMessage[];
   isChatLoading: boolean;
 
+  mode: 'summary' | 'chat';
+
   initState: (api: UseApiType) => void;
   expandSummary: (shortSummary: string, topic?: string) => Promise<void>;
   chatWithTranscript: (message: string, transcriptId: string) => Promise<void>;
+  setSummary: (summary: string, title?: string) => void;
+  setMode: (mode: 'summary' | 'chat') => void;
 }
 
 export const useTranscriptStore = create<TranscriptStore>((set, get) => ({
@@ -27,9 +32,12 @@ export const useTranscriptStore = create<TranscriptStore>((set, get) => ({
   summaryTitle: undefined,
   isLoading: false,
   error: undefined,
+  isExpanded: false,
 
   chatHistory: [],
   isChatLoading: false,
+
+  mode: 'chat',
 
   initState: (api) => set({ api }),
 
@@ -42,7 +50,12 @@ export const useTranscriptStore = create<TranscriptStore>((set, get) => ({
         expandedSummary: string;
       }>('/transcript-service/expand-summary', { shortSummary, topic });
 
-      set({ expandedSummary, summaryTitle: topic, isLoading: false });
+      set({
+        expandedSummary,
+        summaryTitle: topic,
+        isLoading: false,
+        isExpanded: true,
+      });
     } catch (error) {
       console.error(error);
       set({
@@ -88,4 +101,12 @@ export const useTranscriptStore = create<TranscriptStore>((set, get) => ({
       });
     }
   },
+  setSummary: (summary, title) => {
+    set({
+      expandedSummary: summary,
+      summaryTitle: title,
+      isExpanded: false,
+    });
+  },
+  setMode: (mode) => set({ mode }),
 }));

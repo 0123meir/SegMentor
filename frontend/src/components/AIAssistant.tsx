@@ -1,5 +1,5 @@
 import { useTranscriptStore } from '@/state/TranscriptStore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { BsStars } from 'react-icons/bs';
 import { FaCommentDots } from 'react-icons/fa';
 
@@ -7,14 +7,13 @@ import { AIChat } from './ai/AIChat';
 import { AISummary } from './ai/AISummary';
 
 export const AIAssistant = () => {
-  const { isLoading, error } = useTranscriptStore();
-  const [mode, setMode] = useState<'summary' | 'chat'>('chat');
+  const { isLoading, error, mode, setMode } = useTranscriptStore();
 
   useEffect(() => {
     if (isLoading) {
       setMode('summary');
     }
-  }, [isLoading]);
+  }, [isLoading, setMode]);
 
   return (
     <div
